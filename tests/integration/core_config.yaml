@@ -1,0 +1,171 @@
+# cfg for pymasq.datasets
+datasets:
+  data: loan
+  dropnans: True
+  nrows: 10
+# cfg for pymasq.mitigations
+mitigations:
+  - add_noise:
+      method: additive
+      magnitude: 5
+      cols: LoanAmount
+  - add_noise:
+      method: correlated
+      magnitude: 20
+      cols: 
+          - LoanAmount
+          - ApplicantIncome
+  - hashing:    
+      hash_func: sha256
+      cols: Education
+  - rounding:
+      magnitude: 1
+      round_decimal: True
+      cols: LoanAmount
+  - substitute:
+      from_val: LP
+      to_val: X
+      check_substr: True
+      cols: Loan_ID
+  - topbot_recoding: 
+      method: both    
+      top_cutoff: 15000
+      top_to: 20000
+      bot_cutoff: 1500
+      bot_to: 2000    
+      cols: 
+        - ApplicantIncome
+  - geom_transform:
+      magnitude: 0.3
+      perturb_cols:
+          - LoanAmount
+          - ApplicantIncome
+  - truncate:
+      method: index
+      idx: 1
+      cols: Property_Area
+  - microaggregation:
+      method: robust
+      aggr: 2      
+      cols: 
+        - ApplicantIncome
+        - CoapplicantIncome      
+  - microaggregation:
+      method: sequential
+      aggr: 2      
+      cols: 
+        - ApplicantIncome
+        - CoapplicantIncome   
+  - microaggregation:
+      method: sequential
+      aggr: 2      
+      sort_by: CoapplicantIncome
+      cols: 
+        - ApplicantIncome
+        - CoapplicantIncome   
+  - microaggregation:
+      method: sequential
+      aggr: 2    
+      sort_all: True
+      cols: 
+        - ApplicantIncome
+        - CoapplicantIncome   
+  - microaggregation:
+      method: quantile
+      aggr: 2      
+      cols: 
+        - ApplicantIncome
+        - CoapplicantIncome 
+  - microaggregation:
+      method: ranking
+      aggr: 2      
+      cols: 
+        - ApplicantIncome
+        - CoapplicantIncome         
+  - microaggregation:
+      method: advanced
+      aggr: 2      
+      cols:
+        - ApplicantIncome
+        - CoapplicantIncome
+        - LoanAmount
+      clust: kmeans
+  - microaggregation:
+      method: advanced
+      aggr: 2      
+      cols:
+        - ApplicantIncome
+        - CoapplicantIncome
+        - LoanAmount
+      reduct: pca
+  - microaggregation:
+      method: advanced
+      aggr: 2      
+      cols:
+        - ApplicantIncome
+        - CoapplicantIncome
+        - LoanAmount
+      scale: standard
+      reduct: pca
+  - microaggregation:
+      method: advanced
+      aggr: 2      
+      cols:
+        - ApplicantIncome
+        - CoapplicantIncome
+        - LoanAmount
+      reduct: pca
+  - microaggregation:
+      method: advanced
+      aggr: 2      
+      cols:
+        - ApplicantIncome
+        - CoapplicantIncome
+        - LoanAmount
+      scale: standard
+      reduct: pca
+  - local_supp:
+      suppress_col: Married
+      sensitive_col: Gender
+      to_val: None
+      risk_threshold: 0.6      
+      cols: 
+        - Married
+        - Gender
+        - Credit_History
+        - Loan_Status
+  - shuffle:
+      shuffle_cols: 
+        - ApplicantIncome
+        - LoanAmount
+      cor_cols: 
+        - Education
+        - Loan_Status
+  - pram:
+      perturb_cols: 
+        - Self_Employed
+        - Education
+        - Married
+      sensitive_col: Gender
+      probs: 0.2
+# cfg for pymasq.metrics
+metrics:
+  l_diversity:
+    params:    
+      sensitive_col: Gender
+      L: 2
+      method: distinct
+  t_closeness:
+    params:
+      sensitive_col: Gender
+      t: 0.1
+      datatype: categorical
+  k_anon:
+    params:
+      key_vars: 
+        - LoanAmount
+        - Property_Area
+        - ApplicantIncome
+        - Education
+      k: 10
+# do not define pymasq.optimization; use default config

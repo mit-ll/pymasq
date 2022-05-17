@@ -1,0 +1,268 @@
+mitigations:    
+  # Customer_Age
+  - add_noise_additive: 
+      magnitude: 20 
+      centered: True
+      keep_dtypes: True
+      cols: Customer_Age    
+  - add_noise_additive:  
+      magnitude: 50 
+      centered: True
+      keep_dtypes: True
+      cols: Customer_Age
+  - add_noise_additive:  
+      magnitude: 5 
+      centered: True
+      keep_dtypes: True
+      cols: Customer_Age
+  - add_noise_restricted: 
+      magnitude: 50 
+      keep_dtypes: True
+      cols: Customer_Age
+  # Total_Amt_Chng_Q4_Q1 Total_Ct_Chng_Q4_Q1
+  - robust_magg:
+      aggr: 3
+      keep_dtypes: True
+      cols:
+        - Total_Amt_Chng_Q4_Q1
+        - Total_Ct_Chng_Q4_Q1
+  - robust_magg:
+      aggr: 5
+      keep_dtypes: True
+      cols:
+        - Total_Amt_Chng_Q4_Q1
+        - Total_Ct_Chng_Q4_Q1
+  - robust_magg:
+      aggr: 10
+      keep_dtypes: True
+      cols:
+        - Total_Amt_Chng_Q4_Q1
+        - Total_Ct_Chng_Q4_Q1
+  - robust_magg:
+      aggr: 20
+      keep_dtypes: True
+      cols:
+        - Total_Amt_Chng_Q4_Q1
+        - Total_Ct_Chng_Q4_Q1
+  - robust_magg:
+      aggr: 50
+      keep_dtypes: True
+      cols:
+        - Total_Amt_Chng_Q4_Q1
+        - Total_Ct_Chng_Q4_Q1
+  - add_noise_correlated:
+      keep_dtypes: True
+      magnitude: 5
+      cols:
+        - Total_Amt_Chng_Q4_Q1
+        - Total_Ct_Chng_Q4_Q1
+  # Credit_Limit Avg_Open_To_Buy
+  - geom_transform:
+      perturb_cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+      sensitive_col: Marital_Status
+      magnitude: 0.04
+      shuffle: False
+      cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+      sensitive_col: Marital_Status
+      magnitude: 0.04
+      shuffle: False
+      cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+      sensitive_col: Marital_Status
+      magnitude: 0.08
+      shuffle: False
+      cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+      sensitive_col: Marital_Status
+      magnitude: 0.08
+      shuffle: False
+      cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+      sensitive_col: Marital_Status
+      magnitude: 0.04
+      shuffle: False
+      cols:
+        - Credit_Limit
+        - Avg_Open_To_Buy
+        - Marital_Status
+  # Total_Trans_Ct
+  - topbot_recoding:
+      method: both
+      top_cutoff: 100
+      bot_cutoff: 20
+      cols: Total_Trans_Ct
+  - topbot_recoding:
+      method: both
+      top_cutoff: 80
+      bot_cutoff: 40
+      cols: Total_Trans_Ct
+  - add_noise_restricted:
+      magnitude: 5  
+      keep_dtypes: True
+      cols: Total_Trans_Ct
+  # Dependent_count Total_Relationship_Count
+  - advanced_magg:
+      aggr: 3
+      measure: median 
+      clust: kmeans
+      scale: standard
+      cols:
+        - Dependent_count
+        - Total_Relationship_Count
+  - advanced_magg:
+      aggr: 10
+      measure: median 
+      clust: kmeans
+      scale: standard
+      cols:
+        - Dependent_count
+        - Total_Relationship_Count
+  - advanced_magg:
+      aggr: 10
+      measure: median 
+      clust: kmeans
+      cols:
+        - Dependent_count
+        - Total_Relationship_Count
+  - advanced_magg:
+      aggr: 50
+      measure: median 
+      clust: kmeans
+      scale: standard
+      cols:
+        - Dependent_count
+        - Total_Relationship_Count
+  - add_noise_correlated:
+      keep_dtypes: True
+      magnitude: 5
+      cols:
+        - Total_Relationship_Count
+        - Dependent_count
+  # Total_Revolving_Bal Total_Trans_Amt
+  - geom_transform:
+      perturb_cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+      sensitive_col: Marital_Status
+      magnitude: 0.04
+      shuffle: False
+      cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+      sensitive_col: Marital_Status
+      magnitude: 0.04
+      shuffle: False
+      cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+      sensitive_col: Marital_Status
+      magnitude: 0.08
+      shuffle: False
+      cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+      sensitive_col: Marital_Status
+      magnitude: 0.08
+      shuffle: False
+      cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+        - Marital_Status
+  - geom_transform:
+      perturb_cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+      sensitive_col: Marital_Status
+      magnitude: 0.04
+      shuffle: False
+      cols:
+        - Total_Revolving_Bal
+        - Total_Trans_Amt
+        - Marital_Status
+  # Contacts_Count_12_mon Months_Inactive_12_mon
+  - advanced_magg:
+      aggr: 3
+      measure: median 
+      clust: kmeans
+      scale: standard
+      cols:
+        - Contacts_Count_12_mon
+        - Months_Inactive_12_mon
+  - advanced_magg:
+      aggr: 10
+      measure: median 
+      clust: kmeans
+      scale: standard
+      cols:
+        - Contacts_Count_12_mon
+        - Months_Inactive_12_mon
+  - advanced_magg:
+      aggr: 10
+      measure: median 
+      clust: kmeans
+      cols:
+        - Contacts_Count_12_mon
+        - Months_Inactive_12_mon
+  - advanced_magg:
+      aggr: 50
+      measure: median 
+      clust: kmeans
+      scale: standard
+      cols:
+        - Contacts_Count_12_mon
+        - Months_Inactive_12_mon
+  - add_noise_correlated:
+      keep_dtypes: True
+      magnitude: 5
+      cols:
+        - Contacts_Count_12_mon
+        - Months_Inactive_12_mon
+metrics:
+    auc_score:
+      params: 
+        sensitive_col: Marital_Status
+        method: rfclass
+        retrain: True
+      weight: 1.0
