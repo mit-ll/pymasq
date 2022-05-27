@@ -16,6 +16,8 @@ Delivered to the U.S. Government with Unlimited Rights, as defined in DFARS Part
 
 [Source](https://tgsmith61591.github.io/2018-12-23-automate-gh-builds/) for script
 
+1. Ensure that pymasq is installed in your environment
+
 1. Make sure that `update_docs.sh` has execute permissions  
 
     ```sh
@@ -53,4 +55,4 @@ which will generate the html documentation in `pymasq/docs/build/`.
     ./update_docs.sh -v=0.6.3-SNAPSHOT
     ```
 
-1. View newly generated documentation [here]()
+1. View newly generated documentation [here](https://mit-ll.github.io/pymasq/index.html)
