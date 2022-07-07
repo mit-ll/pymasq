@@ -1,0 +1,6 @@
+optimizations:
+  IterativeSearch:
+    iters: 50
+    reuse_mutations: False
+    randomize_mutations: True
+    verbose: 0

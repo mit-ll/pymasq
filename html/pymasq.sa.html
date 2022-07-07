@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymasq.sa package &mdash; pymasq 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pymasq
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pymasq</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymasq</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>pymasq.sa package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pymasq.sa.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymasq-sa-package">
+<h1>pymasq.sa package<a class="headerlink" href="#pymasq-sa-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pymasq.sa.sobol">
+<span id="pymasq-sa-sobol-module"></span><h2>pymasq.sa.sobol module<a class="headerlink" href="#module-pymasq.sa.sobol" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pymasq.sa.sobol.analyze">
+<span class="sig-prename descclassname"><span class="pre">pymasq.sa.sobol.</span></span><span class="sig-name descname"><span class="pre">analyze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_second_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pymasq.sa.sobol.analyze" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze takes in a trained model and a params dictionary describing the model inputs. The
+function calculates the first order sensitivities and total sensitivities for the inputs
+described in the params file and will optionally do the same if <cite>calc_second_order</cite> is <cite>True</cite> (default behavior).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>child class of sklearn.base.BaseEstimator</em>) – The trained model that will be the target for sensitivity analysis. Must be able to run
+<cite>.predict()</cite> on the provided set of samples</p></li>
+<li><p><strong>params</strong> (<em>Dict</em>) – A params dict generated by the <cite>gen_params</cite> function</p></li>
+<li><p><strong>samples</strong> (<em>np.ndarray</em>) – A samples array generated by the <cite>gen_samples</cite> function</p></li>
+<li><p><strong>confidence</strong> (<em>float</em><em> [</em><em>0.0</em><em>, </em><em>1.0</em><em>)</em><em>, </em><em>optional</em>) – The confidence interval provided as a value between 0 and 1. (Default: 0.95)</p></li>
+<li><p><strong>calc_second_order</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean that determines whether the number of generated samples should conform to the
+number required for first AND second order sensitivities, or just first order
+sensitivities. This boolean value should match that of the flag provided to the
+<cite>gen_samples</cite> function used to generate the <cite>samples</cite> parameter. (Default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>np.array</em> – An array of pd.Interval objects for the first order sensitivities and their confidence
+intervals</p></li>
+<li><p><em>np.array</em> – An array of pd.Interval objects for the total sensitivities and their confidence
+intervals</p></li>
+<li><p><em>np.ndarray</em> – A two dimensional array of pd.Interval objects for the second order sensitivities and their
+confidence intervals. Values will only exist in the top-right half of the matrix.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pymasq.sa.sobol.gen_params" title="pymasq.sa.sobol.gen_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_params</span></code></a>, <a class="reference internal" href="#pymasq.sa.sobol.gen_samples" title="pymasq.sa.sobol.gen_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_samples</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymasq.sa.sobol.gen_params">
+<span class="sig-prename descclassname"><span class="pre">pymasq.sa.sobol.</span></span><span class="sig-name descname"><span class="pre">gen_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#pymasq.sa.sobol.gen_params" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dictionary containing the metadata required for SA analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.DataFrame</em>) – The input data frame. All columns must be numeric in order to perform sensitivity analysis</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dictionary containing the number of columns (<cite>num_cols</cite>), column names (<cite>names</cite>),
+and min and max bounds for each column (<cite>bounds</cite>)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymasq.sa.sobol.gen_samples">
+<span class="sig-prename descclassname"><span class="pre">pymasq.sa.sobol.</span></span><span class="sig-name descname"><span class="pre">gen_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_second_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#pymasq.sa.sobol.gen_samples" title="Permalink to this definition"></a></dt>
+<dd><p>A function for generating input samples to the analyze method.</p>
+<p>With the <cite>uniform</cite> method, inputs will be generated based on a uniform distribution over the
+range of values that the input data can have. The number of samples returned by the function
+will be 𝑁*(2𝐷+2) for <cite>calc_second_order=True</cite> and 𝑁*(𝐷+2) for <cite>calc_second_order=False</cite> where
+𝑁 is the value supplied by <cite>num_samples</cite> and 𝐷 is the number of columns in the data.</p>
+<p>TODO: sample method description once implemented</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – A dataframe of input values to the model that sensitivity analysis should be performed on</p></li>
+<li><p><strong>method</strong> (<em>{&quot;uniform&quot;</em><em>, </em><em>&quot;sample&quot;}</em><em>, </em><em>optional</em>) – A string that dictates which form of sample generation to use. (Default: “uniform”)</p></li>
+<li><p><strong>num_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – An integer used in computing the number of samples to return. It is NOT the returned
+number of samples but a value used to generate an appropriate number of samples
+(described  above). (Default: 10000)</p></li>
+<li><p><strong>calc_second_order</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean that determines whether the number of generated samples should conform to the
+number required for first AND second order sensitivities, or just first order
+sensitivities (as described above). (Default: True)</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em> or </em><em>None</em>) – The params dictionary generated by <cite>gen_params</cite>. If the method is “uniform” and this value
+is None, <cite>gen_params</cite> will be called. (Default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An n-dimensional numpy array containing a number of samples required for first or
+second order sensitivity analysis.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="pymasq.errors.html#pymasq.errors.InputError" title="pymasq.errors.InputError"><strong>InputError</strong></a> – Throws an error if the user tries to enter a method that is not “uniform” or “sample”</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pymasq.sa">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pymasq.sa" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pymasq.sa.analyze">
+<span class="sig-prename descclassname"><span class="pre">pymasq.sa.</span></span><span class="sig-name descname"><span class="pre">analyze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_second_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pymasq.sa.analyze" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze takes in a trained model and a params dictionary describing the model inputs. The
+function calculates the first order sensitivities and total sensitivities for the inputs
+described in the params file and will optionally do the same if <cite>calc_second_order</cite> is <cite>True</cite> (default behavior).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>child class of sklearn.base.BaseEstimator</em>) – The trained model that will be the target for sensitivity analysis. Must be able to run
+<cite>.predict()</cite> on the provided set of samples</p></li>
+<li><p><strong>params</strong> (<em>Dict</em>) – A params dict generated by the <cite>gen_params</cite> function</p></li>
+<li><p><strong>samples</strong> (<em>np.ndarray</em>) – A samples array generated by the <cite>gen_samples</cite> function</p></li>
+<li><p><strong>confidence</strong> (<em>float</em><em> [</em><em>0.0</em><em>, </em><em>1.0</em><em>)</em><em>, </em><em>optional</em>) – The confidence interval provided as a value between 0 and 1. (Default: 0.95)</p></li>
+<li><p><strong>calc_second_order</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean that determines whether the number of generated samples should conform to the
+number required for first AND second order sensitivities, or just first order
+sensitivities. This boolean value should match that of the flag provided to the
+<cite>gen_samples</cite> function used to generate the <cite>samples</cite> parameter. (Default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>np.array</em> – An array of pd.Interval objects for the first order sensitivities and their confidence
+intervals</p></li>
+<li><p><em>np.array</em> – An array of pd.Interval objects for the total sensitivities and their confidence
+intervals</p></li>
+<li><p><em>np.ndarray</em> – A two dimensional array of pd.Interval objects for the second order sensitivities and their
+confidence intervals. Values will only exist in the top-right half of the matrix.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pymasq.sa.gen_params" title="pymasq.sa.gen_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_params</span></code></a>, <a class="reference internal" href="#pymasq.sa.gen_samples" title="pymasq.sa.gen_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_samples</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymasq.sa.gen_params">
+<span class="sig-prename descclassname"><span class="pre">pymasq.sa.</span></span><span class="sig-name descname"><span class="pre">gen_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#pymasq.sa.gen_params" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dictionary containing the metadata required for SA analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.DataFrame</em>) – The input data frame. All columns must be numeric in order to perform sensitivity analysis</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dictionary containing the number of columns (<cite>num_cols</cite>), column names (<cite>names</cite>),
+and min and max bounds for each column (<cite>bounds</cite>)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymasq.sa.gen_samples">
+<span class="sig-prename descclassname"><span class="pre">pymasq.sa.</span></span><span class="sig-name descname"><span class="pre">gen_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_second_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#pymasq.sa.gen_samples" title="Permalink to this definition"></a></dt>
+<dd><p>A function for generating input samples to the analyze method.</p>
+<p>With the <cite>uniform</cite> method, inputs will be generated based on a uniform distribution over the
+range of values that the input data can have. The number of samples returned by the function
+will be 𝑁*(2𝐷+2) for <cite>calc_second_order=True</cite> and 𝑁*(𝐷+2) for <cite>calc_second_order=False</cite> where
+𝑁 is the value supplied by <cite>num_samples</cite> and 𝐷 is the number of columns in the data.</p>
+<p>TODO: sample method description once implemented</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – A dataframe of input values to the model that sensitivity analysis should be performed on</p></li>
+<li><p><strong>method</strong> (<em>{&quot;uniform&quot;</em><em>, </em><em>&quot;sample&quot;}</em><em>, </em><em>optional</em>) – A string that dictates which form of sample generation to use. (Default: “uniform”)</p></li>
+<li><p><strong>num_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – An integer used in computing the number of samples to return. It is NOT the returned
+number of samples but a value used to generate an appropriate number of samples
+(described  above). (Default: 10000)</p></li>
+<li><p><strong>calc_second_order</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean that determines whether the number of generated samples should conform to the
+number required for first AND second order sensitivities, or just first order
+sensitivities (as described above). (Default: True)</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em> or </em><em>None</em>) – The params dictionary generated by <cite>gen_params</cite>. If the method is “uniform” and this value
+is None, <cite>gen_params</cite> will be called. (Default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An n-dimensional numpy array containing a number of samples required for first or
+second order sensitivity analysis.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="pymasq.errors.html#pymasq.errors.InputError" title="pymasq.errors.InputError"><strong>InputError</strong></a> – Throws an error if the user tries to enter a method that is not “uniform” or “sample”</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, MITLL.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

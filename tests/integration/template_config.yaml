@@ -1,0 +1,49 @@
+# config for dataset
+datasets:
+  # name of the pymasq.dataset to use (e.g., 'loan' or 'loan.csv')
+  data: str 
+  # drop rows with NAs if True
+  dropnans: bool
+  # number of rows to subset the data
+  nrows: int
+  # list of columns to subset the data; a single string, instead of a list, can also be passed
+  cols:
+    - str
+    - str
+# config for mitigations  
+mitigations:
+  # name of pymasq.mitigation to use (e.g., 'add_noise')
+  - name_of_mitigation_1:
+      # key-value pairs of the mitigation parameter names and values
+      # NOTE: the 'p' probability key can be omitted
+      name_of_param_1: value_of_param_1   # value type is specific to mitigation
+      name_of_param_1: value_of_param_2
+  - name_of_mitigation_2:
+      name_of_param_1: value_of_param_1
+# config for metrics  
+metrics:
+  # name of pymasq.metrics to use (e.g., 'k_anon')
+  name_of_metric_1:
+    # top-level 'params' key to define parameters of metrics
+    # NOTE: the 'df', 'orig_df', and 'mod_df' parameters can be omitted 
+    params:    
+      name_of_param_1: value_of_param_1   # value type is specific to metric
+      name_of_param_2: value_of_param_2
+    # importance weighting to set; can be omitted
+    weight: float      
+  name_of_metric_2:
+    params:
+      name_of_param_1: value_of_param_1
+      name_of_param_2: value_of_param_2
+      name_of_param_3: value_of_param_3
+    weight: float
+# config for optimizations
+optimizations:
+  # name of pymasq.optimizations to use (e.g., 'ExhaustiveSearch')
+  name_of_optimization_1: 
+    # key-value pairs of the optimization parameter names and values
+    name_of_param_1: value_of_param_1
+    name_of_param_2: value_of_param_2
+    name_of_param_3: value_of_param_3
+  name_of_optimization_2:     
+    name_of_param_1: value_of_param_1
