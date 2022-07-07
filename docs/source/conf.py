@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..','..')))
 # -- Project information -----------------------------------------------------
 
 project = 'pymasq'
-copyright = '2020, MITLL'
+copyright = '2022, MITLL'
 author = 'MITLL'
 
 # The full version, including alpha/beta/rc tags
