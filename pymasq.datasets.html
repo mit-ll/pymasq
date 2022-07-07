@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymasq.datasets package &mdash; pymasq 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pymasq
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pymasq</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymasq</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>pymasq.datasets package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pymasq.datasets.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymasq-datasets-package">
+<h1>pymasq.datasets package<a class="headerlink" href="#pymasq-datasets-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pymasq.datasets.data_generator">
+<span id="pymasq-datasets-data-generator-module"></span><h2>pymasq.datasets.data_generator module<a class="headerlink" href="#module-pymasq.datasets.data_generator" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt id="pymasq.datasets.data_generator.gen_bin_df">
+<code class="sig-prename descclassname">pymasq.datasets.data_generator.</code><code class="sig-name descname">gen_bin_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.data_generator.gen_bin_df" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a dataframe of eight (8) binary columns where the first column
+is considered the target variable with half 0’s and half 1’s, and then
+the next six columns have progressively more (0% - 50% by 10%) of the values
+from the traget column flipped that that they are less correlated, and the
+last column is all 0’s.</p>
+<p>This dataset can be used for distinguishing the importance of a column to
+predicting the target column, such that each column is pregressively less
+correlated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of rows in the returned dataframe
+(Default: 1000)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe containing increasingly unimportant binary variables</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.data_generator.gen_geom_seq">
+<code class="sig-prename descclassname">pymasq.datasets.data_generator.</code><code class="sig-name descname">gen_geom_seq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">6</span></em>, <em class="sig-param"><span class="n">rate</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">2.0</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#pymasq.datasets.data_generator.gen_geom_seq" title="Permalink to this definition"></a></dt>
+<dd><p>Builds a list of floats that geometrically increase for n times from a starting value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>float</em><em>, </em><em>optional</em>) – The starting value for generating a doubled values
+(Default: .5)</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of time that the value will be doubled
+(Default: 6)</p></li>
+<li><p><strong>rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Rate of increases or decreases in the sequence
+(Default: 2.0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x_s</strong> – List of geometric sequence</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.data_generator.gen_num_df">
+<code class="sig-prename descclassname">pymasq.datasets.data_generator.</code><code class="sig-name descname">gen_num_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pymasq.datasets.data_generator.gen_num_df" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a dataframe of seven (7) numeric columns where the first column
+is considered the target variable with half 0’s and half 1’s, and then
+the next six columns have samples from two normal distributions (means 5 and 10,
+corresponding to 0 and 1 respectively) with progressively larger standard
+deviations.  This will generate columns with data that increasingly overlaps
+between the two classes and therefore decreases the ability to distinguish
+betweenthe two classes of 0 and 1.  This should correspond to decrease in
+variable importance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of rows in the returned dataframe
+(Default: 1000)</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Number to set for random seed used in the gauss function
+(Default: 1234)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe containing increasingly unimportant numeric variables</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.data_generator.generate_l_diverse_table">
+<code class="sig-prename descclassname">pymasq.datasets.data_generator.</code><code class="sig-name descname">generate_l_diverse_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>List<span class="p">[</span>int<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">num_col</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em>, <em class="sig-param"><span class="n">num_q_blocks</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em>, <em class="sig-param"><span class="n">q_block_sizes</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>List<span class="p">[</span>int<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">5</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pymasq.datasets.data_generator.generate_l_diverse_table" title="Permalink to this definition"></a></dt>
+<dd><p>Used for testing l-diversity. Creates a data set that is l-diverse for given l.
+:param l: The specified diversity that the data set needs to be TODO: need to expand this to allow float l parameters for entropy
+:type l: Union[int, List[int]]
+:param num_col: The number of columns (in addition to the sensitive column) the data set should have</p>
+<blockquote>
+<div><p>(default: 5)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_q_blocks</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of q_blocks (equivalence classes) the data set should have
+(default: 5)</p></li>
+<li><p><strong>q_block_sizes</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Specified sizes of the q_blocks; if an int q_block_sizes will be the size of all q_blocks, otherwise must be a list of length num_q_blocks</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dataframe that meets the above requirements for testing of the l-diversity metric</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.data_generator.generate_t_close_table">
+<code class="sig-prename descclassname">pymasq.datasets.data_generator.</code><code class="sig-name descname">generate_t_close_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensitive_col</span><span class="p">:</span> <span class="n">List</span></em>, <em class="sig-param"><span class="n">num_col</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">3</span></em>, <em class="sig-param"><span class="n">num_q_blocks</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">3</span></em>, <em class="sig-param"><span class="n">q_block_sizes</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>List<span class="p">[</span>int<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">3</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pymasq.datasets.data_generator.generate_t_close_table" title="Permalink to this definition"></a></dt>
+<dd><p>Used for testing t-closeness. Creates a data set that is t-close for given t.
+:param sensitive_col: List to be used as the sensitive column in the dataset
+:type sensitive_col: List[int]
+:param num_col: The number of columns (in addition to the sensitive column) the data set should have</p>
+<blockquote>
+<div><p>(default: 3)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_q_blocks</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of q_blocks (equivalence classes) the data set should have
+(default: 3)</p></li>
+<li><p><strong>q_block_sizes</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Specified sizes of the q_blocks; if an int q_block_sizes will be the size of all q_blocks, otherwise must be a list of length num_q_blocks
+(default: 3)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dataframe that meets the above requirements for testing of the l-diversity metric</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pymasq.datasets.utils">
+<span id="pymasq-datasets-utils-module"></span><h2>pymasq.datasets.utils module<a class="headerlink" href="#module-pymasq.datasets.utils" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt id="pymasq.datasets.utils.rand_cat_change">
+<code class="sig-prename descclassname">pymasq.datasets.utils.</code><code class="sig-name descname">rand_cat_change</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">p</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#pymasq.datasets.utils.rand_cat_change" title="Permalink to this definition"></a></dt>
+<dd><p>Randomly changes a portion of a categorical array to a different category
+in the array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<em>array-like</em>) – An array of strings or categories</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Proportion of the array to change categories, between 0.0 and 1.0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array with a user-defined portion of the elements randomly changed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pymasq.datasets">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pymasq.datasets" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference internal" href="#module-pymasq.datasets" title="pymasq.datasets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymasq.datasets</span></code></a> module includes utilities to load tabular datasets.</p>
+<dl class="py function">
+<dt id="pymasq.datasets.gen_bin_df">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">gen_bin_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.gen_bin_df" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a dataframe of eight (8) binary columns where the first column
+is considered the target variable with half 0’s and half 1’s, and then
+the next six columns have progressively more (0% - 50% by 10%) of the values
+from the traget column flipped that that they are less correlated, and the
+last column is all 0’s.</p>
+<p>This dataset can be used for distinguishing the importance of a column to
+predicting the target column, such that each column is pregressively less
+correlated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of rows in the returned dataframe
+(Default: 1000)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe containing increasingly unimportant binary variables</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.gen_geom_seq">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">gen_geom_seq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">6</span></em>, <em class="sig-param"><span class="n">rate</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">2.0</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#pymasq.datasets.gen_geom_seq" title="Permalink to this definition"></a></dt>
+<dd><p>Builds a list of floats that geometrically increase for n times from a starting value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>float</em><em>, </em><em>optional</em>) – The starting value for generating a doubled values
+(Default: .5)</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of time that the value will be doubled
+(Default: 6)</p></li>
+<li><p><strong>rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Rate of increases or decreases in the sequence
+(Default: 2.0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x_s</strong> – List of geometric sequence</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.gen_num_df">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">gen_num_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pymasq.datasets.gen_num_df" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a dataframe of seven (7) numeric columns where the first column
+is considered the target variable with half 0’s and half 1’s, and then
+the next six columns have samples from two normal distributions (means 5 and 10,
+corresponding to 0 and 1 respectively) with progressively larger standard
+deviations.  This will generate columns with data that increasingly overlaps
+between the two classes and therefore decreases the ability to distinguish
+betweenthe two classes of 0 and 1.  This should correspond to decrease in
+variable importance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of rows in the returned dataframe
+(Default: 1000)</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Number to set for random seed used in the gauss function
+(Default: 1234)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe containing increasingly unimportant numeric variables</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.load_bank_attrition_rates">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">load_bank_attrition_rates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.load_bank_attrition_rates" title="Permalink to this definition"></a></dt>
+<dd><p>Load and return the Bank Attrition Rates dataset.</p>
+<p>A manager at the bank is disturbed with more and more customers leaving their credit card services.
+They would really appreciate if one could predict for them who is gonna get churned so
+they can proactively go to the customer to provide them better services and turn customers’ decisions in the opposite direction.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Samples total</p></td>
+<td><p>10,127</p></td>
+</tr>
+<tr class="row-even"><td><p>Dimensionality</p></td>
+<td><p>20</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>pandas.DataFrame</em></p></li>
+<li><p><em>The dataset was obtained from</em></p></li>
+<li><p><strong>https</strong> (<em>//www.kaggle.com/sakshigoyal7/credit-card-customers</em>)</p></li>
+<li><p>The <cite>CLIENTNUM</cite> and <cite>Naive_Bayes_Classifier_Attrition_Flag_*</cite> columns have been removed.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.load_census">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">load_census</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.load_census" title="Permalink to this definition"></a></dt>
+<dd><p>Load and return the Adult Census Income dataset.</p>
+<p>The adult census income dataset contains information regarding individuals from the 1994 Census database.
+The <cite>sex</cite> feature can be used to evaluate the effectiveness Statistical Disclosure Control methods.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Samples total</p></td>
+<td><p>32562</p></td>
+</tr>
+<tr class="row-even"><td><p>Dimensionality</p></td>
+<td><p>15</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>pandas.DataFrame</em></p></li>
+<li><p><em>The dataset was obtained from</em></p></li>
+<li><p><strong>http</strong> (<em>//archive.ics.uci.edu/ml/datasets/Adult</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.load_data">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">load_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">fpath</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load and return the data from fpath/fname.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>{&quot;census.csv&quot;</em><em>, </em><em>&quot;loan.csv&quot;</em><em>, </em><em>&quot;prestige.csv&quot;</em>) – “shuffled.csv”, “y_star.csv”, “y_star1.csv”}
+Name of csv file to be loaded from <cite>fpath</cite>.</p></li>
+<li><p><strong>fpath</strong> (<em>string</em><em>, </em><em>optional</em>) – File path where <cite>fname</cite> is located.
+The module’s data directory will be used if omitted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.load_loan">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">load_loan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.load_loan" title="Permalink to this definition"></a></dt>
+<dd><p>Load and return the Loan dataset.</p>
+<p>The loan dataset contains mock information regarding home loans issued by the Dream Housing Finance company.
+The <cite>gender</cite>, <cite>married</cite>, <cite>education</cite>, <cite>self_employed</cite>, and <cite>loan_status</cite> are all prime feature candidates
+that can be used to evaluate the effectiveness Statistical Disclosure Control methods.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Samples total</p></td>
+<td><p>614</p></td>
+</tr>
+<tr class="row-even"><td><p>Dimensionality</p></td>
+<td><p>13</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>pandas.DataFrame</em></p></li>
+<li><p><em>The dataset was obtained from</em></p></li>
+<li><p><strong>https</strong> (<em>//www.kaggle.com/burak3ergun/loan-data-set</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.load_prestige">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">load_prestige</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.datasets.load_prestige" title="Permalink to this definition"></a></dt>
+<dd><p>Load and return the Prestige Of Canadian Occupations dataset.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Samples total</p></td>
+<td><p>102</p></td>
+</tr>
+<tr class="row-even"><td><p>Dimensionality</p></td>
+<td><p>6</p></td>
+</tr>
+</tbody>
+</table>
+<p>This data frame contains the following columns:</p>
+<p>education
+Average education of occupational incumbents, years, in 1971.</p>
+<p>income
+Average income of incumbents, dollars, in 1971.</p>
+<p>women
+Percentage of incumbents who are women.</p>
+<p>prestige
+Pineo-Porter prestige score for occupation, from a social survey conducted
+in the mid-1960s.</p>
+<p>census
+Canadian Census occupational code.</p>
+<p>type
+Type of occupation. A factor with levels (note: out of order):
+bc, Blue Collar; prof, Professional, Managerial, and Technical;
+wc, White Collar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>pandas.DataFrame</em></p></li>
+<li><p><em>The dataset was obtained from</em></p></li>
+<li><p><strong>https</strong> (<em>//www.rdocumentation.org/packages/carData/versions/3.0-4/topics/Prestige</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.datasets.rand_cat_change">
+<code class="sig-prename descclassname">pymasq.datasets.</code><code class="sig-name descname">rand_cat_change</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">p</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#pymasq.datasets.rand_cat_change" title="Permalink to this definition"></a></dt>
+<dd><p>Randomly changes a portion of a categorical array to a different category
+in the array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<em>array-like</em>) – An array of strings or categories</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Proportion of the array to change categories, between 0.0 and 1.0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array with a user-defined portion of the elements randomly changed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, MITLL.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

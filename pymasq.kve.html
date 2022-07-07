@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymasq.kve package &mdash; pymasq 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pymasq
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pymasq</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymasq</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>pymasq.kve package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pymasq.kve.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymasq-kve-package">
+<h1>pymasq.kve package<a class="headerlink" href="#pymasq-kve-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pymasq.kve.kve">
+<span id="pymasq-kve-kve-module"></span><h2>pymasq.kve.kve module<a class="headerlink" href="#module-pymasq.kve.kve" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt id="pymasq.kve.kve.boruta_scores">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">boruta_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_estimators</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">50</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#pymasq.kve.kve.boruta_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Boruta is an all relevant feature selection method, while most other are
+minimal optimal; this means it tries to find all features carrying
+information usable for prediction, rather than finding a possibly compact
+subset of features on which some classifier has a minimal error</p>
+<p>NOTE: Does not work with small data, requires &gt;250 rows</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>n_estimators</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1000</em><em>)</em>) – Number of trees that are constructed during the random forest</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: -1</em><em>)</em>) – <dl class="simple">
+<dt>Number of workers to use for parallel processing</dt><dd><ul>
+<li><p>-1 indicates use all available workers</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1234</em><em>)</em>) – Integer seed for setting the random state in the model</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>optional</em><em> (</em><em>Default 2</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables verbose logging</p></li>
+<li><p>2 is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 50</em><em>)</em>) – The number of maximum iterations to perform.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of strings, contains whether a feature should be included in
+further analysis:
+- “yes”: boruta ranking = 1
+- “maybe”: boruta ranking = 2
+- “no”: boruta ranking &gt;= 3</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://medium.com/&#64;indreshbhattacharyya/feature-selection-categorical-feature-selection-boruta-light-gbm-chi-square-bf47e94e2558">https://medium.com/&#64;indreshbhattacharyya/feature-selection-categorical-feature-selection-boruta-light-gbm-chi-square-bf47e94e2558</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.kve.importance_scores">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">importance_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">sensitive_col</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">methods</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Tuple<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pymasq.kve.kve.importance_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Use Feature Selection methods to generate importance ranks for variables
+in a binary classification setting with the target variable being the
+binary labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_df</strong> (<em>pd.DataFrame</em>) – Dataframe containing the binary label column and the other variables
+of interest.</p></li>
+<li><p><strong>sensitive_col</strong> (<em>str</em>) – Name of the column in the dataframe that contains binary labels</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – Number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>methods</strong> (<em>Tuple</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em><em> (</em><em>Default: &quot;Random_Forest&quot;</em><em>,</em><em>&quot;Boruta&quot;</em><em>,</em><em>&quot;RFE&quot;</em><em>, </em><em>&quot;Stepwise&quot;</em><em>)</em>) – Names of the ranking methods to run</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>(</em><em>Default: 0</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables reporting</p></li>
+<li><p>2 is is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>scores</strong> – The dataframe contains a column of all the variable names and columns
+of each of the ranking methods that are run on the data set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.kve.key_variable_exploration">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">key_variable_exploration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">sensitive_col</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">preprocessed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_components</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">6</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>pandas.core.frame.DataFrame<span class="p">]</span><a class="headerlink" href="#pymasq.kve.kve.key_variable_exploration" title="Permalink to this definition"></a></dt>
+<dd><p>Explore the ranking of key variables in a binary classification setting
+with the target column containing the binary labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the binary label column and the other variables of interest.</p></li>
+<li><p><strong>sensitive_col</strong> (<em>str</em>) – Name of the column in the dataframe, <cite>df</cite>, that contains binary labels.</p></li>
+<li><p><strong>preprocessed</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>Default: False</em><em>, </em><em>the data will be preprocessed</em><em>)</em>) – Flag for whether the dataframe passed in has already been preprocessed.</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>optional</em><em> (</em><em>Default: 0</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables verbose logging.</p></li>
+<li><p>2 is step-by-step reporting.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>num_components</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 6</em><em>)</em>) – <p>Indicates the number of components used to represent categories
+variables, default is 6 so that each categories variable will be
+represented by six columns which will each contain a float element
+from a 6 dimensional vector.</p>
+<p>Note: The same category from a categories variable such as “blue” in
+a Color column would be represented by the same 6 numbers across the
+columns for every row in the original dataset that had the color “blue”.</p>
+</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional arguments to be passed to <cite>importance_Scores</cite>:
+* methods : Tuple[str], optional Default: (‘rf’, ‘boruta’, ‘rfe’, ‘stepwise’)</p>
+<blockquote>
+<div><p>Names of the ranking methods to run.</p>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dictionary contains a “ranking” dataframe with the aggregated
+ranking per variable and and “evidence” dataframe with the
+unaggreagted ranking for variable components.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.kve.random_forest_scores">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">random_forest_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_estimators</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#pymasq.kve.kve.random_forest_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Runs permutation importance on a Random Forest model which returns both
+the feature importances from the Random Forest model and well as a list
+of whether to include each column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>n_estimators</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 100</em><em>)</em>) – Number of trees that are constructed during the random forest</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em><em>(</em><em>Default: -1</em><em>)</em>) – Number of workers to use for parallel processing
+-1 indicates use all available workers</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1234</em><em>)</em>) – Integer seed for setting the random state in the model</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>optional</em><em> (</em><em>Default: 0</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables verbose logging</p></li>
+<li><p>1 is is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a 2-tuple containing a list of the feature importance scores
+from the OOB error when training the random forest model for each of
+the input features and a second list of strings, “yes” is a feature
+should be included as calculated by is the permutation mean is greater
+than 0 or “no” if not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.kve.rfe_scores">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">rfe_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">solver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'saga'</span></em>, <em class="sig-param"><span class="n">penalty</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'l2'</span></em>, <em class="sig-param"><span class="n">l1_ratio</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">step</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">cv</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#pymasq.kve.kve.rfe_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Feature ranking with recursive feature elimination.</p>
+<p>Given an external estimator that assigns weights to features
+(e.g., the coefficients of a linear model), the goal of recursive feature
+elimination (RFE) is to select features by recursively considering smaller
+and smaller sets of features. First, the estimator is trained on the
+initial set of features and the importance of each feature is obtained
+either through a <a href="#id1"><span class="problematic" id="id2">coef_</span></a> attribute or through a <a href="#id3"><span class="problematic" id="id4">feature_importances_</span></a>
+attribute. Then, the least important features are pruned from current set
+of features. That procedure is recursively repeated on the pruned set
+until the desired number of features to select is eventually reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: -1</em><em>)</em>) – Number of workers to use for parallel processing
+-1 indicates use all available workers</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1234</em><em>)</em>) – Integer seed for setting the random state in the model</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>verbose<span class="classifier">int {0, 1, 2}, optional (Default: 0)</span></dt><dd><dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul class="simple">
+<li><p>0 disables verbose logging</p></li>
+<li><p>2 is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>solver: str {‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’}, optional (Default: “saga”)</dt><dd><p>Algorithm to use in the optimization problem.</p>
+<p>For small datasets, ‘liblinear’ is a good choice,
+whereas ‘sag’ and ‘saga’ are faster for large ones.</p>
+<p>For multiclass problems, only ‘newton-cg’, ‘sag’, ‘saga’ and
+‘lbfgs’ handle multinomial loss; ‘liblinear’ is limited to
+one-versus-rest schemes.</p>
+<p>‘newton-cg’, ‘lbfgs’, ‘sag’ and ‘saga’ handle L2 or no penalty</p>
+<p>‘liblinear’ and ‘saga’ also handle L1 penalty</p>
+<p>‘saga’ also supports ‘elasticnet’ penalty</p>
+<p>‘liblinear’ does not support setting penalty=’none’</p>
+<p>Note that ‘sag’ and ‘saga’ fast convergence is only guaranteed on 0
+features with approximately the same scale. You can preprocess the
+data with a scaler from sklearn.preprocessing.</p>
+</dd>
+<dt>penalty: {‘l1’, ‘l2’, ‘elasticnet’, ‘none’}, optional (Default: “elasticnet”)</dt><dd><p>Used to specify the norm used in the penalization. The ‘newton-cg’,
+‘sag’ and ‘lbfgs’ solvers support only l2 penalties. ‘elasticnet’ is
+only supported by the ‘saga’ solver. If ‘none’ (not supported by the
+liblinear solver), no regularization is applied.</p>
+</dd>
+<dt>l1_ratio: float, optional (Default: 0.5)</dt><dd><p>The Elastic-Net mixing parameter, with 0 &lt;= l1_ratio &lt;= 1. Only used
+if penalty=’elasticnet’. Setting l1_ratio=0 is equivalent to using
+penalty=’l2’, while setting l1_ratio=1 is equivalent to using
+penalty=’l1’. For 0 &lt; l1_ratio &lt;1, the penalty is a combination of L1
+and L2.</p>
+</dd>
+<dt>step<span class="classifier">int or float, optional (Default: 1)</span></dt><dd><p>If greater than or equal to 1, then step corresponds to the (integer)
+number of features to remove at each iteration. If within (0.0, 1.0),
+then step corresponds to the percentage (rounded down) of features to
+remove at each iteration. Note that the last iteration may remove fewer
+than step features in order to reach min_features_to_select.</p>
+</dd>
+<dt>cv<span class="classifier">int, optional (Default: 5)</span></dt><dd><p>Determines the cross-validation splitting strategy. Possible inputs
+for cv are:</p>
+<blockquote>
+<div><p>None, to use the default 5-fold cross-validation,
+integer, to specify the number of folds.</p>
+</div></blockquote>
+<p>For integer/None inputs, if y is binary or multiclass,
+sklearn.model_selection.StratifiedKFold is used.</p>
+<p>If the estimator is a classifier or if y is neither binary nor multiclass,
+sklearn.model_selection.KFold is used.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of strings, contains whether a feature should be included in
+further analysis:
+- “yes”: RFECV ranking = 1
+- “no”: RFECV ranking not = 1</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.kve.stepwise_scores">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">stepwise_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#pymasq.kve.kve.stepwise_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Feature ranking with stepwise selection with regression for retaining significant features.</p>
+<p>Built from the first answer from <a class="reference external" href="https://datascience.stackexchange.com/questions/24405/how-to-do-stepwise-regression-using-sklearn/24447#24447">https://datascience.stackexchange.com/questions/24405/how-to-do-stepwise-regression-using-sklearn/24447#24447</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional arguments to be passed to <cite>stepwise_selection</cite>.
+* initial_list : List[str], optional (Default: None)</p>
+<blockquote>
+<div><p>list of features to start with (column names of x_train)</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>threshold_in: float, optional (Default: 0.01)</dt><dd><p>include a feature if its p-value &lt; threshold_in</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>threshold_out: float, optional (Default: 0.05)</dt><dd><p>exclude a feature if its p-value &gt; threshold_out</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>iterations: int, optional (Default: 100)</dt><dd><p>number of iterations for testing parameters to avoid
+infinite loops</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>verbose: bool, optional (Default: True)</dt><dd><p>flag for whether to print the sequence of inclusions and exclusions</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>list of strings, contains whether a feature should be included in
+further analysis:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>”yes”: stepwise_selection selects column given parameters</p></li>
+<li><p>”no”: stepwise_selection does not selects column given parameters</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.kve.stepwise_selection">
+<code class="sig-prename descclassname">pymasq.kve.kve.</code><code class="sig-name descname">stepwise_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">initial_list</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold_in</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">threshold_out</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">iterations</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.kve.kve.stepwise_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Perform a forward-backward feature selection
+based on p-value from <cite>statsmodels.api.OLS</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model
+with candidate features</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>initial_list</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – List of features to start with (column names of x_train)</p></li>
+<li><p><strong>threshold_in</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>Default: 0.01</em><em>)</em>) – Include a feature if its p-value &lt; threshold_in</p></li>
+<li><p><strong>threshold_out</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>Default: 0.05</em><em>)</em>) – Exclude a feature if its p-value &gt; threshold_out</p></li>
+<li><p><strong>iterations</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 100</em><em>)</em>) – Number of iterations for testing parameters to avoid
+infinite loops</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>Default: True</em><em>)</em>) – Flag for whether to print the sequence of inclusions and exclusions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>included</strong> (<em>List[str]</em>) – list of selected features</p></li>
+<li><p><em>Always set threshold_in &lt; threshold_out to avoid infinite looping.</em></p></li>
+<li><p><strong>See https</strong> (<em>//en.wikipedia.org/wiki/Stepwise_regression for the details</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pymasq.kve">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pymasq.kve" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt id="pymasq.kve.boruta_scores">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">boruta_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_estimators</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">50</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#pymasq.kve.boruta_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Boruta is an all relevant feature selection method, while most other are
+minimal optimal; this means it tries to find all features carrying
+information usable for prediction, rather than finding a possibly compact
+subset of features on which some classifier has a minimal error</p>
+<p>NOTE: Does not work with small data, requires &gt;250 rows</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>n_estimators</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1000</em><em>)</em>) – Number of trees that are constructed during the random forest</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: -1</em><em>)</em>) – <dl class="simple">
+<dt>Number of workers to use for parallel processing</dt><dd><ul>
+<li><p>-1 indicates use all available workers</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1234</em><em>)</em>) – Integer seed for setting the random state in the model</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>optional</em><em> (</em><em>Default 2</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables verbose logging</p></li>
+<li><p>2 is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 50</em><em>)</em>) – The number of maximum iterations to perform.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of strings, contains whether a feature should be included in
+further analysis:
+- “yes”: boruta ranking = 1
+- “maybe”: boruta ranking = 2
+- “no”: boruta ranking &gt;= 3</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://medium.com/&#64;indreshbhattacharyya/feature-selection-categorical-feature-selection-boruta-light-gbm-chi-square-bf47e94e2558">https://medium.com/&#64;indreshbhattacharyya/feature-selection-categorical-feature-selection-boruta-light-gbm-chi-square-bf47e94e2558</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.importance_scores">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">importance_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">sensitive_col</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">methods</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Tuple<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pymasq.kve.importance_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Use Feature Selection methods to generate importance ranks for variables
+in a binary classification setting with the target variable being the
+binary labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_df</strong> (<em>pd.DataFrame</em>) – Dataframe containing the binary label column and the other variables
+of interest.</p></li>
+<li><p><strong>sensitive_col</strong> (<em>str</em>) – Name of the column in the dataframe that contains binary labels</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – Number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>methods</strong> (<em>Tuple</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em><em> (</em><em>Default: &quot;Random_Forest&quot;</em><em>,</em><em>&quot;Boruta&quot;</em><em>,</em><em>&quot;RFE&quot;</em><em>, </em><em>&quot;Stepwise&quot;</em><em>)</em>) – Names of the ranking methods to run</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>(</em><em>Default: 0</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables reporting</p></li>
+<li><p>2 is is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>scores</strong> – The dataframe contains a column of all the variable names and columns
+of each of the ranking methods that are run on the data set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.key_variable_exploration">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">key_variable_exploration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">sensitive_col</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">preprocessed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_components</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">6</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>pandas.core.frame.DataFrame<span class="p">]</span><a class="headerlink" href="#pymasq.kve.key_variable_exploration" title="Permalink to this definition"></a></dt>
+<dd><p>Explore the ranking of key variables in a binary classification setting
+with the target column containing the binary labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the binary label column and the other variables of interest.</p></li>
+<li><p><strong>sensitive_col</strong> (<em>str</em>) – Name of the column in the dataframe, <cite>df</cite>, that contains binary labels.</p></li>
+<li><p><strong>preprocessed</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>Default: False</em><em>, </em><em>the data will be preprocessed</em><em>)</em>) – Flag for whether the dataframe passed in has already been preprocessed.</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>optional</em><em> (</em><em>Default: 0</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables verbose logging.</p></li>
+<li><p>2 is step-by-step reporting.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>num_components</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 6</em><em>)</em>) – <p>Indicates the number of components used to represent categories
+variables, default is 6 so that each categories variable will be
+represented by six columns which will each contain a float element
+from a 6 dimensional vector.</p>
+<p>Note: The same category from a categories variable such as “blue” in
+a Color column would be represented by the same 6 numbers across the
+columns for every row in the original dataset that had the color “blue”.</p>
+</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional arguments to be passed to <cite>importance_Scores</cite>:
+* methods : Tuple[str], optional Default: (‘rf’, ‘boruta’, ‘rfe’, ‘stepwise’)</p>
+<blockquote>
+<div><p>Names of the ranking methods to run.</p>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dictionary contains a “ranking” dataframe with the aggregated
+ranking per variable and and “evidence” dataframe with the
+unaggreagted ranking for variable components.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.random_forest_scores">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">random_forest_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_estimators</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#pymasq.kve.random_forest_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Runs permutation importance on a Random Forest model which returns both
+the feature importances from the Random Forest model and well as a list
+of whether to include each column</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>n_estimators</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 100</em><em>)</em>) – Number of trees that are constructed during the random forest</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em><em>(</em><em>Default: -1</em><em>)</em>) – Number of workers to use for parallel processing
+-1 indicates use all available workers</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1234</em><em>)</em>) – Integer seed for setting the random state in the model</p></li>
+<li><p><strong>verbose</strong> (<em>int {0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em>, </em><em>optional</em><em> (</em><em>Default: 0</em><em>)</em>) – <dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul>
+<li><p>0 disables verbose logging</p></li>
+<li><p>1 is is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a 2-tuple containing a list of the feature importance scores
+from the OOB error when training the random forest model for each of
+the input features and a second list of strings, “yes” is a feature
+should be included as calculated by is the permutation mean is greater
+than 0 or “no” if not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.rfe_scores">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">rfe_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">categories</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1234</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">solver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'saga'</span></em>, <em class="sig-param"><span class="n">penalty</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'l2'</span></em>, <em class="sig-param"><span class="n">l1_ratio</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">step</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">cv</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#pymasq.kve.rfe_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Feature ranking with recursive feature elimination.</p>
+<p>Given an external estimator that assigns weights to features
+(e.g., the coefficients of a linear model), the goal of recursive feature
+elimination (RFE) is to select features by recursively considering smaller
+and smaller sets of features. First, the estimator is trained on the
+initial set of features and the importance of each feature is obtained
+either through a <a href="#id5"><span class="problematic" id="id6">coef_</span></a> attribute or through a <a href="#id7"><span class="problematic" id="id8">feature_importances_</span></a>
+attribute. Then, the least important features are pruned from current set
+of features. That procedure is recursively repeated on the pruned set
+until the desired number of features to select is eventually reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>categories</strong> (<em>int</em>) – number of categories in the senestive column used to determine the type
+of model used in feature selection, -1 indicates the column is continuous</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: -1</em><em>)</em>) – Number of workers to use for parallel processing
+-1 indicates use all available workers</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 1234</em><em>)</em>) – Integer seed for setting the random state in the model</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>verbose<span class="classifier">int {0, 1, 2}, optional (Default: 0)</span></dt><dd><dl class="simple">
+<dt>Level of reporting from the algorithms:</dt><dd><ul class="simple">
+<li><p>0 disables verbose logging</p></li>
+<li><p>2 is step-by-step reporting</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>solver: str {‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’}, optional (Default: “saga”)</dt><dd><p>Algorithm to use in the optimization problem.</p>
+<p>For small datasets, ‘liblinear’ is a good choice,
+whereas ‘sag’ and ‘saga’ are faster for large ones.</p>
+<p>For multiclass problems, only ‘newton-cg’, ‘sag’, ‘saga’ and
+‘lbfgs’ handle multinomial loss; ‘liblinear’ is limited to
+one-versus-rest schemes.</p>
+<p>‘newton-cg’, ‘lbfgs’, ‘sag’ and ‘saga’ handle L2 or no penalty</p>
+<p>‘liblinear’ and ‘saga’ also handle L1 penalty</p>
+<p>‘saga’ also supports ‘elasticnet’ penalty</p>
+<p>‘liblinear’ does not support setting penalty=’none’</p>
+<p>Note that ‘sag’ and ‘saga’ fast convergence is only guaranteed on 0
+features with approximately the same scale. You can preprocess the
+data with a scaler from sklearn.preprocessing.</p>
+</dd>
+<dt>penalty: {‘l1’, ‘l2’, ‘elasticnet’, ‘none’}, optional (Default: “elasticnet”)</dt><dd><p>Used to specify the norm used in the penalization. The ‘newton-cg’,
+‘sag’ and ‘lbfgs’ solvers support only l2 penalties. ‘elasticnet’ is
+only supported by the ‘saga’ solver. If ‘none’ (not supported by the
+liblinear solver), no regularization is applied.</p>
+</dd>
+<dt>l1_ratio: float, optional (Default: 0.5)</dt><dd><p>The Elastic-Net mixing parameter, with 0 &lt;= l1_ratio &lt;= 1. Only used
+if penalty=’elasticnet’. Setting l1_ratio=0 is equivalent to using
+penalty=’l2’, while setting l1_ratio=1 is equivalent to using
+penalty=’l1’. For 0 &lt; l1_ratio &lt;1, the penalty is a combination of L1
+and L2.</p>
+</dd>
+<dt>step<span class="classifier">int or float, optional (Default: 1)</span></dt><dd><p>If greater than or equal to 1, then step corresponds to the (integer)
+number of features to remove at each iteration. If within (0.0, 1.0),
+then step corresponds to the percentage (rounded down) of features to
+remove at each iteration. Note that the last iteration may remove fewer
+than step features in order to reach min_features_to_select.</p>
+</dd>
+<dt>cv<span class="classifier">int, optional (Default: 5)</span></dt><dd><p>Determines the cross-validation splitting strategy. Possible inputs
+for cv are:</p>
+<blockquote>
+<div><p>None, to use the default 5-fold cross-validation,
+integer, to specify the number of folds.</p>
+</div></blockquote>
+<p>For integer/None inputs, if y is binary or multiclass,
+sklearn.model_selection.StratifiedKFold is used.</p>
+<p>If the estimator is a classifier or if y is neither binary nor multiclass,
+sklearn.model_selection.KFold is used.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of strings, contains whether a feature should be included in
+further analysis:
+- “yes”: RFECV ranking = 1
+- “no”: RFECV ranking not = 1</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.stepwise_scores">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">stepwise_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#pymasq.kve.stepwise_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Feature ranking with stepwise selection with regression for retaining significant features.</p>
+<p>Built from the first answer from <a class="reference external" href="https://datascience.stackexchange.com/questions/24405/how-to-do-stepwise-regression-using-sklearn/24447#24447">https://datascience.stackexchange.com/questions/24405/how-to-do-stepwise-regression-using-sklearn/24447#24447</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional arguments to be passed to <cite>stepwise_selection</cite>.
+* initial_list : List[str], optional (Default: None)</p>
+<blockquote>
+<div><p>list of features to start with (column names of x_train)</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>threshold_in: float, optional (Default: 0.01)</dt><dd><p>include a feature if its p-value &lt; threshold_in</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>threshold_out: float, optional (Default: 0.05)</dt><dd><p>exclude a feature if its p-value &gt; threshold_out</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>iterations: int, optional (Default: 100)</dt><dd><p>number of iterations for testing parameters to avoid
+infinite loops</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>verbose: bool, optional (Default: True)</dt><dd><p>flag for whether to print the sequence of inclusions and exclusions</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>list of strings, contains whether a feature should be included in
+further analysis:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>”yes”: stepwise_selection selects column given parameters</p></li>
+<li><p>”no”: stepwise_selection does not selects column given parameters</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pymasq.kve.stepwise_selection">
+<code class="sig-prename descclassname">pymasq.kve.</code><code class="sig-name descname">stepwise_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_train</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">initial_list</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold_in</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">threshold_out</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">iterations</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymasq.kve.stepwise_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Perform a forward-backward feature selection
+based on p-value from <cite>statsmodels.api.OLS</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> (<em>pd.DataFrame</em>) – A dataframe containing all input variables for training the model
+with candidate features</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A series containing the ground truth labels or numbers</p></li>
+<li><p><strong>initial_list</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – List of features to start with (column names of x_train)</p></li>
+<li><p><strong>threshold_in</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>Default: 0.01</em><em>)</em>) – Include a feature if its p-value &lt; threshold_in</p></li>
+<li><p><strong>threshold_out</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>Default: 0.05</em><em>)</em>) – Exclude a feature if its p-value &gt; threshold_out</p></li>
+<li><p><strong>iterations</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>Default: 100</em><em>)</em>) – Number of iterations for testing parameters to avoid
+infinite loops</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>Default: True</em><em>)</em>) – Flag for whether to print the sequence of inclusions and exclusions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>included</strong> (<em>List[str]</em>) – list of selected features</p></li>
+<li><p><em>Always set threshold_in &lt; threshold_out to avoid infinite looping.</em></p></li>
+<li><p><strong>See https</strong> (<em>//en.wikipedia.org/wiki/Stepwise_regression for the details</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, MITLL.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
