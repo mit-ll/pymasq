@@ -53,7 +53,7 @@ DISTRIBUTION STATEMENT A. Approved for public release. Distribution is unlimited
 
 © 2021 Massachusetts Institute of Technology.
 
-    Subject to FAR 52.227-11 – Patent Rights – Ownership by the Contractor (May 2014)
+Subject to FAR 52.227-11 – Patent Rights – Ownership by the Contractor (May 2014)
     SPDX-License-Identifier: Insert SPDX ID
 
 This material is based upon work supported under Air Force Contract No. FA8702-15-D-0001. Any opinions, findings, conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the U.S. Air Force.
