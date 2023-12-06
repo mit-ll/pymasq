@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from pymasq.errors import DataTypeError, InputError
-from SALib.sample import saltelli
+from SALib.sample import sobol as saltelli
 from SALib.analyze import sobol
 from typing import Dict, Optional, Tuple, Final
 

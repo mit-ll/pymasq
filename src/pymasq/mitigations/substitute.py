@@ -1,10 +1,9 @@
 import pandas as pd
-import re
 
 from typing import List, Optional, Union
 
 from pymasq import BEARTYPE
-from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES
+from pymasq.config import FORMATTING_ON_OUTPUT
 from pymasq.utils import formatting
 
 __all__ = ["substitute"]
@@ -13,7 +12,7 @@ __all__ = ["substitute"]
 def __format_if_list(
     from_val: Union[str, float, int, List], to_val: Union[str, float, int, List]
 ):
-    """ Format input values if at least one of them is a list """
+    """Format input values if at least one of them is a list"""
     if isinstance(from_val, list):
         to_val = to_val if isinstance(to_val, list) else [to_val]
         if len(to_val) == 1:

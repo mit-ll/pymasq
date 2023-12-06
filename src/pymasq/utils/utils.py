@@ -8,7 +8,6 @@ from typing import Final, List, Optional, Union
 
 from pymasq import BEARTYPE
 from pymasq import config
-from pymasq.errors import InputError
 
 
 __all__ = ["BOTH", "as_dataframe", "validate_numeric", "formatting", "freq_calc"]

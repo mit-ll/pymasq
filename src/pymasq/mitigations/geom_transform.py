@@ -10,7 +10,7 @@ from pymasq import BEARTYPE
 from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
-from pymasq.utils import formatting, validate_numeric
+from pymasq.utils import formatting
 
 
 __all__ = ["geom_transform"]

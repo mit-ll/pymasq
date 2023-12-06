@@ -1,7 +1,6 @@
 from typing import Union, List
 
 import pandas as pd
-import numpy as np
 
 from .utils import _as_series
 
@@ -9,11 +8,9 @@ __all__ = ["rank_swap"]
 
 
 def rank_swap(
-    data: Union[pd.DataFrame, pd.Series],
-    cols: Union[str, List[str]] = None,
-    **kwargs
+    data: Union[pd.DataFrame, pd.Series], cols: Union[str, List[str]] = None, **kwargs
 ) -> pd.Series:
-    """ TODO
+    """TODO
 
     Parameters
     ----------

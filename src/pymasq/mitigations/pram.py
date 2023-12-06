@@ -6,7 +6,6 @@ from typing import Dict, List, Optional, Union
 from pymasq import BEARTYPE
 from pymasq.config import (
     FORMATTING_ON_OUTPUT,
-    FORMATTING_IGNORE_DTYPES,
 )
 from pymasq.errors import InputError, NotInRangeError
 from pymasq.mitigations.utils import _is_identical
@@ -92,9 +91,7 @@ def __randomization(
             d_pramed[idxs] = np.random.choice(
                 cats,
                 len(idxs),
-                p=trans.loc[
-                    cat,
-                ],
+                p=trans.loc[cat,],
             )
 
     return d_pramed
@@ -300,7 +297,7 @@ def pram(
 
     if len(perturb_cols) != n_pc:
         if len(perturb_cols) == 0:
-            raise InputError(f"All values of `data` cannot be NaNs or identical.")
+            raise InputError("All values of `data` cannot be NaNs or identical.")
         else:
             print(
                 "WARNING: ignoring columns that are composed entirely of identical values."

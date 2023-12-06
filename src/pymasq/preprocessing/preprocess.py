@@ -384,7 +384,7 @@ class EmbeddingsEncoder(PreprocessorBase):
             dropped_cols.extend(ignore_columns)
 
         if sensitive_col or ignore_columns:
-            input_data = df.drop(dropped_cols, 1).copy()
+            input_data = df.drop(columns=dropped_cols, axis=1).copy()
         else:
             input_data = df.copy()
 
@@ -548,7 +548,7 @@ class EmbeddingsEncoder(PreprocessorBase):
             print("Splitting Data into Numerical and Categorical Data...")
 
         if sensitive_col or ignore_columns:
-            input_data = df.drop(dropped_cols, 1).copy()
+            input_data = df.drop(columns=dropped_cols, axis=1).copy()
             ignore_col_data = df.loc[:, ignore_columns].copy()
         else:
             input_data = df.copy()
@@ -678,14 +678,14 @@ class EmbeddingsEncoder(PreprocessorBase):
                 [y, ignore_col_data, numerical_imputed_normalized, binary]
                 + categorical_embeddings
                 + textual_embeddings,
-                1,
+                axis=1,
             )
 
         return pd.concat(
             [ignore_col_data, numerical_imputed_normalized, binary]
             + categorical_embeddings
             + textual_embeddings,
-            1,
+            axis=1,
         )
 
 

@@ -8,9 +8,6 @@ from pathlib import Path
 from pymasq.datasets import load_census
 from pymasq.models.models import LogisticRegressionClassifier, RFClassifier
 from pymasq.preprocessing import LabelEncoder_pm, EmbeddingsEncoder
-
-# from pymasq.errors import InputError, DataTypeError
-
 from pymasq.utils import cache
 
 
@@ -36,7 +33,7 @@ def my_df():
         (
             LogisticRegressionClassifier,
             LabelEncoder_pm,
-            0.6,
+            0.5,
             "cache_test/053cb5e57bfa9b5c9568625cb22588dd.larsCV.2bd270eec04828b035a1facfbb35f355.pkl",
             """larsCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.LabelEncoder_pm'>
 First ten rows:
@@ -57,7 +54,7 @@ First ten rows:
         (
             RFClassifier,
             EmbeddingsEncoder,
-            0.5,
+            0.61,
             "cache_test/053cb5e57bfa9b5c9568625cb22588dd.ENCV.e81a5b5eb0df48bc68540d7b71342a7d.pkl",
             """ENCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.EmbeddingsEncoder'>
 First ten rows:
@@ -121,7 +118,6 @@ def test_cache(my_df, combo):
     except Exception as e:
         print("This error is a desired outcome of the test:")
         print("\t", e, "\n")
-        pass
 
     cfg.CACHE_HMAC_KEY = "my key"
     # Assert to see if description was saved

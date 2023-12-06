@@ -10,7 +10,7 @@ from pymasq import BEARTYPE
 from pymasq.config import FORMATTING_ON_OUTPUT
 from pymasq.utils import formatting
 from pymasq.preprocessing import LabelEncoder_pm
-from pymasq.errors import InputError, DataTypeError
+from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
 
 

@@ -137,7 +137,9 @@ def local_supp(
         method=method,
         qual=qual,
     )
-    if not keep_dtypes and type(to_val) != type(data.loc[0, suppress_col]):
+    if not keep_dtypes and not isinstance(
+        type(to_val), type(data.loc[0, suppress_col])
+    ):
         # TODO: switch to logging
         print(
             f"WARNING: The datatype of the `suppress_col` ({suppress_col}`) will be changed."

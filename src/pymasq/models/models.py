@@ -1,4 +1,4 @@
-from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER, DEFAULT_SEED
+from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER
 import pandas as pd
 import numpy as np
 from typing import List, Optional, Type, Any, Union

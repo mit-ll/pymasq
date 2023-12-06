@@ -13,7 +13,6 @@ from pymasq.config import (
     VALIDATE_NUMERIC_ON_INPUT,
     VALIDATE_NUMERIC_ON_OUTPUT,
 )
-from pymasq.mitigations.utils import _as_series, _as_dataframe
 from pymasq.utils import validate_numeric, formatting
 from pymasq import BEARTYPE
 from pymasq.errors import InputError

@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Tuple
-from pymasq import ROOT_DIR
 
 # Directory where all embeddings and models will be cached
 CACHE_LOCATION: Path = Path("~/.cache/pymasq").expanduser()

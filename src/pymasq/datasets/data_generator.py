@@ -136,7 +136,7 @@ def _l_div_sensitive_gen(l: int, n: int) -> List:
     while len(unique_entries) != len(set(unique_entries)):
         unique_entries = np.random.choice(range(n), l)
 
-    non_unique = np.random.choice(unique_entries, n - l)
+    non_unique = np.random.Generator.choice(unique_entries, n - l)
     return list(unique_entries) + list(non_unique)
 
 

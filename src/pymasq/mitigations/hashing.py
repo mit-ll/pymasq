@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import hashlib
 import numpy as np
@@ -8,7 +8,6 @@ import pandas as pd
 from pymasq import BEARTYPE
 from pymasq.config import (
     FORMATTING_ON_OUTPUT,
-    FORMATTING_IGNORE_DTYPES,
 )
 from pymasq.errors import InputError
 from pymasq.utils import formatting

@@ -11,7 +11,7 @@ BOTH: Final = "both"
 
 
 def _is_identical(s: pd.Series) -> bool:
-    """ Checks if all values in the input series are identical. """
+    """Checks if all values in the input series are identical."""
     s = s.to_numpy()  # s.values (pandas<0.24)
     return (s[0] == s).all()
 
@@ -19,7 +19,7 @@ def _is_identical(s: pd.Series) -> bool:
 def _as_series(
     obj: Union[pd.DataFrame, pd.Series], cols: Optional[Union[str, List[str]]] = None
 ) -> pd.Series:
-    """ Convert an object data structure into a Series """
+    """Convert an object data structure into a Series"""
     if isinstance(obj, pd.DataFrame):
         if cols is None:
             raise InputError(
@@ -38,7 +38,7 @@ def _as_series(
 def _as_dataframe(
     obj: Union[pd.DataFrame, pd.Series], cols: Optional[Union[str, List[str]]] = None
 ) -> pd.DataFrame:
-    """ Convert an object data structure into a DataFrame """
+    """Convert an object data structure into a DataFrame"""
     if isinstance(obj, pd.DataFrame):
         if cols is None:
             return obj.copy()

@@ -456,7 +456,7 @@ class StochasticSearch(OptimizationBase):
 
             prob = np.random.random_sample()
 
-            if (target.equals(new_target) == False) and (
+            if not target.equals(new_target) and (
                 self._accept_prob(cur_fit, new_fit) > prob
             ):
                 if self.verbose >= 1:
