@@ -7,7 +7,7 @@ import pymasq.config as cfg
 from pathlib import Path
 from pymasq.datasets import load_census
 from pymasq.models.models import LogisticRegressionClassifier, RFClassifier
-from pymasq.preprocessing import LabelEncoder_pm, EmbeddingsEncoder
+from pymasq.preprocessing import LabelEncoderPM, EmbeddingsEncoder
 from pymasq.utils import cache
 
 
@@ -32,10 +32,10 @@ def my_df():
     [
         (
             LogisticRegressionClassifier,
-            LabelEncoder_pm,
+            LabelEncoderPM,
             0.5,
             "cache_test/053cb5e57bfa9b5c9568625cb22588dd.larsCV.2bd270eec04828b035a1facfbb35f355.pkl",
-            """larsCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.LabelEncoder_pm'>
+            """larsCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.LabelEncoderPM'>
 First ten rows:
    age  fnlwgt  education  ...     sex capital_gain  income_level
 0   39   77516  Bachelors  ...    Male         2174         <=50K

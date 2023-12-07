@@ -6,7 +6,7 @@ import pytest
 import pymasq.config as cfg
 from pathlib import Path
 from pymasq.datasets import load_census
-from pymasq.preprocessing import LabelEncoder_pm, EmbeddingsEncoder
+from pymasq.preprocessing import LabelEncoderPM, EmbeddingsEncoder
 from pymasq.models.models import (
     LogisticRegressionClassifier,
     TpotClassifier,
@@ -33,11 +33,11 @@ def my_df():
 @pytest.mark.parametrize(
     "combo",
     [
-        (LogisticRegressionClassifier, LabelEncoder_pm, 0.5),
+        (LogisticRegressionClassifier, LabelEncoderPM, 0.5),
         (LogisticRegressionClassifier, EmbeddingsEncoder, 0.5),
-        (RFClassifier, LabelEncoder_pm, 1.0),
+        (RFClassifier, LabelEncoderPM, 1.0),
         (RFClassifier, EmbeddingsEncoder, 1.0),
-        (TpotClassifier, LabelEncoder_pm, 0.77),
+        (TpotClassifier, LabelEncoderPM, 0.77),
         (TpotClassifier, EmbeddingsEncoder, 0.86),
     ],
 )

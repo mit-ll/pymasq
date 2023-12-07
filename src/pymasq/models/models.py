@@ -84,7 +84,7 @@ class LarsCvRegressor(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -180,7 +180,7 @@ class ElasticNetCvRegressor(ModelingBase):
         preprocessor : PreprocessorBase  (Default: None)
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -288,7 +288,7 @@ class LogisticRegressionClassifier(ModelingBase):
         preprocessor : PreprocessorBase  (Default: None)
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -397,7 +397,7 @@ class RFClassifier(ModelingBase):
         preprocessor : PreprocessorBase  (Default: None)
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -498,7 +498,7 @@ class RFRegressor(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -604,7 +604,7 @@ class TpotClassifier(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
 
         scoring : string or callable, optional (Default: 'f1')
@@ -785,7 +785,7 @@ class TpotRegressor(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
 
         scoring : string or callable, optional (Default: 'f1')

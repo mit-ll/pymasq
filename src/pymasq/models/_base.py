@@ -87,7 +87,7 @@ class ModelingBase:
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain : boolean, optional (Default: False)
             Re-runs and saves over existing TPOT model for the given file path.

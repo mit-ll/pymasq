@@ -16,7 +16,7 @@ from pymasq.metrics import utils
 from pymasq import BEARTYPE
 
 # This file contains two children of PreprocessorBase
-#  1. LabelEncoder_pm
+#  1. LabelEncoderPM
 #  2. EmbeddingsEncoder
 
 #################
@@ -30,7 +30,7 @@ REDUCTION_METHODS = {
 }
 
 
-class LabelEncoder_pm(PreprocessorBase):
+class LabelEncoderPM(PreprocessorBase):
     """
     This class manages an instance of sklearn's LabelEncoder.
     Encodes categorical data only, as integers.
@@ -38,7 +38,6 @@ class LabelEncoder_pm(PreprocessorBase):
 
     def __init__(self):
         super().__init__()
-        pass
 
     @staticmethod
     @BEARTYPE
@@ -84,7 +83,7 @@ class LabelEncoder_pm(PreprocessorBase):
     @staticmethod
     @BEARTYPE
     def encode_both(
-        df_A: pd.DataFrame, df_B: pd.DataFrame, **kwargs
+        df_a: pd.DataFrame, df_b: pd.DataFrame, **kwargs
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Takes two dataframes and uses sklearn's LabelEncoder on categorical columns only to relabel
@@ -100,28 +99,28 @@ class LabelEncoder_pm(PreprocessorBase):
 
         Parameter
         ---------
-        df_A: pdf.DataFrame:
+        df_a: pdf.DataFrame:
             The data frame to encode.
-        df_B: pdf.DataFrame:
+        df_b: pdf.DataFrame:
             The data frame to encode.
 
         Returns
         -------
         Tuple[pd.DataFrame, pd.DataFrame]:
             pd.DataFrame
-                df_A data frame now preprocessed so that categorical data is relabeled as integers.
+                df_a data frame now preprocessed so that categorical data is relabeled as integers.
             pd.DataFrame
-                df_B data frame now preprocessed so that categorical data is relabeled as integers.
+                df_b data frame now preprocessed so that categorical data is relabeled as integers.
 
-        Column order remains consistent with original dataframes. df_A and df_B are not modified.
+        Column order remains consistent with original dataframes. df_a and df_b are not modified.
 
         """
         le = skLabelEncoder()
         # make a copy
-        df_a = df_A.copy()
-        df_b = df_B.copy()
-        if set(df_a.columns) != set(df_B.columns):
-            raise InputError("df_A and df_B must have same columns")
+        df_a = df_a.copy()
+        df_b = df_b.copy()
+        if set(df_a.columns) != set(df_b.columns):
+            raise InputError("df_a and df_b must have same columns")
         col_order = df_a.columns.tolist()
 
         # join together; mark each so we can separate again later
@@ -150,10 +149,10 @@ class LabelEncoder_pm(PreprocessorBase):
                 [cat_cols.apply(le.fit_transform), num_cols], join="outer", axis=1
             )
         # split up again, and drop the extra column
-        df_A_enc = both.loc[both[class_col] == 0].drop(class_col, axis=1)
-        df_B_enc = both.loc[both[class_col] == 1].drop(class_col, axis=1)
+        df_a_enc = both.loc[both[class_col] == 0].drop(class_col, axis=1)
+        df_b_enc = both.loc[both[class_col] == 1].drop(class_col, axis=1)
 
-        return df_A_enc[col_order], df_B_enc[col_order]
+        return df_a_enc[col_order], df_b_enc[col_order]
 
 
 #################
@@ -193,7 +192,6 @@ class EmbeddingsEncoder(PreprocessorBase):
 
     def __init__(self):
         super().__init__()
-        pass
 
     @staticmethod
     def sentence_bpe_vectors(
@@ -229,8 +227,8 @@ class EmbeddingsEncoder(PreprocessorBase):
     @staticmethod
     @BEARTYPE
     def encode_both(
-        df_A: pd.DataFrame,
-        df_B: pd.DataFrame,
+        df_a: pd.DataFrame,
+        df_b: pd.DataFrame,
         sensitive_col: Optional[Union[List, str]] = None,
         seed: int = 1234,
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -240,10 +238,10 @@ class EmbeddingsEncoder(PreprocessorBase):
 
         Parameters
         ----------
-        df_A : pd.DataFrame
+        df_a : pd.DataFrame
             data frame containing the binary label column and the other variables
             of interest
-        df_B : pd.DataFrame
+        df_b : pd.DataFrame
             data frame containing the binary label column and the other variables
             of interest
         sensitive_col : str or List[str] (Default: None)
@@ -255,20 +253,20 @@ class EmbeddingsEncoder(PreprocessorBase):
         -------
         Tuple:
             pd.DataFrame
-                The encoded version of df_A
+                The encoded version of df_a
             pd.DataFrame
-                The encoded version of df_B
-        df_A and df_B are not modified.
+                The encoded version of df_b
+        df_a and df_b are not modified.
         """
 
-        if set(df_A.columns) != set(df_B.columns):
-            raise InputError("df_A and df_B must have same columns.")
+        if set(df_a.columns) != set(df_b.columns):
+            raise InputError("df_a and df_b must have same columns.")
 
         # pick a column name that isn't in the dataset
-        class_col = utils.uniq_col_name(df_A)
+        class_col = utils.uniq_col_name(df_a)
         # make one dataframe for pre-processing, otherwise preprocess_data won't be consistent
-        orig_df_copy = df_A.copy()
-        mod_df_copy = df_B.copy()
+        orig_df_copy = df_a.copy()
+        mod_df_copy = df_b.copy()
         orig_df_copy[class_col] = 0
         mod_df_copy[class_col] = 1
         comb_for_proprocessing = pd.concat(
@@ -293,7 +291,6 @@ class EmbeddingsEncoder(PreprocessorBase):
             .drop([class_col], axis=1)
             .reset_index(drop=True)
         )
-        # return both
         return orig_df_proc, mod_df_proc
 
     @staticmethod
@@ -693,5 +690,5 @@ class EmbeddingsEncoder(PreprocessorBase):
 preprocessor_fn = {
     None: PreprocessorBase,
     "embeddings": EmbeddingsEncoder,
-    "label_encode": LabelEncoder_pm,
+    "label_encode": LabelEncoderPM,
 }

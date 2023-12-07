@@ -7,7 +7,7 @@ from numpy import NaN
 
 from pymasq.datasets import load_census
 
-from pymasq.preprocessing import embed_entities, LabelEncoder_pm, EmbeddingsEncoder
+from pymasq.preprocessing import embed_entities, LabelEncoderPM, EmbeddingsEncoder
 
 # from pymasq.errors import InputError, DataTypeError
 
@@ -242,7 +242,7 @@ def test_label_encode_1(my_df):
     10   37  280464          5               1    1             0             1
 
     """
-    enc, _ = LabelEncoder_pm.encode_both(my_df, my_df)
+    enc, _ = LabelEncoderPM.encode_both(my_df, my_df)
     assert (
         enc.to_json()
         == '{"age":{"0":39,"1":50,"2":38,"3":53,"4":28,"5":37,"6":49,"7":52,"8":31,"9":42,"10":37},"fnlwgt":{"0":77516,"1":83311,"2":215646,"3":234721,"4":338409,"5":284582,"6":160187,"7":209642,"8":45781,"9":159449,"10":280464},"education":{"0":2,"1":2,"2":3,"3":0,"4":2,"5":4,"6":1,"7":3,"8":4,"9":2,"10":5},"marital_status":{"0":3,"1":1,"2":0,"3":1,"4":1,"5":1,"6":2,"7":1,"8":3,"9":1,"10":1},"sex":{"0":1,"1":1,"2":1,"3":1,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":1},"capital_gain":{"0":2174,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":14084,"9":5178,"10":0},"income_level":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":1,"10":1}}'
@@ -290,7 +290,7 @@ def test_label_encode_2(my_df):
     """
     my_df1 = my_df[my_df["marital_status"].isin(["Never-married", "Divorced"])]
     my_df2 = my_df[~my_df["marital_status"].isin(["Never-married", "Divorced"])]
-    enc1, enc2 = LabelEncoder_pm.encode_both(my_df1, my_df2)
+    enc1, enc2 = LabelEncoderPM.encode_both(my_df1, my_df2)
     assert set(enc1.marital_status).isdisjoint(set(enc2.marital_status))
     assert (
         enc1.to_json()

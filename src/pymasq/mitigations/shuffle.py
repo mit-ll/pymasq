@@ -9,7 +9,7 @@ import scipy.stats as ss
 from pymasq import BEARTYPE
 from pymasq.config import FORMATTING_ON_OUTPUT
 from pymasq.utils import formatting
-from pymasq.preprocessing import LabelEncoder_pm
+from pymasq.preprocessing import LabelEncoderPM
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
 
@@ -214,7 +214,7 @@ def shuffle(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
 
-    _data = LabelEncoder_pm.encode(df=pd.concat([x, y], axis=1))
+    _data = LabelEncoderPM.encode(df=pd.concat([x, y], axis=1))
 
     resp_cols = y.columns.to_list()
     pred_cols = x.columns.to_list()
