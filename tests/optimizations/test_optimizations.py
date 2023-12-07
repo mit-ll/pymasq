@@ -2,26 +2,26 @@
 # coding: utf-8
 
 import copy
+import hashlib
 import itertools
 import json
 import numpy as np
 import pandas as pd
 import pytest
+import random
 
 from scipy.special import perm
+from sklearn.utils import shuffle
 
 import pymasq
+from pymasq import mitigations as mits
+from pymasq import optimizations as opts
+from pymasq import set_seed
+from pymasq.datasets import load_census
+
 
 pymasq.BEARTYPE = lambda func: func
 
-from pymasq.datasets import load_census
-from pymasq import optimizations as opts
-from pymasq import mitigations as mits
-from pymasq import set_seed
-
-import random
-from sklearn.utils import shuffle
-import hashlib
 
 set_seed(1)
 
@@ -68,7 +68,7 @@ def my_mutations():
 # evaluation functions
 zeros = {lambda: 0: {"weight": 1}}
 ones = {lambda: 1: {"weight": 1}}
-rands = {lambda: np.random.rand(): {"weight": 1}}
+rands = {lambda: np.random.Generator.rand(): {"weight": 1}}
 
 
 # Test standard termination conditions
@@ -150,7 +150,7 @@ def test_optimizations_standard_termination(
     ],
 )
 def test_optimizations_returns(my_df, my_mutations, my_metrics, my_iters, my_theta):
-    """ Test the return variables of all `pymasq.optimization` algorithms. """
+    """Test the return variables of all `pymasq.optimization` algorithms."""
 
     def _returns_correctly(algo):
         result = algo.optimize()
@@ -310,10 +310,8 @@ def test_randomize_mutations(
 
         return any(
             [
-                len(mut_log_unique) == len(my_mutations),  # randomize = True
-                all(
-                    mut_log[: len(_my_mutations)] == _my_mutations
-                ),  # randomize = False
+                len(mut_log_unique) == len(my_mutations),
+                all(mut_log[: len(_my_mutations)] == _my_mutations),
             ]
         )
 
@@ -375,7 +373,7 @@ def test_randomize_mutations(
         (ones, np.inf, 0.0, 100),
     ],
 )
-def test_IncrementalSearch(
+def test_incremental_search(
     my_df, my_mutations, my_metrics, my_iters, my_theta, my_retry
 ):
     """
@@ -411,7 +409,7 @@ def test_IncrementalSearch(
         (zeros, np.inf, 1.0, None, None),  # theta
     ],
 )
-def test_ExhaustiveSearch(
+def test_exhaustive_search(
     my_df, my_mutations, my_metrics, my_iters, my_theta, my_num_perms, my_size_perms
 ):
     """
@@ -422,7 +420,9 @@ def test_ExhaustiveSearch(
     def _terminates_correctly(res, fit, log):
         if not np.isinf(my_iters):
             assert log.shape[0] == (my_iters + 1)
-        elif my_theta == 1.0 or my_theta == 0.9:
+        elif np.isclose(my_theta, 1.0, rtol=1e-09, atol=1e-09) or np.isclose(
+            my_theta, 0.9, rtol=1e-09, atol=1e-09
+        ):
             assert log.iloc[-1]["fitness"] <= my_theta
         else:
             # terminates via permutations
@@ -461,7 +461,7 @@ def test_exit_on_error():
     def throw_error_mut(*args, **kwargs):
         df = args[0]
         choice = random.choices([True, False], weights=[1, 2])
-        if choice[0] == True:
+        if choice[0] is True:
             raise Exception("Mutation error thrown on purpose.")
         else:
             df = shuffle(df)
@@ -469,16 +469,16 @@ def test_exit_on_error():
             return df
 
     def rand_metric(df, *args, **kwargs):
-        Hash = hashlib.sha512
-        MAX_HASH_PLUS_ONE = 2 ** (Hash().digest_size * 8)
+        hash_func = hashlib.sha512
+        MAX_HASH_PLUS_ONE = 2 ** (hash_func().digest_size * 8)
         seed = str(df).encode()
-        hash_digest = Hash(seed).digest()
+        hash_digest = hash_func(seed).digest()
         hash_int = int.from_bytes(hash_digest, "big")
         return np.round(hash_int / MAX_HASH_PLUS_ONE, 4)  # Float division
 
     def throw_error_metric(df, *args, **kwargs):
         choice = random.choices([True, False], weights=[1, 2])
-        if choice[0] == True:
+        if choice[0] is True:
             raise Exception("Metrics error thrown on purpose.")
         else:
             return rand_metric(df)

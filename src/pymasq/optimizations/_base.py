@@ -6,7 +6,6 @@ from abc import abstractmethod
 
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-# import pymasq
 from pymasq import BEARTYPE
 import pymasq.mitigations as mits
 import pymasq.metrics as mets
@@ -17,7 +16,6 @@ from pymasq.errors import (
     LessThanZeroError,
     NoMutationAvailableError,
 )
-import sys
 
 
 class OptimizationBase:
@@ -106,7 +104,6 @@ class OptimizationBase:
         exit_on_error: bool = True,  # Don't change to False without considering impact on pytests.
         **kwargs,
     ):
-
         self.target = target
         self.mutations = mutations
         self.metrics = metrics
@@ -136,12 +133,12 @@ class OptimizationBase:
                 f"A probability `p` must be defined for each mutation in `mutations`. (Received: {mutations})."
             )
         prob_sum = sum(probs)
-        if prob_sum == 0.0:
+        if np.isclose(prob_sum, 0.0, rtol=1e-09, atol=1e-09):
             probs = self._distribute(len(mutations))
             self.mutations = [
                 dict(m, **{"p": probs[i]}) for i, m in enumerate(mutations)
             ]
-        elif round(prob_sum, 5) != 1.0:
+        elif not np.isclose(round(prob_sum, 5), 1.0, rtol=1e-09, atol=1e-09):
             raise SumNotEqualToOneError(
                 f"Mitigation probabilities must sum to 1. (Received: {prob_sum})"
             )
@@ -152,13 +149,13 @@ class OptimizationBase:
                 f"An importance weighting `weight` must be defined for each metric in `metrics`. (Received: {metrics})"
             )
         weight_sum = sum(weights)
-        if weight_sum == 0.0:
+        if np.isclose(weight_sum, 0.0, rtol=1e-09, atol=1e-09):
             weights = self._distribute(len(metrics))
             [
                 v.update({"weight": weights[i]})
                 for i, v in enumerate(self.metrics.values())
             ]
-        elif weight_sum != 1.0:
+        elif not np.isclose(weight_sum, 1.0, rtol=1e-09, atol=1e-09):
             raise SumNotEqualToOneError(
                 f"Metric importance weightings must sum to 1. (Received: {weight_sum})"
             )
@@ -204,7 +201,9 @@ class OptimizationBase:
             except KeyError:
                 sums.append(0.0)
         # if n_defined == 0, then none were defined
-        if n_defined != 0.0 and n_defined != len(values):
+        if not np.isclose(n_defined, 0.0, rtol=1e-09, atol=1e-09) and n_defined != len(
+            values
+        ):
             # TODO: future iterations should distribute missing values and/or normalize
             return None
         return sums
@@ -409,7 +408,7 @@ class OptimizationBase:
         mut = None
         if self.randomize_mutations:
             probs = [v["p"] for v in mutations]
-            mut = np.random.choice(mutations, p=probs)
+            mut = np.random.Generator.choice(mutations, p=probs)
             if not self.reuse_mutations and mutations:
                 # redistribute according to initial weighting
                 mut_idx = mutations.index(mut)
@@ -439,7 +438,9 @@ class OptimizationBase:
             result = func(target, **args)
         except Exception as e:
             if self.verbose >= 2:
-                print(f"[Warning] mutation {func.__name__} failed with args:={args}")
+                print(
+                    f"[Warning] mutation {func.__name__} failed with args:={args} and error: {e}"
+                )
             raise
         if isinstance(result, pd.Series):
             col_args = args.get("col", args.get("cols", None))

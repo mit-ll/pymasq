@@ -36,10 +36,10 @@ def hashing(
         a function name in the `hashlib` Python library [1]_. Else, it will apply the user-defined function.
         Algorithms listed in `hashlib.algorithms_guaranteed` are prefererd.
     salt : list, str, or int, Optional
-        The salt, or random data, to add to `data` to perturb it before hashing occurs. 
-        If left as `None`, then no salt will be added to `data`. If `salt` is a list, 
-        then it must be of the same length as `data`. If `salt` is a string, then the same salt value 
-        will be added to each value in `data`. If `salt` is an integer, then a random salt of that bit size 
+        The salt, or random data, to add to `data` to perturb it before hashing occurs.
+        If left as `None`, then no salt will be added to `data`. If `salt` is a list,
+        then it must be of the same length as `data`. If `salt` is a string, then the same salt value
+        will be added to each value in `data`. If `salt` is an integer, then a random salt of that bit size
         will automatically be generated (note that 16 and 32 are typical salt bit sizes).
         Generated salts can be stored by specifying the `store_salts` parameter.
         Please refer to [2]_ for additional information on the importance of salts.
@@ -166,13 +166,17 @@ def hashing(
                 salt, index=data.index, columns=data.columns, dtype=bytes
             )
             if salt_df.shape != data.shape:
-                raise InputError(f"Incorrect `salt` dimensions; expected {data.shape}. (Received: {salt_df.shape})")
+                raise InputError(
+                    f"Incorrect `salt` dimensions; expected {data.shape}. (Received: {salt_df.shape})"
+                )
         elif isinstance(salt, str):
             salt_df[:] = salt.encode()
         elif isinstance(salt, int):
             salt_df = salt_df.applymap(lambda v: os.urandom(salt))
         else:
-            raise InputError(f"Invalid `salt` type; only types allowed are `list`, `str`, and `int`. (Received: {type(salt)})")
+            raise InputError(
+                f"Invalid `salt` type; only types allowed are `list`, `str`, and `int`. (Received: {type(salt)})"
+            )
 
         data = (data + salt_df) if append_salt else (salt_df + data)
 
@@ -187,7 +191,9 @@ def hashing(
 
     if "shake" in str(hash_func):
         # TODO: change to logging
-        print(f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{hash_func}` as a callable defined with your prefered length.")
+        print(
+            f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{hash_func}` as a callable defined with your prefered length."
+        )
         return data.applymap(lambda v: hash_func(v).hexdigest(16))
-    
+
     return data.applymap(lambda v: hash_func(v).hexdigest())

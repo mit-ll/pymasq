@@ -18,7 +18,7 @@ BOTH: Final = "both"
 
 @BEARTYPE
 def as_dataframe(obj, cols: Optional[Union[List, str, int]] = None):
-    """ Convert an object data structure into a DataFrame """
+    """Convert an object data structure into a DataFrame"""
     if isinstance(obj, (list, np.ndarray)):
         cols = None
     if cols is not None:
@@ -103,7 +103,7 @@ def formatting(
 
 
 def is_identical(s: pd.Series) -> bool:
-    """ Checks if all values in the input series are identical. """
+    """Checks if all values in the input series are identical."""
     s = s.to_numpy()  # s.values (pandas<0.24)
     return (s[0] == s).all()
 

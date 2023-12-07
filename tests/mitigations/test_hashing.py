@@ -28,7 +28,7 @@ def my_df():
 @pytest.fixture
 def salts():
     df = _my_df()
-    return np.random.choice(["a", "b", "c"], size=df.shape).tolist()
+    return np.random.Generator.choice(["a", "b", "c"], size=df.shape).tolist()
 
 
 @pytest.mark.parametrize("hash_func", (ALGORITHMS))
@@ -36,12 +36,12 @@ def test_hashing_all_hashlib_guaranteed_algorithms(my_df, hash_func):
     """
     Test all hashing algorithms that are guaranteed to be supported by hashlib, regardless of OS platform.
     """
-    e = None
+    rdf = None
     try:
         rdf = hashing(my_df, hash_func)
     except Exception as e:
-        print("Raised Exception")
-    assert e is None
+        print(f"Raised Exception: {e}")
+    assert rdf is not None
 
 
 @pytest.mark.parametrize("hash_func", (ALGORITHMS))

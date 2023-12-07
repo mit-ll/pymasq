@@ -279,19 +279,17 @@ def geom_transform(
 
     # Randomized expansion
     sign = np.sign(bo)
-    bo = np.add(abs(bo), abs(np.random.uniform(size=bo.shape) * magnitude))
+    bo = np.add(abs(bo), abs(np.random.Generator.uniform(size=bo.shape) * magnitude))
     bo = (bo * sign).T
     bo = bo * data[perturb_cols].std().values + data[perturb_cols].mean().values
 
     shuff_idx = data.index
     if shuffle:
-        shuff_idx = np.random.choice(
+        shuff_idx = np.random.Generator.choice(
             range(bo.shape[0]), size=(bo.shape[0]), replace=False
         )
 
-    data.loc[:, perturb_cols] = bo[
-        shuff_idx,
-    ]
+    data.loc[:, perturb_cols] = bo[shuff_idx,]
     if len(sensitive_col) != 0:
         data.loc[:, sensitive_col] = data.loc[shuff_idx, sensitive_col].reset_index(
             drop=True

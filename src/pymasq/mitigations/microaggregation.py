@@ -578,18 +578,14 @@ def robust_magg(
     for _ in range((len(data) // aggr) - 1):
         max_val_idx = np.nanargmax(mah_dists)
         min_val_idxs = _knn(pw_dists[:, max_val_idx], aggr)
-        pw_dists[
-            min_val_idxs,
-        ] = np.nan
+        pw_dists[min_val_idxs,] = np.nan
         mah_dists[min_val_idxs] = np.nan
         z[min_val_idxs] = np.mean(z[min_val_idxs], axis=0)
 
     min_val_idxs = np.unique(
         np.argwhere(~np.isnan(pw_dists))[:, 0]
     )  # get idx of remaining non-nan values
-    z[min_val_idxs,] = z[min_val_idxs,].mean(
-        axis=0
-    )  # merge w above
+    z[min_val_idxs,] = z[min_val_idxs,].mean(axis=0)  # merge w above
 
     mat = (z * data.std().to_numpy()) + data.mean().to_numpy()
 

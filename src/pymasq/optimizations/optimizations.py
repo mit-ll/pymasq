@@ -92,7 +92,6 @@ class IterativeSearch(OptimizationBase):
         best_fit = cur_fit
 
         while all([cur_fit > self.theta, self._iters > 0]):
-
             if self.verbose:
                 print("-- Iteration [%i] --" % (self._max_iters - self._iters))
                 if self.progress_reporter:
@@ -225,7 +224,6 @@ class IncrementalSearch(OptimizationBase):
 
     @BEARTYPE
     def _optimize(self):
-
         target = self._target
         retry = self.retry
 
@@ -240,7 +238,6 @@ class IncrementalSearch(OptimizationBase):
         )
 
         while all([cur_fit > self.theta, self._iters > 0, retry > 0]):
-
             if self.verbose:
                 print("-- Iteration [%i] --" % (self._max_iters - self._iters))
                 if self.progress_reporter:
@@ -429,7 +426,6 @@ class StochasticSearch(OptimizationBase):
         best_fit = cur_fit
 
         while all([best_fit > self.theta, self._iters > 0]):
-
             if self.verbose:
                 print("-- Iteration [%i] --" % (self._max_iters - self._iters))
                 if self.progress_reporter:
@@ -584,7 +580,6 @@ class ExhaustiveSearch(OptimizationBase):
         return_best: bool = False,
         **kwargs,
     ):
-
         kwargs["headers"] = ["perm_num"]
         super().__init__(*args, **kwargs)
 
@@ -631,7 +626,7 @@ class ExhaustiveSearch(OptimizationBase):
 
         if self.randomize_mutations:
             # Note: only matters when `num_perms` is set.
-            test = np.random.shuffle(self._mutations)
+            test = np.random.Generator.shuffle(self._mutations)
 
         for num_perms, mutation_perms in enumerate(
             itertools.permutations(self._mutations, self.size_perms)
@@ -643,7 +638,6 @@ class ExhaustiveSearch(OptimizationBase):
 
             stop = False
             for mutation in mutation_perms:
-
                 if self.verbose:
                     print("\t-- Iteration [%i] --" % (self._max_iters - self._iters))
                     if self.progress_reporter:

@@ -4,5 +4,5 @@ import pandas as pd
 
 
 def suda(df: pd.DataFrame, cols: List[str], **kwargs: Dict[Any, Any]) -> pd.DataFrame:
-    """ TODO """
+    """TODO"""
     return df
