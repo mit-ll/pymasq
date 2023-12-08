@@ -25,7 +25,6 @@ pymasq.BEARTYPE = lambda func: func
 
 set_seed(1)
 
-
 @pytest.fixture
 def my_df():
     df = load_census()
@@ -68,7 +67,7 @@ def my_mutations():
 # evaluation functions
 zeros = {lambda: 0: {"weight": 1}}
 ones = {lambda: 1: {"weight": 1}}
-rands = {lambda: np.random.Generator.rand(): {"weight": 1}}
+rands = {lambda: np.random.rand(): {"weight": 1}}
 
 
 # Test standard termination conditions

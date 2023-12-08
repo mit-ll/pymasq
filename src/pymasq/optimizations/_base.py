@@ -6,10 +6,12 @@ from abc import abstractmethod
 
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from pymasq import BEARTYPE
+
 import pymasq.mitigations as mits
 import pymasq.metrics as mets
 
+from pymasq import BEARTYPE
+from pymasq.config import DEFAULT_SEED
 from pymasq.errors import (
     SumNotEqualToOneError,
     NotInRangeError,
@@ -17,6 +19,7 @@ from pymasq.errors import (
     NoMutationAvailableError,
 )
 
+rg = np.random.Generator(np.random.PCG64(DEFAULT_SEED))
 
 class OptimizationBase:
     """Base class for the optimization algorithms.
@@ -408,7 +411,7 @@ class OptimizationBase:
         mut = None
         if self.randomize_mutations:
             probs = [v["p"] for v in mutations]
-            mut = np.random.Generator.choice(mutations, p=probs)
+            mut = rg.choice(mutations, p=probs)
             if not self.reuse_mutations and mutations:
                 # redistribute according to initial weighting
                 mut_idx = mutations.index(mut)
@@ -541,4 +544,4 @@ class Logbook:
         """
         record = self._pretty_values(record)
         df = pd.DataFrame.from_records(record)
-        self.log = self.log.append(df, ignore_index=True)
+        self.log = self.log._append(df, ignore_index=True)

@@ -626,7 +626,7 @@ class ExhaustiveSearch(OptimizationBase):
 
         if self.randomize_mutations:
             # Note: only matters when `num_perms` is set.
-            test = np.random.Generator.shuffle(self._mutations)
+            test = np.random.shuffle(self._mutations)
 
         for num_perms, mutation_perms in enumerate(
             itertools.permutations(self._mutations, self.size_perms)
