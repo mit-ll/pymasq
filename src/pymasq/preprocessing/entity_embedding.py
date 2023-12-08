@@ -123,7 +123,7 @@ def embed_entities(
 
         # Converts categories represented by integers to strings so that the
         # label encoder will work and the classes can be determined later
-        categorical_df[column] = categorical_df[column].astype(str)
+        categorical_df.loc[:, column] = categorical_df.loc[:,column].astype(str)
         le = LabelEncoder()
         X_train = le.fit_transform(categorical_df[column])
 

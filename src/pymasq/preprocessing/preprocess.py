@@ -131,7 +131,7 @@ class LabelEncoderPM(PreprocessorBase):
         df_b[class_col] = 1
 
         # append b to a; and then split out the categorical (non-numerical) columns
-        cat_cols = df_a.append(df_b).select_dtypes(exclude=["number"])
+        cat_cols = df_a._append(df_b).select_dtypes(exclude=["number"])
         # cast everything to string in case we have a mix of floats and string,
         # otherwise LabelEncoder will choke/die.
         # This should never happen, but does in our pytests, so who knows.
@@ -140,7 +140,7 @@ class LabelEncoderPM(PreprocessorBase):
         )
 
         # append b to a; and then split out the non-categorical (numerical) columns
-        num_cols = df_a.append(df_b).select_dtypes(include=["number"])
+        num_cols = df_a._append(df_b).select_dtypes(include=["number"])
         # concatenate, but relabel the cat_cols first
         if cat_cols.empty:
             both = num_cols
