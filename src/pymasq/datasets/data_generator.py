@@ -7,7 +7,9 @@ from typing import List, Union
 from .utils import rand_cat_change
 
 from pymasq import BEARTYPE
+from pymasq.config import DEFAULT_SEED
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @BEARTYPE
 def gen_geom_seq(start: float = 0.5, n: int = 6, rate: float = 2.0) -> List[float]:
@@ -132,11 +134,11 @@ def _l_div_sensitive_gen(l: int, n: int) -> List:
         List of integer values for the sensitive column
     """
 
-    unique_entries = np.random.choice(range(n), l)
+    unique_entries = rg.choice(range(n), l)
     while len(unique_entries) != len(set(unique_entries)):
-        unique_entries = np.random.choice(range(n), l)
+        unique_entries = rg.choice(range(n), l)
 
-    non_unique = np.random.Generator.choice(unique_entries, n - l)
+    non_unique = rg.Generator.choice(unique_entries, n - l)
     return list(unique_entries) + list(non_unique)
 
 

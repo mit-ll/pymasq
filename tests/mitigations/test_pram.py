@@ -3,12 +3,14 @@ import pandas as pd
 import pytest
 
 import pymasq
+from pymasq.config import DEFAULT_SEED
 from pymasq.datasets import load_census
 from pymasq.errors import InputError, NotInRangeError
 from pymasq.mitigations import pram
 
 pymasq.set_seed(10)
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @pytest.fixture
 def my_df():
@@ -33,7 +35,7 @@ def my_numerical_df():
     nrows = 10
     max_val = 1000000
     return pd.DataFrame(
-        np.random.Generator.random_integers(0, max_val, (nrows, ncols)),
+        rg.integers(0, max_val, (nrows, ncols)),
         columns=[f"c{i}" for i in range(ncols)],
     )
 

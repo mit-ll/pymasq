@@ -6,12 +6,14 @@ import pytest
 import hashlib
 import numpy as np
 
+from pymasq.config import DEFAULT_SEED
 from pymasq.datasets import load_census
 from pymasq.mitigations import hashing
 
 
 ALGORITHMS = hashlib.algorithms_guaranteed
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 def _my_df():
     df = load_census()
@@ -28,7 +30,7 @@ def my_df():
 @pytest.fixture
 def salts():
     df = _my_df()
-    return np.random.Generator.choice(["a", "b", "c"], size=df.shape).tolist()
+    return rg.choice(["a", "b", "c"], size=df.shape).tolist()
 
 
 @pytest.mark.parametrize("hash_func", (ALGORITHMS))

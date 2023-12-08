@@ -2,16 +2,18 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pymasq.config import DEFAULT_SEED
 from pymasq.mitigations import geom_transform
 from pymasq.errors import InputError
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @pytest.fixture
 def my_rand_df():
     ncols = 5
     colnames = "abcdefghijklmnopqrstuvwxyz"
     df = pd.DataFrame(
-        np.random.Generator.random_integers(0, 100, (100, ncols)),
+        rg.integers(0, 100, (100, ncols)),
         columns=[colnames[i] for i in range(ncols)],
     )
     return df
@@ -32,7 +34,7 @@ def my_non_numeric_df():
     ncols = 3
     colnames = list("abcdefghijklmnopqrstuvwxyz")
     df = pd.DataFrame(
-        np.random.Generator.choice(colnames, size=(100, ncols), replace=True),
+        rg.choice(colnames, size=(100, ncols), replace=True),
         columns=colnames[:ncols],
     )
     return df
