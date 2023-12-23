@@ -7,7 +7,7 @@ import numpy as np
 import scipy.stats as ss
 
 from pymasq import BEARTYPE
-from pymasq.config import FORMATTING_ON_OUTPUT
+from pymasq.config import DEFAULT_SEED, FORMATTING_ON_OUTPUT
 from pymasq.utils import formatting
 from pymasq.preprocessing import LabelEncoderPM
 from pymasq.errors import InputError
@@ -31,6 +31,8 @@ PEARSON: Final = "pearson"
 KENDALL: Final = "kendall"
 CORRELATIVE: Final = "corr"
 MODEL: Final = "model"
+
+rg = np.random.default_rng(DEFAULT_SEED)
 
 
 @BEARTYPE
@@ -232,7 +234,7 @@ def shuffle(
     ystar1 = predictors.dot(pxs.dot(pssinv).T)
 
     sigma = pxx - pxs.dot(pssinv.dot(psx))
-    e1 = np.random.multivariate_normal(
+    e1 = rg.multivariate_normal(
         mean=[0] * len(resp_cols), cov=sigma, size=_data.shape[0]
     )
     y_star = ystar1 + e1

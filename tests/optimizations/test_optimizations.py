@@ -16,14 +16,14 @@ from sklearn.utils import shuffle
 import pymasq
 from pymasq import mitigations as mits
 from pymasq import optimizations as opts
-from pymasq import set_seed
+from pymasq.config import DEFAULT_SEED
 from pymasq.datasets import load_census
 
 
 pymasq.BEARTYPE = lambda func: func
 
 
-set_seed(1)
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @pytest.fixture
 def my_df():
@@ -67,7 +67,7 @@ def my_mutations():
 # evaluation functions
 zeros = {lambda: 0: {"weight": 1}}
 ones = {lambda: 1: {"weight": 1}}
-rands = {lambda: np.random.rand(): {"weight": 1}}
+rands = {lambda: rg(): {"weight": 1}}
 
 
 # Test standard termination conditions

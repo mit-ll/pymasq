@@ -9,6 +9,7 @@ from sklearn.covariance import MinCovDet
 from typing import List, Optional, Union, Final
 
 from pymasq.config import (
+    DEFAULT_SEED,
     FORMATTING_ON_OUTPUT,
     VALIDATE_NUMERIC_ON_INPUT,
     VALIDATE_NUMERIC_ON_OUTPUT,
@@ -36,12 +37,14 @@ RESTRICTED: Final = "restricted"
 OUTLIERS: Final = "outliers"
 
 
-class OUTLIERS_INTERPOLATION_METHODS:
+class outliersInterpolationMethods:
     LINEAR = "linear"
     LOWER = "lower"
     HIGHER = "higher"
     MIDPOINT = "midpoint"
     NEAREST = "nearest"
+
+rg = np.random.default_rng(DEFAULT_SEED)
 
 
 @formatting(on_output=FORMATTING_ON_OUTPUT)
@@ -114,10 +117,10 @@ def add_noise_additive(
     if centered:
         delta = np.sqrt(1 - np.square(magnitude))
         loc = (1 - delta) / magnitude
-        noise = np.random.normal(loc=loc * data.mean(), scale=std, size=data.shape)
+        noise = rg.normal(loc=loc * data.mean(), scale=std, size=data.shape)
         data *= delta
         return data.add(magnitude * noise)
-    return data + np.random.normal(scale=magnitude * std, size=data.shape)
+    return data + rg.normal(scale=magnitude * std, size=data.shape)
 
 
 @formatting(on_output=FORMATTING_ON_OUTPUT)
@@ -239,7 +242,7 @@ def add_noise_correlated(
             ]
         ).transpose()  # Transposes the data to have the column/row orientation match the input data
 
-        return data_encoded + np.random.multivariate_normal(
+        return data_encoded + rg.multivariate_normal(
             pd.Series([0] * data_encoded.shape[1]),
             (magnitude / 100.0) * data_encoded.cov(),
             size=data_encoded.shape[0],
@@ -415,7 +418,7 @@ def add_noise_outliers(
     outliers = np.unique(np.append(quant_outliers, dist_outliers))
 
     std = 1.96 * data.std() / np.sqrt(len(data)) * (magnitude / 100.0)
-    noise = np.random.normal(scale=std, size=(len(outliers), len(data.columns)))
+    noise = rg.normal(scale=std, size=(len(outliers), len(data.columns)))
 
     data.iloc[outliers, :] += noise
 

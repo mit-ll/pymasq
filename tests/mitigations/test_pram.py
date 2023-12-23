@@ -1,14 +1,14 @@
+import logging
 import numpy as np
 import pandas as pd
 import pytest
 
-import pymasq
 from pymasq.config import DEFAULT_SEED
 from pymasq.datasets import load_census
 from pymasq.errors import InputError, NotInRangeError
 from pymasq.mitigations import pram
 
-pymasq.set_seed(10)
+logger = logging.getLogger(__name__)
 
 rg = np.random.default_rng(DEFAULT_SEED)
 
@@ -114,7 +114,8 @@ def test_pram_probs_valid_dict(my_df):
 def test_pram_numerical_cast_to_categorical(my_numerical_df):
     try:
         pram(my_numerical_df)
-    except:
+    except Exception as e:
+        logger.exception(e)
         assert False, "Numerical dataframe should not have raised error."
 
 

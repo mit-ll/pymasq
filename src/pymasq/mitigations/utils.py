@@ -81,7 +81,7 @@ def __calc_freq(
     freq_df = df.groupby(cols).count()[sensitive_col]
     freq_df = freq_df.rename("samp_fq")
     freq_df = freq_df.reset_index()
-    result = pd.merge(df, freq_df, how="outer", on=cols)
+    result = pd.merge(df, freq_df, how="outer", on=cols, validate="m:1")
     result["pop_fq"] = result["samp_fq"].values * weights
 
     return result

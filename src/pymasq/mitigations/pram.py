@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union
 
 from pymasq import BEARTYPE
 from pymasq.config import (
+    DEFAULT_SEED,
     FORMATTING_ON_OUTPUT,
 )
 from pymasq.errors import InputError, NotInRangeError
@@ -14,6 +15,7 @@ from pymasq.utils import formatting
 
 __all__ = ["pram"]
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 def __calc_transition_matrix(
     data: pd.Series,
@@ -39,7 +41,7 @@ def __calc_transition_matrix(
         pandas.DataFrame with transition probabilities for each category.
     """
     ncats = len(cats)
-    runif = np.random.uniform(low=probs, size=ncats)
+    runif = rg.uniform(low=probs, size=ncats)
     tri = (1 - runif) / (ncats - 1)
 
     prob_mat = np.zeros(shape=(ncats, ncats))
@@ -88,7 +90,7 @@ def __randomization(
     for cat in cats:
         idxs = data.index.where(data == cat).dropna()
         if len(idxs) > 0:
-            d_pramed[idxs] = np.random.choice(
+            d_pramed[idxs] = rg.choice(
                 cats,
                 len(idxs),
                 p=trans.loc[cat,],

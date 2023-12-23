@@ -8,7 +8,7 @@ __all__ = ["rank_swap"]
 
 
 def rank_swap(
-    data: Union[pd.DataFrame, pd.Series], cols: Union[str, List[str]] = None, **kwargs
+    data: Union[pd.DataFrame, pd.Series], cols: Union[str, List[str]] = None,
 ) -> pd.Series:
     """TODO
 

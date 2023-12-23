@@ -1,8 +1,9 @@
+import hashlib
+import logging
+import os
 from typing import Callable, List, Optional, Union
 
-import hashlib
 import numpy as np
-import os
 import pandas as pd
 
 from pymasq import BEARTYPE
@@ -13,6 +14,8 @@ from pymasq.errors import InputError
 from pymasq.utils import formatting
 
 __all__ = ["hashing"]
+
+logger = logging.getLogger(__name__)
 
 
 @formatting(on_output=FORMATTING_ON_OUTPUT, ignore_dtypes=True)
@@ -190,8 +193,7 @@ def hashing(
     hash_func = getattr(hashlib, hash_func)
 
     if "shake" in str(hash_func):
-        # TODO: change to logging
-        print(
+        logger.warning(
             f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{hash_func}` as a callable defined with your prefered length."
         )
         return data.applymap(lambda v: hash_func(v).hexdigest(16))

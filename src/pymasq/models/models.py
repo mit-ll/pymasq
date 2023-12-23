@@ -909,9 +909,9 @@ class TpotRegressor(ModelingBase):
             except:
                 continue
         if Y_predict_prob_array is None:
-            raise (f"No prediction method available for {self.trained}")
+            raise Exception (f"No prediction method available for {self.trained}")
 
-        return mape(y_true=y_true, y_score=Y_predict_prob_array)
+        return mape(y_true=y_true, y_pred=Y_predict_prob_array)
 
 
 # For translation from text to callable functions
