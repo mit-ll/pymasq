@@ -196,6 +196,6 @@ def hashing(
         logger.warning(
             f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{hash_func}` as a callable defined with your prefered length."
         )
-        return data.applymap(lambda v: hash_func(v).hexdigest(16))
+        return data.map(lambda v: hash_func(v).hexdigest(16))
 
-    return data.applymap(lambda v: hash_func(v).hexdigest())
+    return data.map(lambda v: hash_func(v).hexdigest())

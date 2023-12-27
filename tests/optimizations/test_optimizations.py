@@ -67,7 +67,7 @@ def my_mutations():
 # evaluation functions
 zeros = {lambda: 0: {"weight": 1}}
 ones = {lambda: 1: {"weight": 1}}
-rands = {lambda: rg(): {"weight": 1}}
+rands = {lambda: rg.random(1).item(): {"weight": 1}}
 
 
 # Test standard termination conditions
