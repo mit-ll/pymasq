@@ -134,7 +134,7 @@ def auc_score(
         )
     # Encode the two data frames (at once for consistent encodings)
     orig_enc, mod_enc = preprocessor_fn.encode_both(
-        df_A=orig_df, df_B=mod_df, sensitive_col=sensitive_col
+        df_a=orig_df, df_b=mod_df, sensitive_col=sensitive_col
     )
     # Train the classifer based on only the original data
     classifer_fn.train(

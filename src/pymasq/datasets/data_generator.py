@@ -138,7 +138,7 @@ def _l_div_sensitive_gen(l: int, n: int) -> List:
     while len(unique_entries) != len(set(unique_entries)):
         unique_entries = rg.choice(range(n), l)
 
-    non_unique = rg.Generator.choice(unique_entries, n - l)
+    non_unique = rg.choice(unique_entries, n - l)
     return list(unique_entries) + list(non_unique)
 
 

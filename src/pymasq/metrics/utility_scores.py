@@ -60,7 +60,7 @@ def jensen_shannon(
     # Encode the two data frames (at once for consistent encodings)
     preprocessor_fn = preprocess.preprocessor_fn[preprocessor]
     orig_enc, mod_enc = preprocessor_fn.encode_both(
-        df_A=orig_df, df_B=mod_df, sensitive_col=sensitive_col
+        df_a=orig_df, df_b=mod_df, sensitive_col=sensitive_col
     )
 
     # remove sensitive column

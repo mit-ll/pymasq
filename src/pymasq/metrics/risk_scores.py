@@ -284,7 +284,7 @@ def _diversity(
 def l_diversity(
     df: pd.DataFrame,
     sensitive_col: str,
-    L: int = 2,
+    l_thresh: int = 2,
     method: Optional[str] = None,
 ) -> float:
     """
@@ -298,7 +298,7 @@ def l_diversity(
     sensitive_col : str,
         The name of the column containing the data that is being obscured by mitigations
 
-    L : int, optional
+    l_thresh : int, optional
         The threshold by which the closeness of the q-blocks and the full dataset are compared
         (Default: 2)
 
@@ -324,14 +324,14 @@ def l_diversity(
     else:
         raise ValueError(f"method must be '{DISTINCT}' or '{ENTROPY}'")
 
-    return sum([1.0 if ld <= L else 0.0 for ld in l_div]) / len(l_div)
+    return sum([1.0 if ld <= l_thresh else 0.0 for ld in l_div]) / len(l_div)
 
 
 @BEARTYPE
 def is_l_diverse(
     df: pd.DataFrame,
     sensitive_col: str,
-    L: int = 2,
+    l_thresh: int = 2,
     method: Optional[str] = None,
 ) -> bool:
     """
@@ -348,7 +348,7 @@ def is_l_diverse(
     sensitive_col : str
         The name of the column containing the data that is being obscured by mitigations
 
-    L : int, optional
+    l_thresh : int, optional
         The threshold by which the closeness of the q-blocks and the full dataset are compared. Default is arbitrary.
         (Default: 2)
 
@@ -377,9 +377,9 @@ def is_l_diverse(
 
     """
     if method is None or method == DISTINCT:
-        return _diversity(df, sensitive_col, _unique_count) <= L
+        return _diversity(df, sensitive_col, _unique_count) <= l_thresh
     elif method == ENTROPY:
-        return _diversity(df, sensitive_col, _entropy_count) <= np.log(L)
+        return _diversity(df, sensitive_col, _entropy_count) <= np.log(l_thresh)
 
     raise ValueError(f"method must be '{DISTINCT}' or '{ENTROPY}'")
 

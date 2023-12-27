@@ -124,7 +124,7 @@ def _scaling(
             raise ImportError(
                 "Unable to import `tensorly` library to perform `robust` scaling; run ´pip3 install tensorly` from within your project environment to install it."
             )
-        scaled_data, _ = robust_pca(data.values.astype(np.float))
+        scaled_data, _ = robust_pca(data.values.astype(float))
         return scaled_data
     if callable(scale):
         return scale(data, **kwargs)
@@ -561,7 +561,7 @@ def robust_magg(
 
     pw_dists = pairwise_distances(z)
 
-    if not all(np.diagonal(pw_dists)) == 0:
+    if all(np.diagonal(pw_dists)) != 0:
         np.fill_diagonal(pw_dists, 0)
 
     mcd = MinCovDet(random_state=seed).fit(z)
