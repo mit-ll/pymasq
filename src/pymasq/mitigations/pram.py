@@ -50,13 +50,13 @@ def __calc_transition_matrix(
 
     cat_codes = data.cat.codes + 1
     sum_cats = np.nansum(cat_codes)
-    freqs = data.value_counts() / sum_cats  # scaled category frequencies
+    freqs: pd.Series = data.value_counts() / sum_cats  # scaled category frequencies
 
     scaled_prob_mat = prob_mat.copy()
     for i in range(ncats):
         s = sum(freqs * prob_mat[:, i])
         for j in range(ncats):
-            scaled_prob_mat[i, j] = prob_mat[j, i] * (freqs[j] / s)
+            scaled_prob_mat[i, j] = prob_mat[j, i] * (freqs.iloc[j] / s)
 
     trans_probs = prob_mat @ scaled_prob_mat
     scaled_trans_probs = alpha * trans_probs + (1 - alpha) * np.identity(ncats)
