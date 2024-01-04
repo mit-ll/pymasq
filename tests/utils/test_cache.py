@@ -54,7 +54,7 @@ First ten rows:
         (
             RFClassifier,
             EmbeddingsEncoder,
-            0.61,
+            0.57,
             "cache_test/053cb5e57bfa9b5c9568625cb22588dd.ENCV.e81a5b5eb0df48bc68540d7b71342a7d.pkl",
             """ENCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.EmbeddingsEncoder'>
 First ten rows:

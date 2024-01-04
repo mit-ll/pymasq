@@ -1,11 +1,9 @@
-from typing import List, Callable, Dict, Union, Final
-from pymasq.errors import InputError, NotInRangeError
+from typing import List, Callable, Dict, Optional, Union, Final
 
 import numpy as np
 import pandas as pd
 
 from copy import copy
-from typing import Callable, Dict, Final, List, Optional, Union
 
 from pymasq import BEARTYPE
 from pymasq.errors import InputError, NotInRangeError
@@ -185,7 +183,7 @@ def is_k_anon_col(
         .rename(columns={"size": "k_count"})
     )
     adf["is_k_anon"] = adf["k_count"] > k
-    return pd.merge(df, adf, on=key_vars)
+    return pd.merge(df, adf, on=key_vars, how="left", validate="many_to_one")
 
 
 @BEARTYPE
@@ -377,9 +375,9 @@ def is_l_diverse(
 
     """
     if method is None or method == DISTINCT:
-        return _diversity(df, sensitive_col, _unique_count) <= l_thresh
+        return _diversity(df, sensitive_col, _unique_count)["l-diversity"] <= l_thresh
     elif method == ENTROPY:
-        return _diversity(df, sensitive_col, _entropy_count) <= np.log(l_thresh)
+        return _diversity(df, sensitive_col, _entropy_count)["l-diversity"] <= np.log(l_thresh)
 
     raise ValueError(f"method must be '{DISTINCT}' or '{ENTROPY}'")
 
@@ -556,8 +554,9 @@ def _closeness(
     grp_qi = df.groupby(qi)
     # get the closeness
     qs = _get_probs(df, sensitive_col)
-    fun = lambda x: fxn(qs, x)
-    div = grp_qi[sensitive_col].agg(fun)
+    def _func(x):
+        return fxn(qs, x)
+    div = grp_qi[sensitive_col].agg(_func)
     counts = grp_qi[sensitive_col].agg("count")
 
     _t_closeness = []
@@ -661,15 +660,15 @@ def is_t_close(
 
 
 @BEARTYPE
-def indiv_risk_approx(fk: Union[int, float], Fk: Union[int, float]) -> float:
+def indiv_risk_approx(samp_freq: Union[int, float], pop_freq: Union[int, float]) -> float:
     """
     calculates the approximate individual risk
 
     Parameters
     ----------
-    fk : int or float
+    samp_freq : int or float
         the sample frequency of the row's combination of quasi-identifier values
-    Fk : int or float
+    pop_freq : int or float
         the population frequence of the row's combination of quasi-identifier values
 
     Returns
@@ -682,28 +681,28 @@ def indiv_risk_approx(fk: Union[int, float], Fk: Union[int, float]) -> float:
     TODO
 
     """
-    if fk == Fk:
-        return 1 / float(fk)
+    if samp_freq == pop_freq:
+        return 1 / float(samp_freq)
 
-    pk = float(fk) / float(Fk)
+    pk = float(samp_freq) / float(pop_freq)
 
-    if fk > 2:
-        return pk / (fk - (1 - pk))
-    if fk == 2:
+    if samp_freq > 2:
+        return pk / (samp_freq - (1 - pk))
+    if samp_freq == 2:
         return (pk / (1 - pk)) - (((pk / (1 - pk)) ^ 2) * np.log(1 / pk))
     return (pk / (1 - pk)) * np.log(1 / pk)
 
 
 @BEARTYPE
-def indiv_risk_exact(fk: int, Fk: float) -> float:
+def indiv_risk_exact(samp_freq: int, pop_freq: float) -> float:
     """
     calculates the exact individual risk
 
     Parameters
     ----------
-    fk : int
+    samp_freq : int
         the sample frequency of the row's combination of quasi-identifier values
-    Fk : int
+    pop_freq : int
         the population frequence of the row's combination of quasi-identifier values
 
     Returns
@@ -716,32 +715,32 @@ def indiv_risk_exact(fk: int, Fk: float) -> float:
     TODO
 
     """
-    if fk == Fk:
-        return 1 / float(fk)
+    if samp_freq == pop_freq:
+        return 1 / float(samp_freq)
 
-    pk = float(fk) / float(Fk)
+    pk = float(samp_freq) / float(pop_freq)
 
-    def B(fk, pk, i):
-        b1 = (fk - 1 - i) ^ 2 / ((i + 2) * (fk - 2 - i))
-        b2 = (pk ^ (i + 2 - fk) - 1) / (pk ^ (i + 1 - fk) - 1)
+    def b_func(samp_freq, pk, i):
+        b1 = (samp_freq - 1 - i) ^ 2 / ((i + 2) * (samp_freq - 2 - i))
+        b2 = (pk ^ (i + 2 - samp_freq) - 1) / (pk ^ (i + 1 - samp_freq) - 1)
         return b1 * b2
 
-    def BB(fk, pk):
+    def bb_func(samp_freq, pk):
         bb = 0
-        for m in range(fk - 2):
+        for m in range(samp_freq - 2):
             b = 1
             for m2 in range(m + 1):
-                b = b * B(fk, pk, m2)
+                b = b * b_func(samp_freq, pk, m2)
             bb = bb + (-1) ^ (m + 1) * b
         return bb
 
-    first = (pk / (1 - pk)) ^ fk
-    third = (-1) ^ fk * np.log(pk)
+    first = (pk / (1 - pk)) ^ samp_freq
+    third = (-1) ^ samp_freq * np.log(pk)
 
-    if fk > 2:
-        A = (pk ^ (1 - fk) - 1) / (fk - 1)
-        return first * ((A * (1 + BB(fk, pk))) + third)
-    if fk == 2:
+    if samp_freq > 2:
+        A = (pk ^ (1 - samp_freq) - 1) / (samp_freq - 1)
+        return first * ((A * (1 + bb_func(samp_freq, pk))) + third)
+    if samp_freq == 2:
         return (pk / (1 - pk)) - (((pk / (1 - pk)) ^ 2) * np.log(1 / pk))
     return (pk / (1 - pk)) * np.log(1 / pk)
 
@@ -816,7 +815,7 @@ def indiv_risk(
             f"Method must be in ['{APPROX}', '{EXACT}'] Method given was {method}"
         )
 
-    return pd.merge(df, freq_count, how="left", on=quasi_cols + ["order"])["risk"]
+    return pd.merge(df, freq_count, how="left", on=quasi_cols + ["order"], validate="many_to_one")["risk"]
 
 
 @BEARTYPE
@@ -868,7 +867,7 @@ def beta_likeness(
     InputError
         This error is raised when a `beta` value of <= 0 is supplied.
     """
-    if not beta > 0:
+    if beta <= 0:
         raise InputError("beta must be a value greater than 0")
     qi = (  # Generate a list of all quasi-indicators (qi)
         [colname for colname in df.columns if colname != sensitive_col]
@@ -891,7 +890,7 @@ def beta_likeness(
             item, sensitive_col
         )  # get the frequencies of SA values in the equivalence class
         for key in sa_ec.keys():
-            if not sa_all[key] < sa_ec[key]:  # satisfies the requirement that p_i < q_i
+            if sa_all[key] >= sa_ec[key]:  # satisfies the requirement that p_i < q_i
                 continue
             dist = (sa_ec[key] - sa_all[key]) / sa_all[key]  # (q_i - p_i) / p_i
             if enhanced:
