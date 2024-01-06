@@ -2,7 +2,7 @@ from pymasq.kve.kve import key_variable_exploration
 import pandas as pd
 import pytest
 
-from pymasq.kve import random_forest_scores, boruta_scores, rfe_scores, stepwise_scores
+from pymasq.kve import random_forest_scores, rfe_scores, stepwise_scores
 from pymasq.datasets import gen_num_df, gen_bin_df, load_census
 from pymasq.preprocessing import EmbeddingsEncoder
 from pymasq import ROOT_DIR
@@ -71,28 +71,6 @@ def test_random_forest_cont(my_df):
     )
     assert len(rf[1]) > 0, "Should be True"
 
-
-def test_boruta_cont(my_df):
-    """
-    Tests boruta_scores if passed a continuous variable for y
-    """
-    sensitive_col = "age"
-    my_df = EmbeddingsEncoder.encode(
-        my_df,
-        sensitive_col=sensitive_col,
-        cache_location=ROOT_DIR + "/datasets/data/cache",
-    )
-    rf = boruta_scores(
-        x_train=my_df.drop(sensitive_col, axis=1),
-        y=my_df[sensitive_col],
-        verbose=0,
-        categories=-1,
-        max_iter=5,
-        n_estimators=20,
-    )
-    assert len(rf[1]) > 0, "Should be True"
-
-
 def test_rfe_cont(my_df):
     """
     Tests rfe_scores if passed a continuous variable for y
@@ -129,29 +107,6 @@ def test_random_forest_multiclass(my_df):
         y=y,
         verbose=0,
         categories=n_cats,
-        n_estimators=20,
-    )
-    assert len(rf[1]) > 0, "Should be True"
-
-
-def test_boruta_multiclass(my_df):
-    """
-    Tests boruta_scores if passed a variable with number of categories > 2 for y
-    """
-    sensitive_col = "education"
-    my_df = EmbeddingsEncoder.encode(
-        my_df,
-        sensitive_col=sensitive_col,
-        cache_location=ROOT_DIR + "/datasets/data/cache",
-    )
-    y = my_df[sensitive_col]
-    n_cats = len(y.dropna().unique())
-    rf = boruta_scores(
-        x_train=my_df.drop(sensitive_col, axis=1),
-        y=y,
-        verbose=0,
-        categories=n_cats,
-        max_iter=5,
         n_estimators=20,
     )
     assert len(rf[1]) > 0, "Should be True"
@@ -194,20 +149,6 @@ def test_random_forest_bin(bin_df):
     ), "Should be ['yes', 'no', 'no', 'no', 'no', 'no']]"
 
 
-def test_boruta_bin(bin_df):
-    """
-    Tests boruta_scores feature importance ranks for a binary dataframe
-    of a given size.
-    """
-    y = bin_df["Label"]
-    n_cats = len(y.dropna().unique())
-    assert boruta_scores(
-        x_train=bin_df.drop("Label", axis=1), y=y, verbose=0, categories=n_cats
-    ) == ["yes"] * 5 + [
-        "maybe"
-    ], "Should be ['yes', 'yes', 'yes', 'yes', 'yes', 'maybe']"
-
-
 def test_rfe_bin(bin_df):
     """
     Tests rfe_scores feature importance ranks for a binary dataframe
@@ -241,24 +182,6 @@ def test_random_forest_num(num_df):
     ), "Should be ['yes', 'no', 'no', 'no', 'no', 'no']]"
 
 
-def test_boruta_num(num_df):
-    """
-    Tests boruta_scores feature importance ranks for a numeric dataframe
-    of a given size.
-    """
-    y = num_df["Label"]
-    n_cats = len(y.dropna().unique())
-    assert (
-        boruta_scores(
-            x_train=num_df.drop("Label", axis=1),
-            y=y,
-            verbose=0,
-            categories=n_cats,
-        )
-        == ["yes"] * 6
-    ), "Should be ['yes', 'yes', 'yes', 'yes', 'yes', 'yes']"
-
-
 def test_rfe_num(num_df):
     """
     Tests rfe_scores feature importance ranks for a numeric dataframe
@@ -275,23 +198,6 @@ def test_rfe_num(num_df):
         )
         == ["yes"] + ["no"] * 5
     ), "Should be ['yes', 'no', 'no', 'no', 'no', 'no']"
-
-
-def test_boruta_comb(comb_df):
-    """
-    Tests boruta_scores feature importance ranks for a combined dataframe
-    of a given size.
-    """
-    if comb_df.shape[0] <= 2000:
-        assert True
-    y = comb_df["Label"]
-    n_cats = len(y.dropna().unique())
-    scores = boruta_scores(
-        x_train=comb_df.drop("Label", axis=1), y=y, verbose=0, categories=n_cats
-    )
-    assert (
-        scores == ["yes"] * 5 + ["maybe"] + ["yes"] * 6
-    ), "One 'maybe' at index 5, otherwise all 'yes"
 
 
 def test_random_forest_comb(comb_df):

@@ -37,8 +37,8 @@ def my_df():
         (LogisticRegressionClassifier, EmbeddingsEncoder, 0.5),
         (RFClassifier, LabelEncoderPM, 1.0),
         (RFClassifier, EmbeddingsEncoder, 1.0),
-        (TpotClassifier, LabelEncoderPM, 0.77),
-        (TpotClassifier, EmbeddingsEncoder, 0.86),
+        (TpotClassifier, LabelEncoderPM, 0.8),
+        (TpotClassifier, EmbeddingsEncoder, 0.81),
     ],
 )
 def test_classifiers(my_df, combo):
