@@ -1,13 +1,16 @@
-from abc import abstractmethod
-from joblib.parallel import DEFAULT_N_JOBS
-import pandas as pd
+import logging
 import os
-from typing import Type, Optional, List, Union
-from pymasq.utils import cache
+from abc import abstractmethod
+from typing import Type, Optional, Union
+
+import pandas as pd
 
 import pymasq.config as cfg
+from pymasq.utils import cache
 from pymasq.preprocessing._base import PreprocessorBase
 from pymasq import BEARTYPE
+
+logger = logging.getLogger(__name__)
 
 
 class ModelingBase:
@@ -87,7 +90,7 @@ class ModelingBase:
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain : boolean, optional (Default: False)
             Re-runs and saves over existing TPOT model for the given file path.
@@ -106,7 +109,7 @@ class ModelingBase:
         if not retrain:
             self.load_trained_model(df, verbose)  # sets self.trained from file
             if self.trained and verbose > 0:
-                print(
+                logger.info(
                     f"{self.name}: loading trained model from cache. (Set retrain=True to ignore cache.)"
                 )
 
@@ -186,7 +189,7 @@ class ModelingBase:
             verbose=verbose,
         )
         if verbose > 0:
-            print(f"{self.name} model trained and saved to: {filename}")
+            logger.info(f"{self.name} model trained and saved to: {filename}")
 
     @BEARTYPE
     def load_trained_model(

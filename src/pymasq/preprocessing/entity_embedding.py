@@ -1,4 +1,5 @@
 import hashlib
+import logging
 from pathlib import Path
 from typing import Dict, Optional, Union
 
@@ -16,6 +17,7 @@ from sklearn.preprocessing import LabelEncoder
 from pymasq.utils import cache
 import pymasq.config as cfg
 
+logger = logging.getLogger(__name__)
 
 def embed_cache_fn(column: pd.Series, cache_location: Path) -> Path:
     """
@@ -93,7 +95,7 @@ def embed_entities(
     seed = cfg.DEFAULT_SEED if seed is None else seed
 
     if verbose > 0:
-        print(f"Tensor flow seed set to {seed}.")
+        logger.info(f"Tensor flow seed set to {seed}.")
     tf_set_seed(seed)
 
     embed_dict = {}
@@ -113,19 +115,19 @@ def embed_entities(
                 # ignore description
                 embed_dict[column], _ = cache.load_cache(filename)
                 if verbose > 1:
-                    print("\t Cache file found and loaded for column", column)
+                    logger.info("\t Cache file found and loaded for column {column}")
                 # returns none if a file was found but hmac didn't match
                 if embed_dict[column] is not None:
                     continue
 
         if verbose > 1:
-            print("\tembed_entities: No cache available for ", column)
+            logger.info(f"\tembed_entities: No cache available for {column}")
 
         # Converts categories represented by integers to strings so that the
         # label encoder will work and the classes can be determined later
-        categorical_df[column] = categorical_df[column].astype(str)
+        categorical_df.loc[:, column] = categorical_df.loc[:,column].astype(str)
         le = LabelEncoder()
-        X_train = le.fit_transform(categorical_df[column])
+        x_train = le.fit_transform(categorical_df[column])
 
         model = Sequential()
         model.add(
@@ -161,7 +163,7 @@ def embed_entities(
         sgd = SGD(learning_rate=learning_rate)
         model.compile(optimizer=sgd, loss=loss_array, metrics=metrics_array)
         model.fit(
-            X_train,
+            x_train,
             y,
             epochs=epochs,
             verbose=0,

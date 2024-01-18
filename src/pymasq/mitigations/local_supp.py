@@ -1,6 +1,7 @@
-import pandas as pd
-
+import logging
 from typing import Any, List, Optional, Union
+
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (
@@ -12,6 +13,8 @@ from pymasq.utils import formatting
 
 
 __all__ = ["local_supp"]
+
+logger = logging.getLogger(__name__)
 
 
 @formatting(on_output=FORMATTING_ON_OUTPUT, ignore_dtypes=True)  # fmt: off
@@ -137,9 +140,10 @@ def local_supp(
         method=method,
         qual=qual,
     )
-    if not keep_dtypes and type(to_val) != type(data.loc[0, suppress_col]):
-        # TODO: switch to logging
-        print(
+    if not keep_dtypes and not isinstance(
+        type(to_val), type(data.loc[0, suppress_col])
+    ):
+        logger.warning(
             f"WARNING: The datatype of the `suppress_col` ({suppress_col}`) will be changed."
         )
 

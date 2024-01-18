@@ -2,16 +2,18 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pymasq.config import DEFAULT_SEED
 from pymasq.mitigations import geom_transform
 from pymasq.errors import InputError
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @pytest.fixture
 def my_rand_df():
     ncols = 5
     colnames = "abcdefghijklmnopqrstuvwxyz"
     df = pd.DataFrame(
-        np.random.random_integers(0, 100, (100, ncols)),
+        rg.integers(0, 100, (100, ncols)),
         columns=[colnames[i] for i in range(ncols)],
     )
     return df
@@ -32,7 +34,7 @@ def my_non_numeric_df():
     ncols = 3
     colnames = list("abcdefghijklmnopqrstuvwxyz")
     df = pd.DataFrame(
-        np.random.choice(colnames, size=(100, ncols), replace=True),
+        rg.choice(colnames, size=(100, ncols), replace=True),
         columns=colnames[:ncols],
     )
     return df
@@ -95,7 +97,7 @@ def test_geom_transform_error_single_column(my_rand_df):
 
 
 def test_geom_transform_different_values_for_perturb_cols(my_rand_df):
-    """ Ensure geom_transform returns different values for perturb_cols """
+    """Ensure geom_transform returns different values for perturb_cols"""
     perturb_cols = ["a", "b"]
     sensitive_col = "c"
     rdf = geom_transform(
@@ -109,7 +111,7 @@ def test_geom_transform_different_values_for_perturb_cols(my_rand_df):
 
 
 def test_geom_transform_cols_not_specified_no_perturbed(my_rand_df):
-    """ Ensure geom_transform returns different values for perturb_cols """
+    """Ensure geom_transform returns different values for perturb_cols"""
     perturb_cols = ["a", "b"]
     sensitive_col = "d"
     ignore_cols = ["c"]
@@ -134,7 +136,7 @@ def test_geom_transform_cols_not_specified_no_perturbed(my_rand_df):
 
 
 def test_geom_transform_same_values_for_sensitive_col(my_rand_df):
-    """ Ensure geom_transform returns different values for perturb_cols """
+    """Ensure geom_transform returns different values for perturb_cols"""
     perturb_cols = ["a", "b"]
     sensitive_col = "c"
     rdf = geom_transform(
@@ -149,7 +151,7 @@ def test_geom_transform_same_values_for_sensitive_col(my_rand_df):
 
 
 def test_geom_transform_same_values_in_proper_order_for_sensitive_col(my_rand_df):
-    """ Ensure geom_transform returns different values for perturb_cols """
+    """Ensure geom_transform returns different values for perturb_cols"""
     perturb_cols = ["a", "b"]
     sensitive_col = "c"
     rdf = geom_transform(
@@ -164,7 +166,7 @@ def test_geom_transform_same_values_in_proper_order_for_sensitive_col(my_rand_df
 
 
 def test_geom_transform_returns_same_shapes(my_rand_df):
-    """ Ensure geom_transform returns the same dataframe shapes """
+    """Ensure geom_transform returns the same dataframe shapes"""
     perturb_cols = ["a", "b"]
     sensitive_col = "d"
 

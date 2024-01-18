@@ -7,7 +7,9 @@ from typing import List, Union
 from .utils import rand_cat_change
 
 from pymasq import BEARTYPE
+from pymasq.config import DEFAULT_SEED
 
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @BEARTYPE
 def gen_geom_seq(start: float = 0.5, n: int = 6, rate: float = 2.0) -> List[float]:
@@ -117,12 +119,12 @@ def gen_num_df(n: int = 1000, seed: int = 1234) -> pd.DataFrame:
 
 
 @BEARTYPE
-def _l_div_sensitive_gen(l: int, n: int) -> List:
+def _l_div_sensitive_gen(l_div: int, n: int) -> List[int]:
     """
     Generates the sensitive variable for generate_l_diverse_table for each equivalence class
     Parameters
     ----------
-    l : int
+    l_div : int
         The specified diversity that the equivalence class needs to be
     n : int
         The size of the equivalence class (i.e. the lenght of the list returned)
@@ -132,17 +134,17 @@ def _l_div_sensitive_gen(l: int, n: int) -> List:
         List of integer values for the sensitive column
     """
 
-    unique_entries = np.random.choice(range(n), l)
+    unique_entries = rg.choice(range(n), l_div)
     while len(unique_entries) != len(set(unique_entries)):
-        unique_entries = np.random.choice(range(n), l)
+        unique_entries = rg.choice(range(n), l_div)
 
-    non_unique = np.random.choice(unique_entries, n - l)
+    non_unique = rg.choice(unique_entries, n - l_div)
     return list(unique_entries) + list(non_unique)
 
 
 @BEARTYPE
 def generate_l_diverse_table(
-    l: Union[int, List[int]],
+    l_div: Union[int, List[int]],
     num_col: int = 5,
     num_q_blocks: int = 5,
     q_block_sizes: Union[int, List[int]] = 5,
@@ -151,7 +153,7 @@ def generate_l_diverse_table(
     Used for testing l-diversity. Creates a data set that is l-diverse for given l.
     Parameters
     ----------
-    l : Union[int, List[int]]
+    l_div : Union[int, List[int]]
         The specified diversity that the data set needs to be TODO: need to expand this to allow float l parameters for entropy
     num_col : int, optional
         The number of columns (in addition to the sensitive column) the data set should have
@@ -178,10 +180,10 @@ def generate_l_diverse_table(
         if isinstance(q_block_sizes, int)
         else q_block_sizes
     )
-    l = [l] * num_q_blocks if not isinstance(l, list) else l
+    l_div: List[int] = [l_div] * num_q_blocks if not isinstance(l_div, list) else l_div
 
     for n in range(num_q_blocks):
-        senn = _l_div_sensitive_gen(l[n], q_block_sizes[n])
+        senn = _l_div_sensitive_gen(l_div[n], q_block_sizes[n])
         col_names["sensitive"] += senn
         for cn in col_names:
             if cn != "sensitive":

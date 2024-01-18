@@ -1,17 +1,19 @@
+import logging
+
 import pandas as pd
-import numpy as np
 
 from pymasq import config
-
-config.FORMATTING_ON_OUTPUT = True
 
 from pymasq.mitigations import (
     global_recode,
     EQUAL,
-    EQUIDISTANT,
     MAGNITUDE,
     LOG_EQUIDISTANT,
 )
+
+config.FORMATTING_ON_OUTPUT = True
+
+logger = logging.getLogger(__name__)
 
 
 def test_global_recode_labels_ordered():
@@ -25,7 +27,7 @@ def test_global_recode_labels_ordered():
         ordered=True,
     )
     result = global_recode(series, bins=3, ordered=True, labels=["A", "B", "C"])
-    print(result)
+    logger.info(result)
     assert all(result == expected_result), "This should be true"
 
 
@@ -73,12 +75,12 @@ def test_global_recode_no_labels():
         dtype="category",
         ordered=True,
     )
-    print("EXPECTED RESULT ====>", expected_result)
+    logger.info(f"EXPECTED RESULT ====>{expected_result}")
     result = global_recode(
         series,
         bins=5,
     )
-    print("RESULT ====>", result)
+    logger.info(f"RESULT ====>{result}")
 
     assert all(result == expected_result), "This should be true"
 

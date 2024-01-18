@@ -124,7 +124,7 @@ def _scaling(
             raise ImportError(
                 "Unable to import `tensorly` library to perform `robust` scaling; run ´pip3 install tensorly` from within your project environment to install it."
             )
-        scaled_data, _ = robust_pca(data.values.astype(np.float))
+        scaled_data, _ = robust_pca(data.values.astype(float))
         return scaled_data
     if callable(scale):
         return scale(data, **kwargs)
@@ -548,7 +548,7 @@ def robust_magg(
     # test data for normality; z-scores are only meaningful for normally distributed data
     result = shapiro(data)
     if result.pvalue < 0.05:
-        print(
+        logger.info(
             f"Warning: data not normally distributed; fails Shapiro-Wilk test (p={result.pvalue})."
         )
 
@@ -561,7 +561,7 @@ def robust_magg(
 
     pw_dists = pairwise_distances(z)
 
-    if not all(np.diagonal(pw_dists)) == 0:
+    if all(np.diagonal(pw_dists)) != 0:
         np.fill_diagonal(pw_dists, 0)
 
     mcd = MinCovDet(random_state=seed).fit(z)
@@ -578,18 +578,14 @@ def robust_magg(
     for _ in range((len(data) // aggr) - 1):
         max_val_idx = np.nanargmax(mah_dists)
         min_val_idxs = _knn(pw_dists[:, max_val_idx], aggr)
-        pw_dists[
-            min_val_idxs,
-        ] = np.nan
+        pw_dists[min_val_idxs,] = np.nan
         mah_dists[min_val_idxs] = np.nan
         z[min_val_idxs] = np.mean(z[min_val_idxs], axis=0)
 
     min_val_idxs = np.unique(
         np.argwhere(~np.isnan(pw_dists))[:, 0]
     )  # get idx of remaining non-nan values
-    z[min_val_idxs,] = z[min_val_idxs,].mean(
-        axis=0
-    )  # merge w above
+    z[min_val_idxs,] = z[min_val_idxs,].mean(axis=0)  # merge w above
 
     mat = (z * data.std().to_numpy()) + data.mean().to_numpy()
 

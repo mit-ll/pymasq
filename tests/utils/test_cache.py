@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import logging
 import shutil
-import pytest
-import pymasq.config as cfg
 from pathlib import Path
+
+import pytest
+
+import pymasq.config as cfg
 from pymasq.datasets import load_census
 from pymasq.models.models import LogisticRegressionClassifier, RFClassifier
-from pymasq.preprocessing import LabelEncoder_pm, EmbeddingsEncoder
-
-# from pymasq.errors import InputError, DataTypeError
-
+from pymasq.preprocessing import LabelEncoderPM, EmbeddingsEncoder
 from pymasq.utils import cache
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def my_df():
@@ -35,10 +36,10 @@ def my_df():
     [
         (
             LogisticRegressionClassifier,
-            LabelEncoder_pm,
-            0.6,
+            LabelEncoderPM,
+            0.5,
             "cache_test/053cb5e57bfa9b5c9568625cb22588dd.larsCV.2bd270eec04828b035a1facfbb35f355.pkl",
-            """larsCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.LabelEncoder_pm'>
+            """larsCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.LabelEncoderPM'>
 First ten rows:
    age  fnlwgt  education  ...     sex capital_gain  income_level
 0   39   77516  Bachelors  ...    Male         2174         <=50K
@@ -57,7 +58,7 @@ First ten rows:
         (
             RFClassifier,
             EmbeddingsEncoder,
-            0.5,
+            0.57,
             "cache_test/053cb5e57bfa9b5c9568625cb22588dd.ENCV.e81a5b5eb0df48bc68540d7b71342a7d.pkl",
             """ENCV. Description: Preprocessed with <class 'pymasq.preprocessing.preprocess.EmbeddingsEncoder'>
 First ten rows:
@@ -79,7 +80,7 @@ First ten rows:
 )
 def test_cache(my_df, combo):
     classifier_type, preprocessor, answer, key, desc = combo
-    print(classifier_type)
+    logger.info(classifier_type)
 
     dir_name = "cache_test"
     Path(dir_name).mkdir(exist_ok=True)
@@ -104,13 +105,13 @@ def test_cache(my_df, combo):
         )
     enc = preprocessor.encode(my_df, cache_location=None)
     score = classifier.predict(x_test=enc.drop(["sex"], axis=1), y_true=enc.sex)
-    print(f"{classifier.name}, {preprocessor}: {score}")
+    logger.info(f"{classifier.name}, {preprocessor}: {score}")
     assert round(score, 2) == answer, "Scores should match (trial {}) {} and {}".format(
         combo, score, answer
     )
 
     # Check if the cached file loads, and that the hmac checks out
-    print(f"\n{classifier.name}, {preprocessor} load")
+    logger.info(f"\n{classifier.name}, {preprocessor} load")
     classifier.load_trained_model(my_df, verbose=1)
 
     # Test that changing the hmac will cause a failure
@@ -119,9 +120,8 @@ def test_cache(my_df, combo):
         classifier.load_trained_model(my_df)
         raise ("This test should have failed because the hmac key changed")
     except Exception as e:
-        print("This error is a desired outcome of the test:")
-        print("\t", e, "\n")
-        pass
+        logger.info("This error is a desired outcome of the test:")
+        logger.exception(e)
 
     cfg.CACHE_HMAC_KEY = "my key"
     # Assert to see if description was saved

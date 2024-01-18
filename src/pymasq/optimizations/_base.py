@@ -1,24 +1,25 @@
 import copy
 import inspect
-import numpy as np
-import pandas as pd
+import logging
 from abc import abstractmethod
-
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-# import pymasq
-from pymasq import BEARTYPE
+import numpy as np
+import pandas as pd
+
 import pymasq.mitigations as mits
 import pymasq.metrics as mets
-
+from pymasq import BEARTYPE
+from pymasq.config import DEFAULT_SEED
 from pymasq.errors import (
     SumNotEqualToOneError,
     NotInRangeError,
     LessThanZeroError,
     NoMutationAvailableError,
 )
-import sys
 
+logger = logging.getLogger(__name__)
+rg = np.random.Generator(np.random.PCG64(DEFAULT_SEED))
 
 class OptimizationBase:
     """Base class for the optimization algorithms.
@@ -106,7 +107,6 @@ class OptimizationBase:
         exit_on_error: bool = True,  # Don't change to False without considering impact on pytests.
         **kwargs,
     ):
-
         self.target = target
         self.mutations = mutations
         self.metrics = metrics
@@ -136,12 +136,12 @@ class OptimizationBase:
                 f"A probability `p` must be defined for each mutation in `mutations`. (Received: {mutations})."
             )
         prob_sum = sum(probs)
-        if prob_sum == 0.0:
+        if np.isclose(prob_sum, 0.0, rtol=1e-09, atol=1e-09):
             probs = self._distribute(len(mutations))
             self.mutations = [
                 dict(m, **{"p": probs[i]}) for i, m in enumerate(mutations)
             ]
-        elif round(prob_sum, 5) != 1.0:
+        elif not np.isclose(round(prob_sum, 5), 1.0, rtol=1e-09, atol=1e-09):
             raise SumNotEqualToOneError(
                 f"Mitigation probabilities must sum to 1. (Received: {prob_sum})"
             )
@@ -152,13 +152,13 @@ class OptimizationBase:
                 f"An importance weighting `weight` must be defined for each metric in `metrics`. (Received: {metrics})"
             )
         weight_sum = sum(weights)
-        if weight_sum == 0.0:
+        if np.isclose(weight_sum, 0.0, rtol=1e-09, atol=1e-09):
             weights = self._distribute(len(metrics))
             [
                 v.update({"weight": weights[i]})
                 for i, v in enumerate(self.metrics.values())
             ]
-        elif weight_sum != 1.0:
+        elif not np.isclose(weight_sum, 1.0, rtol=1e-09, atol=1e-09):
             raise SumNotEqualToOneError(
                 f"Metric importance weightings must sum to 1. (Received: {weight_sum})"
             )
@@ -167,7 +167,7 @@ class OptimizationBase:
         if not self.reuse_mutations and self.iters > n_mutations:
             self.iters = n_mutations
             if self.verbose:
-                print(
+                logger.info(
                     ">>> [Info]: The number of iterations (%i)" % (iters),
                     "cannot exceed the number of mutations specified (%i)"
                     % (n_mutations),
@@ -204,7 +204,9 @@ class OptimizationBase:
             except KeyError:
                 sums.append(0.0)
         # if n_defined == 0, then none were defined
-        if n_defined != 0.0 and n_defined != len(values):
+        if not np.isclose(n_defined, 0.0, rtol=1e-09, atol=1e-09) and n_defined != len(
+            values
+        ):
             # TODO: future iterations should distribute missing values and/or normalize
             return None
         return sums
@@ -249,7 +251,7 @@ class OptimizationBase:
             A dataframe with the records of each dataframe, mutation, and fitness value accross the optimization
         """
         if self.verbose:
-            print("[Starting ...]")
+            logger.info("[Starting ...]")
 
         self._target = self.target.copy()
         self._iters = self.iters
@@ -259,7 +261,7 @@ class OptimizationBase:
         target, fit, logbook = self._optimize()  # algo-specific
 
         if self.verbose:
-            print("[... Search Complete]")
+            logger.info("[... Search Complete]")
 
         if self.progress_reporter:
             self.progress_reporter(1.0)
@@ -310,7 +312,7 @@ class OptimizationBase:
                 func = getattr(mets, func)
 
             if self.verbose >= 2:
-                print("\t[Evaluation]: %s" % (func))
+                logger.info("\t[Evaluation]: %s" % (func))
 
             params = copy.deepcopy(args.get("params", {}))
 
@@ -337,7 +339,7 @@ class OptimizationBase:
                     raise
                 else:
                     if self.verbose >= 2:
-                        print(f"[Warning] exception {func.__name__}: {e}")
+                        logger.info(f"[Warning] exception {func.__name__}: {e}")
                     raise
             fitnesses.append((func.__name__, value, args["weight"]))
 
@@ -401,7 +403,7 @@ class OptimizationBase:
 
         if not self.reuse_mutations and not mutations:
             if self.verbose:
-                print(
+                logger.info(
                     ">>> [NOOP] No mutations to apply (consider changing `reuse_mutations`)."
                 )
             return target, {}  # NOOP; all mitigations used and removed
@@ -409,7 +411,7 @@ class OptimizationBase:
         mut = None
         if self.randomize_mutations:
             probs = [v["p"] for v in mutations]
-            mut = np.random.choice(mutations, p=probs)
+            mut = rg.choice(mutations, p=probs)
             if not self.reuse_mutations and mutations:
                 # redistribute according to initial weighting
                 mut_idx = mutations.index(mut)
@@ -433,13 +435,15 @@ class OptimizationBase:
             func = getattr(mits, func)
 
         if self.verbose >= 2:
-            print("\t[Mutation]: %s" % (func), args)
+            logger.info("\t[Mutation]: %s" % (func), args)
 
         try:
             result = func(target, **args)
         except Exception as e:
             if self.verbose >= 2:
-                print(f"[Warning] mutation {func.__name__} failed with args:={args}")
+                logger.info(
+                    f"[Warning] mutation {func.__name__} failed with args:={args} and error: {e}"
+                )
             raise
         if isinstance(result, pd.Series):
             col_args = args.get("col", args.get("cols", None))
@@ -540,4 +544,4 @@ class Logbook:
         """
         record = self._pretty_values(record)
         df = pd.DataFrame.from_records(record)
-        self.log = self.log.append(df, ignore_index=True)
+        self.log = self.log._append(df, ignore_index=True)

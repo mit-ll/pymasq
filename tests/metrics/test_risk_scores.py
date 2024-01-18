@@ -28,6 +28,7 @@ def my_df():
 
 LETTER_SET = ["A", "B", "C", "A", "B", "A", "C", "C", "B"]
 
+true_assert_statement: str = "Should be True"
 
 @pytest.fixture
 def letter_df():
@@ -39,7 +40,7 @@ def test_l_diversity_all_same():
     Tests l-diversity function
     """
     df = generate_l_diverse_table(2)
-    assert l_diversity(df, "sensitive", 3) == 1.0, "Should be True"
+    assert l_diversity(df, "sensitive", 3) == pytest.approx(1.0), true_assert_statement
 
 
 def test_l_diversity_variety():
@@ -47,7 +48,7 @@ def test_l_diversity_variety():
     Tests l-diversity function
     """
     df = generate_l_diverse_table([2, 3, 3, 2, 2])
-    assert l_diversity(df, "sensitive", 2) == 0.6, "Should be True"
+    assert l_diversity(df, "sensitive", 2) == pytest.approx(0.6), true_assert_statement
 
 
 def test_t_closeness_num():
@@ -70,7 +71,7 @@ def test_t_closeness_num():
     assert (
         t_closeness(tc_table, "sensitive", test=True, datatype="numeric")
         == expected_result
-    ), "Should be True"
+    ), true_assert_statement
 
 
 def test_t_closeness_cat():
@@ -93,7 +94,7 @@ def test_t_closeness_cat():
     assert (
         t_closeness(tc_table, "sensitive", test=True, datatype="categorical")
         == expected_result
-    ), "Should be True"
+    ), true_assert_statement
 
 
 def test_t_closeness():
@@ -102,8 +103,8 @@ def test_t_closeness():
     """
     tc_table = generate_t_close_table(LETTER_SET)
     assert (
-        t_closeness(tc_table, "sensitive", datatype="categorical", t=0.0) == 1.0
-    ), "Should be True"
+        t_closeness(tc_table, "sensitive", datatype="categorical", t=0.0) == pytest.approx(1.0)
+    ), true_assert_statement
 
 
 def test_beta_likeness_1(letter_df):
@@ -119,7 +120,7 @@ def test_beta_likeness_2(letter_df):
     Tests beta-likeness on a toy dataset with a very small beta (any information gain should fail)
     """
     assert (
-        beta_likeness(letter_df, "sensitive", beta=1e-9) == 4.0 / 9.0
+        beta_likeness(letter_df, "sensitive", beta=1e-9) == pytest.approx(4.0 / 9.0)
     ), "Should fail beta likeness on the 2 A's in EC2 and 2 C's in EC3"
 
 
@@ -158,7 +159,7 @@ def test_auc_score_1(my_df, method, preprocessor):
             preprocessor=preprocessor,
             **kwargs,
         )
-        == 1.0
+        == pytest.approx(1.0)
     ), "Result should be equal to 1.0 (i.e. True)"
 
 
@@ -186,7 +187,7 @@ def test_auc_score_2(my_df, method, preprocessor):
         ),
         3,
     )
-    assert score == 1.0, "Result should be equal to 1.0 (i.e. True)"
+    assert score == pytest.approx(1.0), "Result should be equal to 1.0 (i.e. True)"
 
 
 answer_key = {

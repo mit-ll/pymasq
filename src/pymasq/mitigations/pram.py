@@ -1,12 +1,13 @@
+import logging
+from typing import Dict, List, Optional, Union
+
 import pandas as pd
 import numpy as np
 
-from typing import Dict, List, Optional, Union
-
 from pymasq import BEARTYPE
 from pymasq.config import (
+    DEFAULT_SEED,
     FORMATTING_ON_OUTPUT,
-    FORMATTING_IGNORE_DTYPES,
 )
 from pymasq.errors import InputError, NotInRangeError
 from pymasq.mitigations.utils import _is_identical
@@ -15,6 +16,9 @@ from pymasq.utils import formatting
 
 __all__ = ["pram"]
 
+logger = logging.getLogger(__name__)
+
+rg = np.random.default_rng(DEFAULT_SEED)
 
 def __calc_transition_matrix(
     data: pd.Series,
@@ -40,7 +44,7 @@ def __calc_transition_matrix(
         pandas.DataFrame with transition probabilities for each category.
     """
     ncats = len(cats)
-    runif = np.random.uniform(low=probs, size=ncats)
+    runif = rg.uniform(low=probs, size=ncats)
     tri = (1 - runif) / (ncats - 1)
 
     prob_mat = np.zeros(shape=(ncats, ncats))
@@ -49,13 +53,13 @@ def __calc_transition_matrix(
 
     cat_codes = data.cat.codes + 1
     sum_cats = np.nansum(cat_codes)
-    freqs = data.value_counts() / sum_cats  # scaled category frequencies
+    freqs: pd.Series = data.value_counts() / sum_cats  # scaled category frequencies
 
     scaled_prob_mat = prob_mat.copy()
     for i in range(ncats):
         s = sum(freqs * prob_mat[:, i])
         for j in range(ncats):
-            scaled_prob_mat[i, j] = prob_mat[j, i] * (freqs[j] / s)
+            scaled_prob_mat[i, j] = prob_mat[j, i] * (freqs.iloc[j] / s)
 
     trans_probs = prob_mat @ scaled_prob_mat
     scaled_trans_probs = alpha * trans_probs + (1 - alpha) * np.identity(ncats)
@@ -89,12 +93,10 @@ def __randomization(
     for cat in cats:
         idxs = data.index.where(data == cat).dropna()
         if len(idxs) > 0:
-            d_pramed[idxs] = np.random.choice(
+            d_pramed[idxs] = rg.choice(
                 cats,
                 len(idxs),
-                p=trans.loc[
-                    cat,
-                ],
+                p=trans.loc[cat,],
             )
 
     return d_pramed
@@ -300,9 +302,9 @@ def pram(
 
     if len(perturb_cols) != n_pc:
         if len(perturb_cols) == 0:
-            raise InputError(f"All values of `data` cannot be NaNs or identical.")
+            raise InputError("All values of `data` cannot be NaNs or identical.")
         else:
-            print(
+            logger.info(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
 

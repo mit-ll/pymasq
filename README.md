@@ -1,7 +1,7 @@
 # PyMASq
 
 <p align="center">
-    <img src="./assets/images/masq_logo_light.svg" width="150px"/>
+    <img src="./assets/images/masq_logo_light.svg" width="150px" alt="MASq Logo"/>
 </p>
 
 ## Python-based Mitigation Application and Assessment (MASq)
@@ -32,9 +32,9 @@ cd pymasq
 ### Installing into a Conda Environment
 
 ```sh
-conda create -n masq python=3.8 -y
+conda create -n masq python=3.10 -y
 conda activate masq
-pip install .
+pip install -e .
 ```
 
 To generate the docs
@@ -44,7 +44,7 @@ python -m pip install -r ./doc-requirements.txt
 ```
 
 <p align="center">
-    <img src="./assets/images/Lincoln_Lab_icon.png" width="150px"/>
+    <img src="./assets/images/Lincoln_Lab_icon.png" width="150px" alt="MIT Lincoln Lab Logo"/>
 </p>
 
 ## Distribution Statement

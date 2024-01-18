@@ -43,7 +43,7 @@ def truncate_by_match(
     Parameters
     ----------
     data : DataFrame or Series
-        The data to be modified.     
+        The data to be modified.
     match : str
         The string to search for.
     keep_before : bool, optional (Default: True)
@@ -70,7 +70,7 @@ def truncate_by_match(
     2  Private           HS-grad    Not-in-family
     3  Private           11th       Husband
     4  Private           Bachelors  Wife
-    
+
     >>> truncate_by_match(df[['workclass', 'education', 'relationship']], match='a')
         workclass        education  relationship
     0  St                B          Not-in-f
@@ -87,6 +87,9 @@ def truncate_by_match(
         return series.apply(
             lambda x: re.split(re.escape(match), x, 1, flags=re.IGNORECASE)
         ).str[0 if keep_before else -1]
+    
+    if isinstance(data, pd.Series):
+        return pd.DataFrame(_truncate_by_match(data, match=match, ignore_case=ignore_case, keep_before=keep_before))
 
     return data.apply(
         _truncate_by_match,
@@ -140,7 +143,7 @@ def truncate_by_index(
     2  Private           HS-grad    Not-in-family
     3  Private           11th       Husband
     4  Private           Bachelors  Wife
-    
+
     >>> truncate_by_index(df[['workclass', 'education', 'relationship']], idx=1, trim_from='both')
         workclass      education  relationship
     0  tate-go         achelor    ot-in-famil
@@ -162,12 +165,17 @@ def truncate_by_index(
         raise InputError(
             f"`trim_from` must be one of ['start', 'end', 'both', None]. (Received: {trim_from})"
         )
+    
+    if isinstance(data, pd.Series):
+        return pd.DataFrame(_truncate_by_index(data, trim_from=trim_from, idx=idx, end=end))
 
     return data.apply(_truncate_by_index, trim_from=trim_from, idx=idx, end=end)
 
 
 def truncate(
-    data: Union[pd.DataFrame, pd.Series], method: str = "index", **kwargs,
+    data: Union[pd.DataFrame, pd.Series],
+    method: str = "index",
+    **kwargs,
 ) -> pd.DataFrame:
     """Truncate strings by index or after matching a speficic substring.
 
@@ -235,7 +243,7 @@ def truncate(
     2  Private           HS-grad    Not-in-family
     3  Private           11th       Husband
     4  Private           Bachelors  Wife
-    
+
     >>> truncate(df, cols=['workclass', 'education', 'relationship'], method='index', idx=1, trim_from='both')
         workclass      education  relationship
     0  tate-go         achelor    ot-in-famil

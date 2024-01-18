@@ -1,5 +1,7 @@
+import logging
 from time import time
 from typing import Tuple, List, Union, Optional
+
 import numpy as np
 import pandas as pd
 from bpemb import BPEmb
@@ -16,10 +18,12 @@ from pymasq.metrics import utils
 from pymasq import BEARTYPE
 
 # This file contains two children of PreprocessorBase
-#  1. LabelEncoder_pm
+#  1. LabelEncoderPM
 #  2. EmbeddingsEncoder
 
 #################
+
+logger = logging.getLogger(__name__)
 
 REDUCTION_METHODS = {
     "pca": PCA,
@@ -30,7 +34,7 @@ REDUCTION_METHODS = {
 }
 
 
-class LabelEncoder_pm(PreprocessorBase):
+class LabelEncoderPM(PreprocessorBase):
     """
     This class manages an instance of sklearn's LabelEncoder.
     Encodes categorical data only, as integers.
@@ -38,7 +42,6 @@ class LabelEncoder_pm(PreprocessorBase):
 
     def __init__(self):
         super().__init__()
-        pass
 
     @staticmethod
     @BEARTYPE
@@ -84,7 +87,7 @@ class LabelEncoder_pm(PreprocessorBase):
     @staticmethod
     @BEARTYPE
     def encode_both(
-        df_A: pd.DataFrame, df_B: pd.DataFrame, **kwargs
+        df_a: pd.DataFrame, df_b: pd.DataFrame, **kwargs
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Takes two dataframes and uses sklearn's LabelEncoder on categorical columns only to relabel
@@ -100,28 +103,28 @@ class LabelEncoder_pm(PreprocessorBase):
 
         Parameter
         ---------
-        df_A: pdf.DataFrame:
+        df_a: pdf.DataFrame:
             The data frame to encode.
-        df_B: pdf.DataFrame:
+        df_b: pdf.DataFrame:
             The data frame to encode.
 
         Returns
         -------
         Tuple[pd.DataFrame, pd.DataFrame]:
             pd.DataFrame
-                df_A data frame now preprocessed so that categorical data is relabeled as integers.
+                df_a data frame now preprocessed so that categorical data is relabeled as integers.
             pd.DataFrame
-                df_B data frame now preprocessed so that categorical data is relabeled as integers.
+                df_b data frame now preprocessed so that categorical data is relabeled as integers.
 
-        Column order remains consistent with original dataframes. df_A and df_B are not modified.
+        Column order remains consistent with original dataframes. df_a and df_b are not modified.
 
         """
         le = skLabelEncoder()
         # make a copy
-        df_a = df_A.copy()
-        df_b = df_B.copy()
-        if set(df_a.columns) != set(df_B.columns):
-            raise InputError("df_A and df_B must have same columns")
+        df_a = df_a.copy()
+        df_b = df_b.copy()
+        if set(df_a.columns) != set(df_b.columns):
+            raise InputError("df_a and df_b must have same columns")
         col_order = df_a.columns.tolist()
 
         # join together; mark each so we can separate again later
@@ -132,7 +135,7 @@ class LabelEncoder_pm(PreprocessorBase):
         df_b[class_col] = 1
 
         # append b to a; and then split out the categorical (non-numerical) columns
-        cat_cols = df_a.append(df_b).select_dtypes(exclude=["number"])
+        cat_cols = df_a._append(df_b).select_dtypes(exclude=["number"])
         # cast everything to string in case we have a mix of floats and string,
         # otherwise LabelEncoder will choke/die.
         # This should never happen, but does in our pytests, so who knows.
@@ -141,7 +144,7 @@ class LabelEncoder_pm(PreprocessorBase):
         )
 
         # append b to a; and then split out the non-categorical (numerical) columns
-        num_cols = df_a.append(df_b).select_dtypes(include=["number"])
+        num_cols = df_a._append(df_b).select_dtypes(include=["number"])
         # concatenate, but relabel the cat_cols first
         if cat_cols.empty:
             both = num_cols
@@ -150,10 +153,10 @@ class LabelEncoder_pm(PreprocessorBase):
                 [cat_cols.apply(le.fit_transform), num_cols], join="outer", axis=1
             )
         # split up again, and drop the extra column
-        df_A_enc = both.loc[both[class_col] == 0].drop(class_col, axis=1)
-        df_B_enc = both.loc[both[class_col] == 1].drop(class_col, axis=1)
+        df_a_enc = both.loc[both[class_col] == 0].drop(class_col, axis=1)
+        df_b_enc = both.loc[both[class_col] == 1].drop(class_col, axis=1)
 
-        return df_A_enc[col_order], df_B_enc[col_order]
+        return df_a_enc[col_order], df_b_enc[col_order]
 
 
 #################
@@ -193,7 +196,6 @@ class EmbeddingsEncoder(PreprocessorBase):
 
     def __init__(self):
         super().__init__()
-        pass
 
     @staticmethod
     def sentence_bpe_vectors(
@@ -229,8 +231,8 @@ class EmbeddingsEncoder(PreprocessorBase):
     @staticmethod
     @BEARTYPE
     def encode_both(
-        df_A: pd.DataFrame,
-        df_B: pd.DataFrame,
+        df_a: pd.DataFrame,
+        df_b: pd.DataFrame,
         sensitive_col: Optional[Union[List, str]] = None,
         seed: int = 1234,
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -240,10 +242,10 @@ class EmbeddingsEncoder(PreprocessorBase):
 
         Parameters
         ----------
-        df_A : pd.DataFrame
+        df_a : pd.DataFrame
             data frame containing the binary label column and the other variables
             of interest
-        df_B : pd.DataFrame
+        df_b : pd.DataFrame
             data frame containing the binary label column and the other variables
             of interest
         sensitive_col : str or List[str] (Default: None)
@@ -255,20 +257,20 @@ class EmbeddingsEncoder(PreprocessorBase):
         -------
         Tuple:
             pd.DataFrame
-                The encoded version of df_A
+                The encoded version of df_a
             pd.DataFrame
-                The encoded version of df_B
-        df_A and df_B are not modified.
+                The encoded version of df_b
+        df_a and df_b are not modified.
         """
 
-        if set(df_A.columns) != set(df_B.columns):
-            raise InputError("df_A and df_B must have same columns.")
+        if set(df_a.columns) != set(df_b.columns):
+            raise InputError("df_a and df_b must have same columns.")
 
         # pick a column name that isn't in the dataset
-        class_col = utils.uniq_col_name(df_A)
+        class_col = utils.uniq_col_name(df_a)
         # make one dataframe for pre-processing, otherwise preprocess_data won't be consistent
-        orig_df_copy = df_A.copy()
-        mod_df_copy = df_B.copy()
+        orig_df_copy = df_a.copy()
+        mod_df_copy = df_b.copy()
         orig_df_copy[class_col] = 0
         mod_df_copy[class_col] = 1
         comb_for_proprocessing = pd.concat(
@@ -293,7 +295,6 @@ class EmbeddingsEncoder(PreprocessorBase):
             .drop([class_col], axis=1)
             .reset_index(drop=True)
         )
-        # return both
         return orig_df_proc, mod_df_proc
 
     @staticmethod
@@ -384,7 +385,7 @@ class EmbeddingsEncoder(PreprocessorBase):
             dropped_cols.extend(ignore_columns)
 
         if sensitive_col or ignore_columns:
-            input_data = df.drop(dropped_cols, 1).copy()
+            input_data = df.drop(columns=dropped_cols, axis=1).copy()
         else:
             input_data = df.copy()
 
@@ -511,12 +512,12 @@ class EmbeddingsEncoder(PreprocessorBase):
             cache_location = Path(cache_location)
 
         if verbose > 0:
-            print("Preprocessing Data...")
+            logger.info("Preprocessing Data...")
             start = time()
 
         cache_location.mkdir(parents=True, exist_ok=True)
         if verbose > 0:
-            print("cache_location for preprocess is: " + str(cache_location))
+            logger.info("cache_location for preprocess is: " + str(cache_location))
 
         # Remove the sensitive column and other columns from consideration.
         # We'll add them back in later.
@@ -545,10 +546,10 @@ class EmbeddingsEncoder(PreprocessorBase):
         ignore_col_data = None
 
         if verbose > 0:
-            print("Splitting Data into Numerical and Categorical Data...")
+            logger.info("Splitting Data into Numerical and Categorical Data...")
 
         if sensitive_col or ignore_columns:
-            input_data = df.drop(dropped_cols, 1).copy()
+            input_data = df.drop(columns=dropped_cols, axis=1).copy()
             ignore_col_data = df.loc[:, ignore_columns].copy()
         else:
             input_data = df.copy()
@@ -557,7 +558,7 @@ class EmbeddingsEncoder(PreprocessorBase):
         binary = input_data.loc[:, binary_columns]
         if binary_columns:
             if verbose > 0:
-                print("Imputing Missing Binary Data...")
+                logger.info("Imputing Missing Binary Data...")
             simple_imputer = SimpleImputer(strategy="most_frequent")
             binary = pd.DataFrame(
                 simple_imputer.fit_transform(input_data[binary_columns]),
@@ -568,7 +569,7 @@ class EmbeddingsEncoder(PreprocessorBase):
         numerical_imputed_normalized = pd.DataFrame()
         if numerical_columns:
             if verbose > 0:
-                print("Imputing Missing Numerical Data...")
+                logger.info("Imputing Missing Numerical Data...")
             simple_imputer = SimpleImputer(strategy="mean")
             simple_imputer.fit(input_data[numerical_columns])
             numerical_imputed = pd.DataFrame(
@@ -596,7 +597,7 @@ class EmbeddingsEncoder(PreprocessorBase):
         categorical_embeddings = []
         if categorical_columns:
             if verbose > 0:
-                print("Imputing Missing Categorical Data...")
+                logger.info("Imputing Missing Categorical Data...")
             simple_imputer = SimpleImputer(fill_value="None", strategy="constant")
             simple_imputer.fit(input_data[categorical_columns])
             categorical_imputed = pd.DataFrame(
@@ -615,7 +616,7 @@ class EmbeddingsEncoder(PreprocessorBase):
                     columns=numerical_columns,
                 )
             if verbose > 0:
-                print("Creating/Loading Categorical Data Embeddings...")
+                logger.info("Creating/Loading Categorical Data Embeddings...")
 
             new_embeddings = embed_entities(
                 target_df=y,
@@ -638,7 +639,7 @@ class EmbeddingsEncoder(PreprocessorBase):
         textual_embeddings = []
         if textual_columns:
             if verbose > 0:
-                print("Imputing Missing Textual Data...")
+                logger.info("Imputing Missing Textual Data...")
             simple_imputer = SimpleImputer(
                 missing_values="", fill_value="None", strategy="constant"
             )
@@ -649,10 +650,10 @@ class EmbeddingsEncoder(PreprocessorBase):
                 columns=textual_columns,
             )
             if verbose > 0:
-                print("Creating Textual Data Embeddings...")
+                logger.info("Creating Textual Data Embeddings...")
             for col in textual_columns:
                 if verbose > 0:
-                    print("\t" + col)
+                    logger.info("\t" + col)
                 sents = textual_imputed[col].str.lower().str.replace("[!?:/]", " ")
 
                 textual_embedding_array = EmbeddingsEncoder.sentence_bpe_vectors(
@@ -671,21 +672,21 @@ class EmbeddingsEncoder(PreprocessorBase):
                 textual_embeddings.append(textual_embedding)
 
         if verbose > 0:
-            print("Preprocessing took: {} seconds".format(round(time() - start, 2)))
+            logger.info("Preprocessing took: {} seconds".format(round(time() - start, 2)))
 
         if sensitive_col:
             return pd.concat(
                 [y, ignore_col_data, numerical_imputed_normalized, binary]
                 + categorical_embeddings
                 + textual_embeddings,
-                1,
+                axis=1,
             )
 
         return pd.concat(
             [ignore_col_data, numerical_imputed_normalized, binary]
             + categorical_embeddings
             + textual_embeddings,
-            1,
+            axis=1,
         )
 
 
@@ -693,5 +694,5 @@ class EmbeddingsEncoder(PreprocessorBase):
 preprocessor_fn = {
     None: PreprocessorBase,
     "embeddings": EmbeddingsEncoder,
-    "label_encode": LabelEncoder_pm,
+    "label_encode": LabelEncoderPM,
 }

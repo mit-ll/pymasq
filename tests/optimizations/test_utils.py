@@ -8,7 +8,6 @@ from pymasq.optimizations import IterativeSearch
 
 
 def test_apply_and_evaluate():
-
     # This checks that the output of apply_and_evaluate is the same as
     # if we called iterativeSearch(), which performs the metrics at each step
 

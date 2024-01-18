@@ -1,4 +1,3 @@
-import math
 import pandas as pd
 
 from typing import List, Union, Optional
@@ -29,14 +28,14 @@ def rounding(
     cols: Optional[Union[List, str, int]] = None,
     keep_dtypes: bool = True,
 ) -> pd.DataFrame:
-    """ Round numerical values to the nearest place value.
+    """Round numerical values to the nearest place value.
 
     Round to the nearest whole number or decimal. Values are always rounded up.
 
     Parameters
     ----------
     data : DataFrame, Series, or array_like
-        The data to be modified.    
+        The data to be modified.
     magnitude : int (Default: 0)
         The place value to round to.
     round_decimal : bool (Default: False)
@@ -54,7 +53,7 @@ def rounding(
 
     Examples
     --------
-    >>> df = pd.DataFrame(np.random.uniform(0.0, 1000, (10,3)))    
+    >>> df = pd.DataFrame(np.random.uniform(0.0, 1000, (10,3)))
        0           1           2
     0  790.885012  378.955986  598.524492
     1  396.506198  416.688230  801.133469

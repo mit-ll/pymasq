@@ -1,3 +1,5 @@
+import logging
+
 from pymasq.config import CATEGORY_THRESHOLD
 import pandas as pd
 
@@ -7,6 +9,7 @@ from pymasq import BEARTYPE
 
 __all__ = ["uniq_col_name", "_get_model_task"]
 
+logger = logging.getLogger(__name__)
 
 @BEARTYPE
 def uniq_col_name(df, prefix: str = "class") -> str:
@@ -61,7 +64,7 @@ def _get_model_task(
     elif is_numeric_dtype(sensitive_col):
         return "regression"
     else:
-        print(
+        logger.info(
             "The number of unique categories: {} is greater than the threshold of {} and is dtype {}".format(
                 num_unique, cat_threshold, sensitive_col.dtype
             )

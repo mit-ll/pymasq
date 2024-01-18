@@ -1,6 +1,6 @@
 from typing import Tuple
 import pandas as pd
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Union
 
 from pymasq import BEARTYPE
 from pymasq.optimizations import IterativeSearch

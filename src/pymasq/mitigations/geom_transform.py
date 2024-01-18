@@ -1,4 +1,5 @@
 import itertools
+import logging
 
 import numpy as np
 import pandas as pd
@@ -7,14 +8,15 @@ from scipy import stats
 from typing import List, Optional, Union
 
 from pymasq import BEARTYPE
-from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES
+from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES, rg
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
-from pymasq.utils import formatting, validate_numeric
+from pymasq.utils import formatting
 
 
 __all__ = ["geom_transform"]
 
+logger = logging.getLogger(__name__)
 
 SKIP_ROTATION_ANGLES = [30, 45, 60, 90, 120, 135, 150, 180]
 MAX_DEGREES = 180
@@ -127,7 +129,8 @@ def geom_transform(
 
     Examples
     --------
-    >>> df = pd.DataFrame(np.random.random_integers(0, 100, (10,3)))
+    >>> rg = np.random.default_rng(1234)
+    >>> df = pd.DataFrame(rg.integers(0, 100, (10,3)))
         0   1   2   3
     0  72  13  92  91
     1  55  63  65  76
@@ -229,7 +232,7 @@ def geom_transform(
                 f"The values of `data[{perturb_cols}]` are all identical and therefore cannot be used for correlation."
             )
         else:
-            print(
+            logger.info(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
     elif len(perturb_cols) == 1:
@@ -261,7 +264,7 @@ def geom_transform(
 
     # Translation Matrix Generation/Application
     idtrans = np.eye(ncols + 1)  # add a new row for the homogeneous coordinate
-    idtrans[:ncols, ncols:] = np.random.uniform(size=(ncols, 1))
+    idtrans[:ncols, ncols:] = rg.uniform(size=(ncols, 1))
 
     # multidim translations; adding ones column for homogeneous coordinate
     multitrans = np.concatenate((bo, np.ones(shape=(bo.shape[0], 1))), axis=1)
@@ -279,19 +282,17 @@ def geom_transform(
 
     # Randomized expansion
     sign = np.sign(bo)
-    bo = np.add(abs(bo), abs(np.random.uniform(size=bo.shape) * magnitude))
+    bo = np.add(abs(bo), abs(rg.uniform(size=bo.shape) * magnitude))
     bo = (bo * sign).T
     bo = bo * data[perturb_cols].std().values + data[perturb_cols].mean().values
 
     shuff_idx = data.index
     if shuffle:
-        shuff_idx = np.random.choice(
+        shuff_idx = rg.choice(
             range(bo.shape[0]), size=(bo.shape[0]), replace=False
         )
 
-    data.loc[:, perturb_cols] = bo[
-        shuff_idx,
-    ]
+    data.loc[:, perturb_cols] = bo[shuff_idx,]
     if len(sensitive_col) != 0:
         data.loc[:, sensitive_col] = data.loc[shuff_idx, sensitive_col].reset_index(
             drop=True

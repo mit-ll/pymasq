@@ -1,15 +1,16 @@
+import logging
 import numpy as np
 import pandas as pd
 import pytest
 
-import pymasq
-
-pymasq.set_seed(10)
-
-from pymasq.mitigations import pram
-from pymasq.errors import InputError, NotInRangeError
+from pymasq.config import DEFAULT_SEED
 from pymasq.datasets import load_census
+from pymasq.errors import InputError, NotInRangeError
+from pymasq.mitigations import pram
 
+logger = logging.getLogger(__name__)
+
+rg = np.random.default_rng(DEFAULT_SEED)
 
 @pytest.fixture
 def my_df():
@@ -34,7 +35,7 @@ def my_numerical_df():
     nrows = 10
     max_val = 1000000
     return pd.DataFrame(
-        np.random.random_integers(0, max_val, (nrows, ncols)),
+        rg.integers(0, max_val, (nrows, ncols)),
         columns=[f"c{i}" for i in range(ncols)],
     )
 
@@ -92,7 +93,7 @@ def test_pram_probs_invalid_dict(my_df):
 
 
 def test_pram_probs_valid_dict(my_df):
-    """ Ensure that specifying probabilities results in that number of changes on average """
+    """Ensure that specifying probabilities results in that number of changes on average"""
     probs = dict(
         race=pd.DataFrame({"White": 0.5, "Black": 0.5}, index=["White", "Black"])
     )
@@ -113,7 +114,8 @@ def test_pram_probs_valid_dict(my_df):
 def test_pram_numerical_cast_to_categorical(my_numerical_df):
     try:
         pram(my_numerical_df)
-    except:
+    except Exception as e:
+        logger.exception(e)
         assert False, "Numerical dataframe should not have raised error."
 
 
@@ -124,25 +126,25 @@ def test_pram_returns_same_shapes(my_df):
 
 
 def test_pram_probs_equal_0(my_df):
-    """ at least 1 value changed """
+    """at least 1 value changed"""
     r = pram(my_df, probs=0)
     assert not all((r == my_df).all())
 
 
 def test_pram_probs_equal_1(my_df):
-    """ no change in data """
+    """no change in data"""
     r = pram(my_df, probs=1)
     assert all((r == my_df).all())
 
 
 def test_pram_alpha_equal_0(my_df):
-    """ no change in data """
+    """no change in data"""
     r = pram(my_df, alpha=0)
     assert all((r == my_df).all())
 
 
 def test_pram_alpha_equal_1(my_df):
-    """ at least 1 value changed """
+    """at least 1 value changed"""
     r = pram(my_df, alpha=1)
     assert not all((r == my_df).all())
 
