@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import logging
 import shutil
-import pytest
-import pymasq.config as cfg
 from pathlib import Path
+
+import pytest
+
+import pymasq.config as cfg
 from pymasq.datasets import load_census
 from pymasq.models.models import LogisticRegressionClassifier, RFClassifier
 from pymasq.preprocessing import LabelEncoderPM, EmbeddingsEncoder
 from pymasq.utils import cache
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def my_df():
@@ -76,7 +80,7 @@ First ten rows:
 )
 def test_cache(my_df, combo):
     classifier_type, preprocessor, answer, key, desc = combo
-    print(classifier_type)
+    logger.info(classifier_type)
 
     dir_name = "cache_test"
     Path(dir_name).mkdir(exist_ok=True)
@@ -101,13 +105,13 @@ def test_cache(my_df, combo):
         )
     enc = preprocessor.encode(my_df, cache_location=None)
     score = classifier.predict(x_test=enc.drop(["sex"], axis=1), y_true=enc.sex)
-    print(f"{classifier.name}, {preprocessor}: {score}")
+    logger.info(f"{classifier.name}, {preprocessor}: {score}")
     assert round(score, 2) == answer, "Scores should match (trial {}) {} and {}".format(
         combo, score, answer
     )
 
     # Check if the cached file loads, and that the hmac checks out
-    print(f"\n{classifier.name}, {preprocessor} load")
+    logger.info(f"\n{classifier.name}, {preprocessor} load")
     classifier.load_trained_model(my_df, verbose=1)
 
     # Test that changing the hmac will cause a failure
@@ -116,8 +120,8 @@ def test_cache(my_df, combo):
         classifier.load_trained_model(my_df)
         raise ("This test should have failed because the hmac key changed")
     except Exception as e:
-        print("This error is a desired outcome of the test:")
-        print("\t", e, "\n")
+        logger.info("This error is a desired outcome of the test:")
+        logger.exception(e)
 
     cfg.CACHE_HMAC_KEY = "my key"
     # Assert to see if description was saved

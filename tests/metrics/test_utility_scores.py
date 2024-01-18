@@ -1,4 +1,5 @@
-from random import sample, gauss, seed
+import logging
+from random import sample, gauss
 
 import pandas as pd
 import pytest
@@ -11,6 +12,7 @@ from pymasq.metrics import propensity_score, proportion_diff_score, jensen_shann
 params = [5000, 10000, 100000]
 seed = 1234
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session", params=params)
 def orig_bin_df(request):
@@ -116,7 +118,7 @@ def test_propensity_score_identical(my_df):
     """
     Tests propensity_score for identical data frames
     """
-    print()
+    logger.info()
     for classifier, pp in [
         ("logreg", ["embeddings", "label_encode"]),
         ("rfclass", ["embeddings", "label_encode"]),
@@ -143,7 +145,7 @@ def test_propensity_score_identical(my_df):
                     method=classifier,
                     preprocessor=preprocessor,
                 )
-            print(f"{classifier}/{preprocessor}: {round(score,2)}")
+            logger.info(f"{classifier}/{preprocessor}: {round(score,2)}")
             assert (
                 round(score, 2) <= 0.0
             ), f"{classifier}/{preprocessor}: Should be 0.0 but is round({score},2)={round(score,2)}"
@@ -185,7 +187,7 @@ def test_propensity_score_moderate_change(my_df):
                     method=classifier,
                     preprocessor=preprocessor,
                 )
-            print(f"{classifier}/{preprocessor}: {round(score,2)}")
+            logger.info(f"{classifier}/{preprocessor}: {round(score,2)}")
             exp = expected.pop()
             assert (
                 round(score, 2) == exp,

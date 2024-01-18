@@ -1,7 +1,8 @@
+import logging
+from typing import Dict, List, Optional, Union
+
 import pandas as pd
 import numpy as np
-
-from typing import Dict, List, Optional, Union
 
 from pymasq import BEARTYPE
 from pymasq.config import (
@@ -14,6 +15,8 @@ from pymasq.utils import formatting
 
 
 __all__ = ["pram"]
+
+logger = logging.getLogger(__name__)
 
 rg = np.random.default_rng(DEFAULT_SEED)
 
@@ -301,7 +304,7 @@ def pram(
         if len(perturb_cols) == 0:
             raise InputError("All values of `data` cannot be NaNs or identical.")
         else:
-            print(
+            logger.info(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
 

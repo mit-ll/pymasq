@@ -1,15 +1,14 @@
 import copy
 import inspect
-import numpy as np
-import pandas as pd
+import logging
 from abc import abstractmethod
-
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
+import numpy as np
+import pandas as pd
 
 import pymasq.mitigations as mits
 import pymasq.metrics as mets
-
 from pymasq import BEARTYPE
 from pymasq.config import DEFAULT_SEED
 from pymasq.errors import (
@@ -19,6 +18,7 @@ from pymasq.errors import (
     NoMutationAvailableError,
 )
 
+logger = logging.getLogger(__name__)
 rg = np.random.Generator(np.random.PCG64(DEFAULT_SEED))
 
 class OptimizationBase:
@@ -167,7 +167,7 @@ class OptimizationBase:
         if not self.reuse_mutations and self.iters > n_mutations:
             self.iters = n_mutations
             if self.verbose:
-                print(
+                logger.info(
                     ">>> [Info]: The number of iterations (%i)" % (iters),
                     "cannot exceed the number of mutations specified (%i)"
                     % (n_mutations),
@@ -251,7 +251,7 @@ class OptimizationBase:
             A dataframe with the records of each dataframe, mutation, and fitness value accross the optimization
         """
         if self.verbose:
-            print("[Starting ...]")
+            logger.info("[Starting ...]")
 
         self._target = self.target.copy()
         self._iters = self.iters
@@ -261,7 +261,7 @@ class OptimizationBase:
         target, fit, logbook = self._optimize()  # algo-specific
 
         if self.verbose:
-            print("[... Search Complete]")
+            logger.info("[... Search Complete]")
 
         if self.progress_reporter:
             self.progress_reporter(1.0)
@@ -312,7 +312,7 @@ class OptimizationBase:
                 func = getattr(mets, func)
 
             if self.verbose >= 2:
-                print("\t[Evaluation]: %s" % (func))
+                logger.info("\t[Evaluation]: %s" % (func))
 
             params = copy.deepcopy(args.get("params", {}))
 
@@ -339,7 +339,7 @@ class OptimizationBase:
                     raise
                 else:
                     if self.verbose >= 2:
-                        print(f"[Warning] exception {func.__name__}: {e}")
+                        logger.info(f"[Warning] exception {func.__name__}: {e}")
                     raise
             fitnesses.append((func.__name__, value, args["weight"]))
 
@@ -403,7 +403,7 @@ class OptimizationBase:
 
         if not self.reuse_mutations and not mutations:
             if self.verbose:
-                print(
+                logger.info(
                     ">>> [NOOP] No mutations to apply (consider changing `reuse_mutations`)."
                 )
             return target, {}  # NOOP; all mitigations used and removed
@@ -435,13 +435,13 @@ class OptimizationBase:
             func = getattr(mits, func)
 
         if self.verbose >= 2:
-            print("\t[Mutation]: %s" % (func), args)
+            logger.info("\t[Mutation]: %s" % (func), args)
 
         try:
             result = func(target, **args)
         except Exception as e:
             if self.verbose >= 2:
-                print(
+                logger.info(
                     f"[Warning] mutation {func.__name__} failed with args:={args} and error: {e}"
                 )
             raise

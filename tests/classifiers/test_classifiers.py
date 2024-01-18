@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-import shutil
+import logging
 import pytest
-import pymasq.config as cfg
+import shutil
 from pathlib import Path
+
+import pymasq.config as cfg
 from pymasq.datasets import load_census
 from pymasq.preprocessing import LabelEncoderPM, EmbeddingsEncoder
 from pymasq.models.models import (
@@ -12,6 +13,8 @@ from pymasq.models.models import (
     TpotClassifier,
     RFClassifier,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
@@ -43,7 +46,7 @@ def my_df():
 )
 def test_classifiers(my_df, combo):
     classifier_type, preprocessor, answer = combo
-    print(classifier_type)
+    logger.info(classifier_type)
     # check that the classifier gets the expected value given a set hmac key and set seed
 
     dir_name = "cache_test"
@@ -72,17 +75,17 @@ def test_classifiers(my_df, combo):
     # should make use of cache
     enc = preprocessor.encode(my_df, cache_location=dir_name, verbose=1)
 
-    print(type(enc.drop(["sex"], axis=1)))
-    print(type(enc.sex))
+    logger.info(type(enc.drop(["sex"], axis=1)))
+    logger.info(type(enc.sex))
     score = classifier.predict(x_test=enc.drop(["sex"], axis=1), y_true=enc.sex)
-    print(f"{classifier.name}, {preprocessor}: {score}")
+    logger.info(f"{classifier.name}, {preprocessor}: {score}")
     assert round(score, 2) == answer, "Scores should match (trial {}, {})".format(
         classifier_type, preprocessor
     )
 
     # Check if the cached file loads, and that the hmac checks out
-    print(f"\n{classifier.name}, {preprocessor} load")
+    logger.info(f"\n{classifier.name}, {preprocessor} load")
     classifier.load_trained_model(my_df, verbose=1)
 
-    print("removing cache")
+    logger.info("removing cache")
     shutil.rmtree(dir_name)

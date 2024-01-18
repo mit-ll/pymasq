@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Tuple
 
+import numpy as np
+
 # Directory where all embeddings and models will be cached
 CACHE_LOCATION: Path = Path("~/.cache/pymasq").expanduser()
 
@@ -26,6 +28,7 @@ REGRESSOR_MODELS: Tuple[str] = ("encv", "rfreg", "tpotreg", "larscv")
 CLASSIFIER_MODELS: Tuple[str] = ("logreg", "rfclass", "tpotclass")
 
 DEFAULT_LOGISITIC_REGRESSION_SOLVER: str = "saga"
+DEFAULT_MODEL_ITERATIONS: int = 1000
 
 # Byte Pair Encoding default language and dimensionality for vectors
 BPE_LANG: str = "en"
@@ -39,3 +42,5 @@ DEFAULT_SEED: int = 1234
 
 # Default number of parallel processors, set to -1 for all processors
 DEFAULT_N_JOBS: int = -1
+
+rg = np.random.default_rng(DEFAULT_SEED)

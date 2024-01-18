@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import logging
+import hashlib
+
 import pytest
 
-import hashlib
-import numpy as np
-
-from pymasq.config import DEFAULT_SEED
+from pymasq.config import rg
 from pymasq.datasets import load_census
 from pymasq.mitigations import hashing
 
 
 ALGORITHMS = hashlib.algorithms_guaranteed
 
-rg = np.random.default_rng(DEFAULT_SEED)
+logger = logging.getLogger(__name__)
 
 def _my_df():
     df = load_census()
@@ -42,7 +42,7 @@ def test_hashing_all_hashlib_guaranteed_algorithms(my_df, hash_func):
     try:
         rdf = hashing(my_df, hash_func)
     except Exception as e:
-        print(f"Raised Exception: {e}")
+        logger.info(f"Raised Exception: {e}")
     assert rdf is not None
 
 

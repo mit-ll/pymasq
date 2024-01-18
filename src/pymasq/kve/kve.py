@@ -160,7 +160,7 @@ def key_variable_exploration(
     methods = kwargs.get("methods", (RANDOM_FOREST, RFE, STEPWISE))
     categories = len(df[sensitive_col].dropna().unique())
     if categories < 2:
-        print(
+        logger.info(
             "The kve function requires two categories for binary classification  and the {} column has {} class".format(
                 sensitive_col, categories
             )
@@ -173,7 +173,7 @@ def key_variable_exploration(
         df, sensitive_col, categories=categories, verbose=verbose, **kwargs
     )
     if verbose > 0:
-        print("Building ranking...")
+        logger.info("Building ranking...")
     include_cols = [c for c in rank_df.columns if INCLUDE in c]
 
     rank_df[INCLUDE] = rank_df.apply(
@@ -261,7 +261,7 @@ def importance_scores(
     score_dict = {}
     if RANDOM_FOREST in methods:
         if verbose > 0:
-            print("Running Random Forest...")
+            logger.info("Running Random Forest...")
         (
             score_dict[RANDOM_FOREST],
             score_dict[f"{RANDOM_FOREST}_{INCLUDE}"],
@@ -271,7 +271,7 @@ def importance_scores(
             method_count += 1
     if RFE in methods:
         if verbose > 0:
-            print("Running Recursive Feature Elimination...")
+            logger.info("Running Recursive Feature Elimination...")
         score_dict[f"{RFE}_{INCLUDE}"] = rfe_scores(
             x_train, y, verbose=verbose, categories=categories
         )
@@ -280,7 +280,7 @@ def importance_scores(
             method_count += 1
     if STEPWISE in methods:
         if verbose > 0:
-            print("Running Stepwise...")
+            logger.info("Running Stepwise...")
         score_dict[f"{STEPWISE}_{INCLUDE}"] = stepwise_scores(
             x_rf, y_rf, verbose=verbose
         )
@@ -654,7 +654,7 @@ def stepwise_selection(
             tested.append(best_feature)
             changed = True
             if verbose > 0:
-                print("Add  {:30} with p-value {:.6}".format(best_feature, best_pval))
+                logger.info("Add  {:30} with p-value {:.6}".format(best_feature, best_pval))
 
         # backward step
         model = sm.OLS(y, sm.add_constant(pd.DataFrame(x_train[included]))).fit()
@@ -666,7 +666,7 @@ def stepwise_selection(
             worst_feature = included[pvalues.argmax()]
             included.remove(worst_feature)
             if verbose > 0:
-                print("Drop {:30} with p-value {:.6}".format(worst_feature, worst_pval))
+                logger.info("Drop {:30} with p-value {:.6}".format(worst_feature, worst_pval))
         if not changed:
             break
         count += 1

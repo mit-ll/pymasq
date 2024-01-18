@@ -1,3 +1,4 @@
+import logging
 import math
 from typing import Union, List, Final, Optional
 
@@ -25,6 +26,7 @@ __all__ = [
     "MODEL",
 ]
 
+logger = logging.getLogger(__name__)
 
 SPEARMAN: Final = "spearman"
 PEARSON: Final = "pearson"
@@ -212,7 +214,7 @@ def shuffle(
                 f"The values of `data[{cor_cols}]` are all identical and therefore cannot be used for correlation."
             )
         else:
-            print(
+            logger.info(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
 

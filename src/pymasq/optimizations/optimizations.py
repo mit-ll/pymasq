@@ -1,13 +1,16 @@
 import itertools
+import logging
 from typing import Optional
 
 import numpy as np
 from scipy.special import perm
 
 from pymasq import BEARTYPE
+from pymasq.config import rg
 from pymasq.errors import LessThanOrEqualToZeroError, NotInRangeError
 from pymasq.optimizations._base import OptimizationBase
 
+logger = logging.getLogger(__name__)
 
 class IterativeSearch(OptimizationBase):
     """Iterative (sequential) optimization algorithm.
@@ -93,7 +96,7 @@ class IterativeSearch(OptimizationBase):
 
         while all([cur_fit > self.theta, self._iters > 0]):
             if self.verbose:
-                print("-- Iteration [%i] --" % (self._max_iters - self._iters))
+                logger.info("-- Iteration [%i] --" % (self._max_iters - self._iters))
                 if self.progress_reporter:
                     self.progress_reporter(
                         round(1 - (self._iters / (self._max_iters * 1.0)), 2)
@@ -105,13 +108,13 @@ class IterativeSearch(OptimizationBase):
             new_fit, fit_log, met_errors = self._safe_evaluate(new_target)
             error_log += met_errors
             if self.verbose >= 2:
-                print(
+                logger.info(
                     ">> Current fitness: %.5f | " % (cur_fit),
                     "New fitness: %.5f | " % (new_fit),
                     "Best fitness: %.5f" % (best_fit),
                 )
                 if self.verbose >= 3:
-                    print(new_target)
+                    logger.info(new_target)
 
             cur_fit = new_fit
             target = new_target
@@ -125,12 +128,12 @@ class IterativeSearch(OptimizationBase):
             )
 
             if cur_fit <= self.theta and self.verbose:
-                print(">>> [Terminating]: Solution found")
+                logger.info(">>> [Terminating]: Solution found")
 
             self._iters -= 1
 
             if self._iters <= 0 and self.verbose:
-                print(">>> [Terminating]: Iterations complete")
+                logger.info(">>> [Terminating]: Iterations complete")
 
         if self.return_best:
             return best_target, best_fit, self._logbook
@@ -239,7 +242,7 @@ class IncrementalSearch(OptimizationBase):
 
         while all([cur_fit > self.theta, self._iters > 0, retry > 0]):
             if self.verbose:
-                print("-- Iteration [%i] --" % (self._max_iters - self._iters))
+                logger.info("-- Iteration [%i] --" % (self._max_iters - self._iters))
                 if self.progress_reporter:
                     self.progress_reporter(
                         round(1 - (self._iters / (self._max_iters * 1.0)), 2)
@@ -252,11 +255,11 @@ class IncrementalSearch(OptimizationBase):
             error_log += met_errors
 
             if self.verbose >= 2:
-                print(
+                logger.info(
                     ">> Current fitness: %.5f | New fitness: %.5f" % (cur_fit, new_fit)
                 )
                 if self.verbose >= 3:
-                    print(new_target)
+                    logger.info(new_target)
 
             if new_fit < cur_fit:
                 cur_fit = new_fit
@@ -264,7 +267,7 @@ class IncrementalSearch(OptimizationBase):
             else:
                 retry -= 1
                 if self.verbose >= 2:
-                    print(">>> Retries left: %i" % (retry))
+                    logger.info(">>> Retries left: %i" % (retry))
 
             self._record_stats(
                 fitness=cur_fit,
@@ -275,16 +278,15 @@ class IncrementalSearch(OptimizationBase):
             )
 
             if cur_fit <= self.theta and self.verbose:
-                print(">>> [Terminating]: Solution found")
+                logger.info(">>> [Terminating]: Solution found")
 
-            if retry <= 0:
-                if self.verbose:
-                    print(">>> [Terminating]: Max number of retries reached")
+            if retry <= 0 and self.verbose:
+                    logger.info(">>> [Terminating]: Max number of retries reached")
 
             self._iters -= 1
 
             if self._iters <= 0 and self.verbose:
-                print(">>> [Terminating]: Iterations complete")
+                logger.info(">>> [Terminating]: Iterations complete")
 
         return target, cur_fit, self._logbook
 
@@ -427,7 +429,7 @@ class StochasticSearch(OptimizationBase):
 
         while all([best_fit > self.theta, self._iters > 0]):
             if self.verbose:
-                print("-- Iteration [%i] --" % (self._max_iters - self._iters))
+                logger.info("-- Iteration [%i] --" % (self._max_iters - self._iters))
                 if self.progress_reporter:
                     self.progress_reporter(
                         round(1 - (self._iters / (self._max_iters * 1.0)), 2)
@@ -442,31 +444,30 @@ class StochasticSearch(OptimizationBase):
             error_log += met_errors
 
             if self.verbose >= 2:
-                print(
+                logger.info(
                     ">> Current fitness: %.5f | " % (cur_fit),
                     "New fitness: %.5f | " % (new_fit),
                     "Best fitness: %.5f" % (best_fit),
                 )
                 if self.verbose >= 3:
-                    print(new_target)
+                    logger.info(new_target)
 
-            prob = np.random.random_sample()
+            prob = rg.random()
 
             if not target.equals(new_target) and (
                 self._accept_prob(cur_fit, new_fit) > prob
             ):
-                if self.verbose >= 1:
-                    print(
-                        ">> New solution accepted",
-                        "(inferior solution)" if cur_fit < new_fit else "",
-                    )
+                if self.verbose >= 1 and cur_fit < new_fit:
+                        logger.info(
+                            ">> New solution accepted"
+                        )
                 cur_fit = new_fit
                 target = new_target
                 accepted = True
 
             if new_fit < best_fit:
                 if self.verbose >= 1:
-                    print(f">> New [best] solution found: {new_fit} < {best_fit}")
+                    logger.info(f">> New [best] solution found: {new_fit} < {best_fit}")
                 best_fit = new_fit
                 best_target = new_target
 
@@ -482,10 +483,10 @@ class StochasticSearch(OptimizationBase):
             self.temperature *= 1 - self.alpha
 
             if cur_fit <= self.theta and self.verbose:
-                print(">>> [Terminating]: Solution found")
+                logger.info(">>> [Terminating]: Solution found")
 
             if self._iters <= 0 and self.verbose:
-                print(">>> [Terminating]: Iterations complete")
+                logger.info(">>> [Terminating]: Iterations complete")
 
         return best_target, best_fit, self._logbook
 
@@ -621,25 +622,25 @@ class ExhaustiveSearch(OptimizationBase):
 
         if any([cur_fit <= self.theta, self._iters <= 0]):
             if self.verbose:
-                print(">>> [Terminating]: Solution found or Iterations Complete")
+                logger.info(">>> [Terminating]: Solution found or Iterations Complete")
             return target, cur_fit, self._logbook
 
         if self.randomize_mutations:
             # Note: only matters when `num_perms` is set.
-            test = np.random.shuffle(self._mutations)
+            rg.shuffle(self._mutations)
 
         for num_perms, mutation_perms in enumerate(
             itertools.permutations(self._mutations, self.size_perms)
         ):
             if self.verbose:
-                print("-- Permutation: [%i] --" % (num_perms))
+                logger.info("-- Permutation: [%i] --" % (num_perms))
 
             target = self._target.copy()
 
             stop = False
             for mutation in mutation_perms:
                 if self.verbose:
-                    print("\t-- Iteration [%i] --" % (self._max_iters - self._iters))
+                    logger.info("\t-- Iteration [%i] --" % (self._max_iters - self._iters))
                     if self.progress_reporter:
                         self.progress_reporter(
                             round(1 - (self._iters / (self._max_iters * 1.0)), 2)
@@ -654,13 +655,13 @@ class ExhaustiveSearch(OptimizationBase):
                 error_log += met_errors
 
                 if self.verbose >= 2:
-                    print(
+                    logger.info(
                         ">> Current fitness: %.5f | " % (cur_fit),
                         "New fitness: %.5f | " % (new_fit),
                         "Best fitness: %.5f" % (best_fit),
                     )
                     if self.verbose >= 3:
-                        print(new_target)
+                        logger.info(new_target)
 
                 cur_fit = new_fit
                 target = new_target
@@ -679,7 +680,7 @@ class ExhaustiveSearch(OptimizationBase):
 
                 if cur_fit <= self.theta:
                     if self.verbose:
-                        print(">>> [Terminating]: Solution found")
+                        logger.info(">>> [Terminating]: Solution found")
                     stop = True
                     break
 
@@ -687,16 +688,16 @@ class ExhaustiveSearch(OptimizationBase):
 
                 if self._iters <= 0:
                     if self.verbose:
-                        print(">>> [Terminating]: Iterations complete")
+                        logger.info(">>> [Terminating]: Iterations complete")
                     stop = True
                     break
 
             if self.verbose:
-                print("\n")
+                logger.info("\n")
 
             if (num_perms + 1) >= self.max_perms:
                 if self.verbose:
-                    print(">>> [Terminating]: Number of permutations complete")
+                    logger.info(">>> [Terminating]: Number of permutations complete")
                 stop = True
 
             if stop:

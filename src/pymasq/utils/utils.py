@@ -1,16 +1,19 @@
-import inspect
 import functools
+import inspect
+import logging
+from typing import Final, List, Optional, Union
+
 import numpy as np
 import pandas as pd
-
 from pandas.api.types import is_numeric_dtype
-from typing import Final, List, Optional, Union
 
 from pymasq import BEARTYPE
 from pymasq import config
 
 
 __all__ = ["BOTH", "as_dataframe", "validate_numeric", "formatting", "freq_calc"]
+
+logger = logging.getLogger(__name__)
 
 
 BOTH: Final = "both"
@@ -85,7 +88,7 @@ def formatting(
                         data = data.astype(dtypes)
                 except:
                     # TODO: switch to logging
-                    print("WARNING: Unable to keep original datatypes.")
+                    logger.info("WARNING: Unable to keep original datatypes.")
 
             if on_output:
                 if input_type == pd.Series:
@@ -146,7 +149,7 @@ def freq_calc(
     freq_df = data.groupby(quasi_cols).count()[sensitive_col]
     freq_df = freq_df.rename("samp_fq").reset_index()
 
-    freqs = pd.merge(data, freq_df, how="outer", on=quasi_cols)
+    freqs = pd.merge(data, freq_df, how="outer", on=quasi_cols, validate="many_to_one")
     weights = as_dataframe(weights) if weights else pd.Series([1] * freqs.shape[0])
     freqs["pop_fq"] = freqs["samp_fq"].values * weights
 

@@ -1,17 +1,21 @@
-import pickle
 import hashlib
-from pathlib import Path
 import hmac
 import glob
-import shutil
-from typing import Optional, Tuple, Dict, Union
-from pandas.util import hash_pandas_object
-import pandas as pd
-from pymasq import BEARTYPE
-import pymasq.config as cfg
-from pymasq.errors import InputError
+import logging
 import os
+import pickle
+import shutil
+from pathlib import Path
+from typing import Optional, Tuple, Dict, Union
 
+import pandas as pd
+from pandas.util import hash_pandas_object
+
+import pymasq.config as cfg
+from pymasq import BEARTYPE
+from pymasq.errors import InputError
+
+logger = logging.getLogger(__name__)
 
 def _hmac(data: object) -> str:
     """
@@ -63,7 +67,7 @@ def save(
 
     filename = f"{fn_prefix}.{_hmac(pickled_data)}.pkl"
     if verbose > 0:
-        print(f"Saving. hmac key is: {cfg.CACHE_HMAC_KEY}")
+        logger.info(f"Saving. hmac key is: {cfg.CACHE_HMAC_KEY}")
     with open(filename, "wb") as fd:
         fd.write(pickled_data)
 
@@ -112,7 +116,7 @@ def load_cache(
         # check the hmac of the file (unless ignore)
         if str(digest) != file.split(".")[-2] and not ignore_hmac:
             if verbose > 0:
-                print(
+                logger.info(
                     f""""
                     Error: hmac of file ({digest}) does not match the hmac stored in the filename 
                     ({file.split('.')[-2]}) for hmac key of '{cfg.CACHE_HMAC_KEY}' for file: {file}
@@ -120,8 +124,8 @@ def load_cache(
                 )
             continue
         if verbose > 0:
-            print(f"Expected hmac: {str(digest)}")
-            print(f"Filename hmac: {file.split('.')[-2]}")
+            logger.info(f"Expected hmac: {str(digest)}")
+            logger.info(f"Filename hmac: {file.split('.')[-2]}")
 
         # read in the data
         try:
@@ -129,7 +133,7 @@ def load_cache(
             description, data = pickle.load(fd)
             fd.close()
             if verbose > 0:
-                print(f"{description}")
+                logger.info(f"{description}")
             return data, description
         except Exception as e:
             raise InputError(f"Error loading cache file from {prefix_path}: {e}")
@@ -161,14 +165,14 @@ def cache_info(file_or_path: str) -> Dict[str, str]:
     Files without valid hmacs are not listed.
 
     """
-    print("Checking all files in ", file_or_path)
+    logger.info(f"Checking all files in {file_or_path}")
     result = {}
     for file in glob.glob(file_or_path + "/*.pkl"):
-        print(f"\n----{file}----")
+        logger.info(f"\n----{file}----")
         try:
             _, description = load_cache(prefix_path=file)
         except Exception as e:
-            print(e)
+            logger.info(e)
             continue
         if description is not None:
             result[file] = description

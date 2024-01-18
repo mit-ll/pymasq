@@ -1,19 +1,17 @@
 import argparse
 import json
-import numpy as np
-import pandas as pd
+import logging
 import os
 import yaml
 
 import pymasq
 
-pymasq.set_seed(123)
-
-from pymasq import mitigations as mits
-from pymasq import metrics as mets
 from pymasq import optimizations as opts
 from pymasq import datasets
 
+pymasq.set_seed(123)
+
+logger = logging.getLogger(__name__)
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CORE_CFG_FNAME = os.path.join(ROOT_DIR, "core_config.yaml")
@@ -76,13 +74,13 @@ def get_configs(test_cfg):
     opts_cfg = cfg.get("optimizations", None)
 
     if VERBOSE:
-        print(
-            "========== [ Dataset ] ==========\n",
-            json.dumps(data_cfg, indent=4),
+        logger.info(
+            f"""========== [ Dataset ] ==========\n,
+            {json.dumps(data_cfg, indent=4)},
             "\n========== [Mitigations] ==========\n",
-            json.dumps(mits_cfg, indent=4),
+            {json.dumps(mits_cfg, indent=4)},
             "\n========== [Metrics] ==========\n",
-            json.dumps(mets_cfg, indent=4),
+            {json.dumps(mets_cfg, indent=4)},"""
         )
 
     return data_cfg, mits_cfg, mets_cfg, opts_cfg
@@ -104,7 +102,7 @@ def get_data(data_cfg):
         df = df.loc[:, cols if isinstance(cols, list) else [cols]]
 
     if VERBOSE:
-        print(df, "\n", df.shape)
+        logger.info(df, "\n", df.shape)
 
     return df
 
@@ -127,8 +125,8 @@ def run(args):
             mod_df, fit, log = algo.optimize()
 
             if VERBOSE:
-                print("\n============== %s ===============\n" % (opt))
-                print(mod_df, "\n", fit, "\n", log)
+                logger.info("\n============== %s ===============\n" % (opt))
+                logger.info(mod_df, "\n", fit, "\n", log)
 
     else:
         # if no optimizations specified, then simply run ExhaustiveSearch
@@ -143,9 +141,9 @@ def run(args):
         mod_df, fit, log = algo.optimize()
 
         if VERBOSE:
-            print(mod_df, "\n", fit, "\n", log)
+            logger.info(mod_df, "\n", fit, "\n", log)
 
-    print("[Tests: Complete]")
+    logger.info("[Tests: Complete]")
 
 
 if __name__ == "__main__":

@@ -1,14 +1,16 @@
-from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER
+import logging
+from typing import List, Optional, Type, Any, Union
+
 import pandas as pd
 import numpy as np
-from typing import List, Optional, Type, Any, Union
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tpot import TPOTClassifier, TPOTRegressor
 from sklearn.metrics import roc_auc_score
 from sklearn.linear_model import ElasticNetCV, ElasticNet, LarsCV, LogisticRegressionCV
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
 from pymasq import BEARTYPE
+from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER, DEFAULT_MODEL_ITERATIONS
 from pymasq.models._base import ModelingBase
 from pymasq.preprocessing._base import PreprocessorBase
 
@@ -23,6 +25,8 @@ from pymasq.preprocessing._base import PreprocessorBase
 
 
 #########################
+
+logger = logging.getLogger(__name__)
 
 
 def mape(
@@ -106,7 +110,7 @@ class LarsCvRegressor(ModelingBase):
 
         # We didn't: train the model and cache it.
         if verbose > 0:
-            print("Training LarsCV model ")
+            logger.info("Training LarsCV model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = df_enc[y_column]
         self.trained = LarsCV(n_jobs=self.n_jobs)
@@ -198,7 +202,7 @@ class ElasticNetCvRegressor(ModelingBase):
 
         # no cache found, we need to train.
         if verbose > 0:
-            print("Training ElasticNetCV model ")
+            logger.info("Training ElasticNetCV model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = df_enc[y_column]
 
@@ -263,8 +267,9 @@ class LogisticRegressionClassifier(ModelingBase):
             A string defining the type of modeling task
         """
         super().__init__(
-            name="logreg", cache_location=cache_location, modeling_task=modeling_task
+            name="logreg", cache_location=cache_location, modeling_task=modeling_task, 
         )
+        self.scaler = StandardScaler()
 
     @BEARTYPE
     def train(
@@ -307,16 +312,18 @@ class LogisticRegressionClassifier(ModelingBase):
 
         # no cache found, we need to train.
         if verbose > 0:
-            print("Training Logistic Regression model ")
+            logger.info("Training Logistic Regression model ")
         x_train = df_enc.drop(y_column, axis=1)
+        x_scaled = self.scaler.fit_transform(x_train)
         y = LabelEncoder().fit_transform(df_enc[y_column])
 
         self.trained = LogisticRegressionCV(
             random_state=self.seed,
             n_jobs=self.n_jobs,
             solver=DEFAULT_LOGISITIC_REGRESSION_SOLVER,
+            max_iter=DEFAULT_MODEL_ITERATIONS,
         )
-        self.trained.fit(x_train, y)
+        self.trained.fit(x_scaled, y)
 
         # save to cache
         self.save_trained_model(
@@ -344,12 +351,13 @@ class LogisticRegressionClassifier(ModelingBase):
 
         """
         assert self.trained is not None
+        x_scaled = self.scaler.fit_transform(x_test)
 
         if pd.Series(y_true).nunique() == 2:
-            y_predict = self.trained.predict(x_test)
+            y_predict = self.trained.predict(x_scaled)
             return roc_auc_score(y_true=y_true.tolist(), y_score=y_predict)
         else:
-            y_predict = self.trained.predict_proba(x_test)
+            y_predict = self.trained.predict_proba(x_scaled)
             return roc_auc_score(
                 y_true=y_true.tolist(), y_score=y_predict[:, 1:], multi_class="ovr"
             )
@@ -416,7 +424,7 @@ class RFClassifier(ModelingBase):
 
         # no cache found, we need to train.
         if verbose > 0:
-            print("Training Logistic Regression model ")
+            logger.info("Training Logistic Regression model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = LabelEncoder().fit_transform(df_enc[y_column])
 
@@ -518,7 +526,7 @@ class RFRegressor(ModelingBase):
 
         # We didn't: train the model and cache it.
         if verbose > 0:
-            print("Training LarsCV model ")
+            logger.info("Training LarsCV model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = LabelEncoder().fit_transform(df_enc[y_column])
         self.trained = RandomForestRegressor(n_jobs=self.n_jobs, random_state=self.seed)
@@ -671,7 +679,7 @@ class TpotClassifier(ModelingBase):
 
         # No cache available, we need to train
         if verbose > 0:
-            print(f"{type(self).__name__} Training new model.")
+            logger.info(f"{type(self).__name__} Training new model.")
 
         tpot = TPOTClassifier(
             generations=int(generations),
@@ -852,7 +860,7 @@ class TpotRegressor(ModelingBase):
 
         # No cache available, we need to train
         if verbose > 0:
-            print(f"{type(self).__name__} Training new model.")
+            logger.info(f"{type(self).__name__} Training new model.")
 
         tpot = TPOTRegressor(
             generations=int(generations),

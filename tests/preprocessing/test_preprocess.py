@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import pytest
+import logging
 
+import pytest
 from numpy import NaN
 
 from pymasq.datasets import load_census
-
 from pymasq.preprocessing import embed_entities, LabelEncoderPM, EmbeddingsEncoder
 
 # from pymasq.errors import InputError, DataTypeError
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def my_df():
@@ -114,8 +115,8 @@ def test_embed_entites_7(my_df):
 #     Tests that embed_entities returns arrays for each education category given two target columns.
 #     """
 #     ret = embed_entities(my_df[["sex", "marital_status"]], my_df[["education"]])
-#     print(my_df["education"].nunique())
-#     print(ret["education"].shape[0])
+#     logger.info(my_df["education"].nunique())
+#     logger.info(ret["education"].shape[0])
 #     assert my_df["education"].nunique() == ret["education"].shape[0]
 
 
@@ -129,8 +130,8 @@ def test_embed_entites_9(my_df):
         cache_location=None,
         retrain=True,
     )
-    print(my_df["education"].nunique())
-    print(ret["education"].shape[0])
+    logger.info(my_df["education"].nunique())
+    logger.info(ret["education"].shape[0])
     assert my_df["education"].nunique() == ret["education"].shape[0]
 
 

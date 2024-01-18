@@ -1,3 +1,4 @@
+import logging
 import os
 from abc import abstractmethod
 from typing import Type, Optional, Union
@@ -8,6 +9,8 @@ import pymasq.config as cfg
 from pymasq.utils import cache
 from pymasq.preprocessing._base import PreprocessorBase
 from pymasq import BEARTYPE
+
+logger = logging.getLogger(__name__)
 
 
 class ModelingBase:
@@ -106,7 +109,7 @@ class ModelingBase:
         if not retrain:
             self.load_trained_model(df, verbose)  # sets self.trained from file
             if self.trained and verbose > 0:
-                print(
+                logger.info(
                     f"{self.name}: loading trained model from cache. (Set retrain=True to ignore cache.)"
                 )
 
@@ -186,7 +189,7 @@ class ModelingBase:
             verbose=verbose,
         )
         if verbose > 0:
-            print(f"{self.name} model trained and saved to: {filename}")
+            logger.info(f"{self.name} model trained and saved to: {filename}")
 
     @BEARTYPE
     def load_trained_model(

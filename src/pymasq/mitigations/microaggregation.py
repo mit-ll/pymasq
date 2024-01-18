@@ -548,7 +548,7 @@ def robust_magg(
     # test data for normality; z-scores are only meaningful for normally distributed data
     result = shapiro(data)
     if result.pvalue < 0.05:
-        print(
+        logger.info(
             f"Warning: data not normally distributed; fails Shapiro-Wilk test (p={result.pvalue})."
         )
 

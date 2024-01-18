@@ -1,4 +1,5 @@
 import itertools
+import logging
 
 import numpy as np
 import pandas as pd
@@ -7,7 +8,7 @@ from scipy import stats
 from typing import List, Optional, Union
 
 from pymasq import BEARTYPE
-from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES, DEFAULT_SEED
+from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES, rg
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
 from pymasq.utils import formatting
@@ -15,7 +16,7 @@ from pymasq.utils import formatting
 
 __all__ = ["geom_transform"]
 
-rg = np.random.default_rng(DEFAULT_SEED)
+logger = logging.getLogger(__name__)
 
 SKIP_ROTATION_ANGLES = [30, 45, 60, 90, 120, 135, 150, 180]
 MAX_DEGREES = 180
@@ -231,7 +232,7 @@ def geom_transform(
                 f"The values of `data[{perturb_cols}]` are all identical and therefore cannot be used for correlation."
             )
         else:
-            print(
+            logger.info(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
     elif len(perturb_cols) == 1:
