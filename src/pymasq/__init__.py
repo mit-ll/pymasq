@@ -75,8 +75,11 @@ __all__ = [
     "kve",
     "metrics",
     "mitigations",
+    "models",
     "optimizations",
     "preprocessing",
     "plotting",
+    "sa",
+    "utils",
     "config",
 ]

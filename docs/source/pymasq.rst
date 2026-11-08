@@ -7,12 +7,12 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   pymasq.classifiers
    pymasq.datasets
    pymasq.errors
    pymasq.kve
    pymasq.metrics
    pymasq.mitigations
+   pymasq.models
    pymasq.optimizations
    pymasq.plotting
    pymasq.preprocessing

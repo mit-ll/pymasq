@@ -2,6 +2,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
+
+import pymasq  # noqa: E402
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -26,7 +29,8 @@ copyright = "2022, MITLL"
 author = "MITLL"
 
 # The full version, including alpha/beta/rc tags
-release = "1.1"
+release = pymasq.__version__
+version = ".".join(release.split(".")[:2])
 
 
 # -- General configuration ---------------------------------------------------

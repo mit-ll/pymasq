@@ -12,6 +12,7 @@ Welcome to pymasq's documentation!
 
    readme
    modules
+   changelog
 
 
 
