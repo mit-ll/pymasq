@@ -42,3 +42,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Metrics Numerical Stability**: Guarded against divide-by-zero in MAPE and fixed regression/AUC scoring edge-cases with binary target labels.
 - **Type Annotations**: Corrected runtime Beartype type hints for infinite iteration limits and arbitrary keyword arguments.
 - **Sphinx Documentation Build**: Fixed module resolution paths in `conf.py` and rendered Markdown README and Changelog cleanly with `sphinx-mdinclude`.
+
