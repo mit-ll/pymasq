@@ -29,7 +29,7 @@ def set_seed(r=None):
     import numpy as np
 
     if r is None:
-        r = struct.unpack("i", urandom(4))[0]
+        r = struct.unpack("I", urandom(4))[0]
     elif isinstance(r, (tuple, list)):
         r = r[0]
 
@@ -49,7 +49,7 @@ def new_token():
     from datetime import datetime
 
     time_stamp = datetime.now()
-    token = "%s%s%s_%s%s%s" % (
+    token = "%04d%02d%02d_%02d%02d%02d" % (
         time_stamp.year,
         time_stamp.month,
         time_stamp.day,

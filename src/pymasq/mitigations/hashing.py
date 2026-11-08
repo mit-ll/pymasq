@@ -185,19 +185,25 @@ def hashing(
         data = (data + salt_df) if append_salt else (salt_df + data)
 
         if store_salt is not None:
-            with open(store_salt, "w") as f:
-                salt_df.to_csv(f, index=False)
+            export_df = salt_df.map(lambda v: v.hex() if isinstance(v, (bytes, bytearray)) else v)
+            export_df.to_csv(store_salt, index=False)
 
-    _df_map = getattr(data, "map", getattr(data, "applymap", None))
     if isinstance(hash_func, Callable):
-        return _df_map(lambda v: hash_func(v))
+        h_callable = hash_func
+    else:
+        h_algo = getattr(hashlib, hash_func)
+        if "shake" in str(h_algo):
+            logger.warning(
+                f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{h_algo}` as a callable defined with your prefered length."
+            )
+            h_callable = lambda v: h_algo(v).hexdigest(16)
+        else:
+            h_callable = lambda v: h_algo(v).hexdigest()
 
-    hash_func = getattr(hashlib, hash_func)
+    result_df = data.copy()
+    for col in result_df.columns:
+        uniques = result_df[col].unique()
+        hash_lookup = {val: h_callable(val) for val in uniques}
+        result_df[col] = result_df[col].map(hash_lookup)
 
-    if "shake" in str(hash_func):
-        logger.warning(
-            f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{hash_func}` as a callable defined with your prefered length."
-        )
-        return _df_map(lambda v: hash_func(v).hexdigest(16))
-
-    return _df_map(lambda v: hash_func(v).hexdigest())
+    return result_df

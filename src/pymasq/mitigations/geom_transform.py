@@ -48,30 +48,29 @@ def _get_rotation_plane(ncols: int, coords: list, rad_value: float):
 
 @BEARTYPE
 def _gen_rotation_parameters(ncols: int, coords: List, cov: np.ndarray):
+    # Precompute rotation planes for all valid angles (independent of col)
+    rot_planes = {
+        rot_angle: _get_rotation_plane(ncols, coords, rot_angle * np.pi / 180.0)
+        for rot_angle in range(1, MAX_DEGREES + 1)
+        if rot_angle not in SKIP_ROTATION_ANGLES
+    }
+
     # Identifying the best perturbation parameters for data based on covariance
     rot_params = np.zeros((MAX_DEGREES, ncols))
 
     for col in range(ncols):
         id_ref = np.eye(ncols)  # identity matrix for reference
         id_ref[:, col] = -id_ref[:, col]
+        cov_id_ref = cov @ id_ref
+        id_cov_id = id_ref @ cov @ id_ref.T
 
-        for rot_angle in range(1, MAX_DEGREES + 1):
-            if rot_angle in SKIP_ROTATION_ANGLES:
-                continue
-
-            # Generate the rotational matrix
-            rad_value = rot_angle * np.pi / 180.0
-            rot_plane = _get_rotation_plane(ncols, coords, rad_value)
-
-            rot_diag = np.diag(rot_plane @ (id_ref @ cov @ id_ref.T) @ rot_plane.T)
-            rot_cov_sum = np.sum(((cov @ id_ref) * rot_plane).T, axis=0).T
+        for rot_angle, rot_plane in rot_planes.items():
+            rot_diag = np.diag(rot_plane @ id_cov_id @ rot_plane.T)
+            rot_cov_sum = np.sum((cov_id_ref * rot_plane).T, axis=0).T
 
             # subplane rotational matrix of the desired rotation angle
             rot_mat = (1 + rot_diag) - (2 * rot_cov_sum)
-
-            min_val = min(rot_mat)
-
-            rot_params[rot_angle - 1, col] = min_val
+            rot_params[rot_angle - 1, col] = np.min(rot_mat)
 
     return rot_params
 

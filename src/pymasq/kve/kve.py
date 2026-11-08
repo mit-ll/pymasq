@@ -3,7 +3,10 @@ from typing import Any, Dict, Final, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
+try:
+    import statsmodels.api as sm
+except ImportError:
+    sm = None
 from numpy import ndarray
 from pandas.api.types import is_numeric_dtype
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
@@ -626,6 +629,11 @@ def stepwise_selection(
     Always set threshold_in < threshold_out to avoid infinite looping.
     See https://en.wikipedia.org/wiki/Stepwise_regression for the details
     """
+    if sm is None:
+        raise ImportError(
+            "statsmodels is required for stepwise_selection. Install it with `pip install statsmodels`."
+        )
+
     included = []
     if initial_list:
         included = list(initial_list)

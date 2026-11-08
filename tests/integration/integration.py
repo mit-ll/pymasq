@@ -52,10 +52,10 @@ def get_configs(test_cfg):
     cfg, new_cfg = None, None
 
     with open(CORE_CFG_FNAME, "r") as f:
-        cfg = yaml.load(f, Loader=yaml.FullLoader)
+        cfg = yaml.safe_load(f)
 
     with open(test_cfg, "r") as f:
-        new_cfg = yaml.load(f, Loader=yaml.FullLoader)
+        new_cfg = yaml.safe_load(f)
 
     # check new_cfg is not empty
     if new_cfg:

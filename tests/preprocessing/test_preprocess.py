@@ -4,7 +4,7 @@
 import logging
 
 import pytest
-from numpy import NaN
+from numpy import nan as NaN
 
 from pymasq.datasets import load_census
 from pymasq.preprocessing import EmbeddingsEncoder, LabelEncoderPM, embed_entities

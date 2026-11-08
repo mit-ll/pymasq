@@ -2,8 +2,12 @@ from typing import Dict, Final, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from SALib.analyze import sobol
-from SALib.sample import sobol as saltelli
+try:
+    from SALib.analyze import sobol
+    from SALib.sample import sobol as saltelli
+except ImportError:
+    sobol = None
+    saltelli = None
 
 from pymasq.errors import DataTypeError, InputError
 
@@ -91,6 +95,9 @@ def gen_samples(
     InputError
         Throws an error if the user tries to enter a method that is not "uniform" or "sample"
     """
+    if saltelli is None:
+        raise ImportError("SALib is required for gen_samples. Install it with `pip install SALib`.")
+
     if method is None or method == UNIFORM:
         if params is None:
             params = gen_params(data)
@@ -153,6 +160,9 @@ def analyze(
     gen_params
     gen_samples
     """
+
+    if sobol is None:
+        raise ImportError("SALib is required for analyze. Install it with `pip install SALib`.")
 
     y_pred = model.predict(samples)
     Si = sobol.analyze(

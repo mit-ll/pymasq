@@ -5,7 +5,10 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from bpemb import BPEmb
+try:
+    from bpemb import BPEmb
+except ImportError:
+    BPEmb = None
 from sklearn.decomposition import PCA, FastICA, IncrementalPCA, KernelPCA, TruncatedSVD
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder as skLabelEncoder
@@ -80,9 +83,7 @@ class LabelEncoderPM(PreprocessorBase):
         if cat_cols.empty:
             both = num_cols
         else:
-            both = pd.concat(
-                [cat_cols.apply(le.fit_transform), num_cols], join="outer", axis=1
-            )
+            both = pd.concat([cat_cols, num_cols], join="outer", axis=1)
         return both[col_order]
 
     @staticmethod
@@ -151,9 +152,7 @@ class LabelEncoderPM(PreprocessorBase):
         if cat_cols.empty:
             both = num_cols
         else:
-            both = pd.concat(
-                [cat_cols.apply(le.fit_transform), num_cols], join="outer", axis=1
-            )
+            both = pd.concat([cat_cols, num_cols], join="outer", axis=1)
         # split up again, and drop the extra column
         df_a_enc = both.loc[both[class_col] == 0].drop(class_col, axis=1)
         df_b_enc = both.loc[both[class_col] == 1].drop(class_col, axis=1)
@@ -224,6 +223,10 @@ class EmbeddingsEncoder(PreprocessorBase):
         np.ndarray:
             The results as a 1-d ndarray of (floats) of length model.vector_size
         """
+        if BPEmb is None:
+            raise ImportError(
+                "bpemb is required for sentence_bpe_vectors. Install it with `pip install bpemb`."
+            )
         vectorizer = BPEmb(lang=cfg.BPE_LANG, dim=cfg.BPE_DIM)
         embeddings = vectorizer.embed(sents).mean(axis=1)
         reduct = REDUCTION_METHODS[reduct_method](n_components=num_embedding_components)

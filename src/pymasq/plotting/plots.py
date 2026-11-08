@@ -29,17 +29,18 @@ def plot_results(
         The plotly graph object generated from the provided data frame and optional parameters
 
     """
+    hover_col = "log" if "log" in df.columns else None
+    color_col = "val_cat" if "val_cat" in df.columns else None
     fig = px.scatter(
         df,
         x=util_col,
         y=risk_col,
-        color="val_cat",
+        color=color_col,
         height=600,
         width=600,
-        hovername="Method: {}".format(df["log"]),
+        hover_name=hover_col,
         color_discrete_map={"good": "darkgreen", "fair": "gold", "poor": "red"},
     )
-    fig.add
     return fig
 
 

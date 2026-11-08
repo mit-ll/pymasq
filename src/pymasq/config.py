@@ -1,12 +1,16 @@
+import os
 from pathlib import Path
 from typing import Tuple
 
 import numpy as np
 
 # Directory where all embeddings and models will be cached
-CACHE_LOCATION: Path = Path("~/.cache/pymasq").expanduser()
+CACHE_LOCATION: Path = Path(os.getenv("PYMASQ_CACHE_DIR", "~/.cache/pymasq")).expanduser()
 
-CACHE_HMAC_KEY: str = "To ensure integrity of files cached by pymasq, change this string to something unique and unguessable."
+CACHE_HMAC_KEY: str = os.getenv(
+    "PYMASQ_CACHE_KEY",
+    "To ensure integrity of files cached by pymasq, change this string to something unique and unguessable.",
+)
 
 # If proportion of free space goes below this threshold, then the cache will be deleted
 FREE_SPACE_THRESHOLD: float = 0.05

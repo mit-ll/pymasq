@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, Final, List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from scipy.stats import entropy as scipy_entropy
 
 from pymasq import BEARTYPE
 from pymasq.errors import InputError, NotInRangeError
@@ -130,11 +131,11 @@ def is_k_anon(
     """
     if key_vars is None:
         key_vars = list(df.columns)
-    return all(
-        df.groupby(key_vars, observed=True, as_index=False)
-        .size()
-        .rename(columns={"size": "k_count"})["k_count"]
-        > k
+    return bool(
+        (
+            df.groupby(key_vars, observed=True)[key_vars[0]].transform("size")
+            >= k
+        ).all()
     )
 
 
@@ -175,13 +176,10 @@ def is_k_anon_col(
     """
     if key_vars is None:
         key_vars = list(df.columns)
-    adf = (
-        df.groupby(key_vars, observed=True, as_index=False)
-        .size()
-        .rename(columns={"size": "k_count"})
-    )
-    adf["is_k_anon"] = adf["k_count"] > k
-    return pd.merge(df, adf, on=key_vars, how="left", validate="many_to_one")
+    adf = df.copy()
+    adf["k_count"] = df.groupby(key_vars, observed=True)[key_vars[0]].transform("size")
+    adf["is_k_anon"] = adf["k_count"] >= k
+    return adf
 
 
 @BEARTYPE
@@ -227,11 +225,8 @@ def _entropy_count(q_block: pd.Series) -> float:
         The entropy of the unique values of the sensitive column
 
     """
-    ent = 0
-    for L in set(q_block):
-        p_l = q_block.value_counts()[L] / len(q_block)
-        ent += p_l * np.log(p_l)
-    return -ent
+    probs = q_block.value_counts(normalize=True).to_numpy()
+    return float(scipy_entropy(probs))
 
 
 @BEARTYPE
@@ -373,9 +368,9 @@ def is_l_diverse(
 
     """
     if method is None or method == DISTINCT:
-        return _diversity(df, sensitive_col, _unique_count)["l-diversity"] <= l_thresh
+        return _diversity(df, sensitive_col, _unique_count)["min"] >= l_thresh
     elif method == ENTROPY:
-        return _diversity(df, sensitive_col, _entropy_count)["l-diversity"] <= np.log(l_thresh)
+        return _diversity(df, sensitive_col, _entropy_count)["min"] >= np.log(l_thresh)
 
     raise ValueError(f"method must be '{DISTINCT}' or '{ENTROPY}'")
 
@@ -478,7 +473,7 @@ def _num_emd(qs: Dict, q_block_col: pd.Series) -> float:
     for i in range(1, m):
         for j in range(1, i + 1):
             d_sub_sum += rs[j - 1]
-        d_sum += [abs(copy(d_sub_sum))]
+        d_sum += [abs(d_sub_sum)]
         d_sub_sum = 0
 
     return sum(d_sum) / (m - 1)
@@ -687,7 +682,7 @@ def indiv_risk_approx(samp_freq: Union[int, float], pop_freq: Union[int, float])
     if samp_freq > 2:
         return pk / (samp_freq - (1 - pk))
     if samp_freq == 2:
-        return (pk / (1 - pk)) - (((pk / (1 - pk)) ^ 2) * np.log(1 / pk))
+        return (pk / (1 - pk)) - (((pk / (1 - pk)) ** 2) * np.log(1 / pk))
     return (pk / (1 - pk)) * np.log(1 / pk)
 
 
@@ -719,8 +714,8 @@ def indiv_risk_exact(samp_freq: int, pop_freq: float) -> float:
     pk = float(samp_freq) / float(pop_freq)
 
     def b_func(samp_freq, pk, i):
-        b1 = (samp_freq - 1 - i) ^ 2 / ((i + 2) * (samp_freq - 2 - i))
-        b2 = (pk ^ (i + 2 - samp_freq) - 1) / (pk ^ (i + 1 - samp_freq) - 1)
+        b1 = ((samp_freq - 1 - i) ** 2) / ((i + 2) * (samp_freq - 2 - i))
+        b2 = (pk ** (i + 2 - samp_freq) - 1) / (pk ** (i + 1 - samp_freq) - 1)
         return b1 * b2
 
     def bb_func(samp_freq, pk):
@@ -729,17 +724,17 @@ def indiv_risk_exact(samp_freq: int, pop_freq: float) -> float:
             b = 1
             for m2 in range(m + 1):
                 b = b * b_func(samp_freq, pk, m2)
-            bb = bb + (-1) ^ (m + 1) * b
+            bb = bb + ((-1) ** (m + 1)) * b
         return bb
 
-    first = (pk / (1 - pk)) ^ samp_freq
-    third = (-1) ^ samp_freq * np.log(pk)
+    first = (pk / (1 - pk)) ** samp_freq
+    third = ((-1) ** samp_freq) * np.log(pk)
 
     if samp_freq > 2:
-        A = (pk ^ (1 - samp_freq) - 1) / (samp_freq - 1)
+        A = (pk ** (1 - samp_freq) - 1) / (samp_freq - 1)
         return first * ((A * (1 + bb_func(samp_freq, pk))) + third)
     if samp_freq == 2:
-        return (pk / (1 - pk)) - (((pk / (1 - pk)) ^ 2) * np.log(1 / pk))
+        return (pk / (1 - pk)) - (((pk / (1 - pk)) ** 2) * np.log(1 / pk))
     return (pk / (1 - pk)) * np.log(1 / pk)
 
 
@@ -792,6 +787,7 @@ def indiv_risk(
             f"Values of `sensitive_col` and/or `quasi_cols` are not in `data` columns {list(df.columns)}. (Received: {sensitive_col} and {quasi_cols})"
         )
 
+    df = df.copy()
     df["order"] = df.index
 
     freq_count = freq_calc(

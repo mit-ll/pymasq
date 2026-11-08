@@ -50,15 +50,14 @@ def __calc_transition_matrix(
     prob_mat[:, :] = tri.reshape((1, ncats)).T
     np.fill_diagonal(prob_mat, runif)
 
-    cat_codes = data.cat.codes + 1
-    sum_cats = np.nansum(cat_codes)
-    freqs: pd.Series = data.value_counts() / sum_cats  # scaled category frequencies
+    freqs = data.value_counts(normalize=True).reindex(cats, fill_value=0.0)
 
     scaled_prob_mat = prob_mat.copy()
     for i in range(ncats):
         s = sum(freqs * prob_mat[:, i])
-        for j in range(ncats):
-            scaled_prob_mat[i, j] = prob_mat[j, i] * (freqs.iloc[j] / s)
+        if s > 0:
+            for j in range(ncats):
+                scaled_prob_mat[i, j] = prob_mat[j, i] * (freqs.iloc[j] / s)
 
     trans_probs = prob_mat @ scaled_prob_mat
     scaled_trans_probs = alpha * trans_probs + (1 - alpha) * np.identity(ncats)
@@ -88,11 +87,12 @@ def __randomization(
         A DataFrame with perturbed values.
     """
     d_pramed = data.copy()
-    d_pramed.cat.set_categories(cats)
+    if hasattr(d_pramed, "cat"):
+        d_pramed = d_pramed.cat.set_categories(cats)
     for cat in cats:
-        idxs = data.index.where(data == cat).dropna()
+        idxs = data.index[data == cat]
         if len(idxs) > 0:
-            d_pramed[idxs] = rg.choice(
+            d_pramed.loc[idxs] = rg.choice(
                 cats,
                 len(idxs),
                 p=trans.loc[cat],

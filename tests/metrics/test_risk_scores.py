@@ -9,7 +9,10 @@ from pymasq.errors import InputError
 from pymasq.metrics import (
     auc_score,
     beta_likeness,
+    indiv_risk_approx,
+    indiv_risk_exact,
     is_beta_like,
+    is_k_anon,
     is_l_diverse,
     is_t_close,
     k_anon,
@@ -49,6 +52,48 @@ def test_l_diversity_variety():
     """
     df = generate_l_diverse_table([2, 3, 3, 2, 2])
     assert l_diversity(df, "sensitive", 2) == pytest.approx(0.6), true_assert_statement
+
+
+def test_is_l_diverse():
+    df = generate_l_diverse_table(3)
+    assert is_l_diverse(df, "sensitive", l_thresh=3)
+    assert not is_l_diverse(df, "sensitive", l_thresh=4)
+
+
+def test_k_anon():
+    import pandas as pd
+    df = pd.DataFrame({
+        "q1": [1, 1, 1, 2, 2],
+        "q2": [10, 10, 10, 20, 20],
+        "sensitive": ["A", "B", "A", "B", "C"]
+    })
+    # Group sizes: (1,10) has 3, (2,20) has 2.
+    # For k=2, all records meet k-anonymity (size >= 2), 0% violate
+    assert k_anon(df, key_vars=["q1", "q2"], k=2) == 0.0
+    assert is_k_anon(df, key_vars=["q1", "q2"], k=2)
+    # For k=3, group (2,20) has size 2 < 3, so 2 of 5 records violate (40%)
+    assert k_anon(df, key_vars=["q1", "q2"], k=3) == pytest.approx(0.4)
+    assert not is_k_anon(df, key_vars=["q1", "q2"], k=3)
+
+
+def test_indiv_risk_formulas():
+    # Test indiv_risk_approx for various sample frequencies
+    res_eq = indiv_risk_approx(5, 5)
+    assert res_eq == pytest.approx(1 / 5)
+    res_gt2 = indiv_risk_approx(4, 10)
+    assert 0.0 < res_gt2 < 1.0
+    res_2 = indiv_risk_approx(2, 10)
+    assert 0.0 < res_2 < 1.0
+    res_1 = indiv_risk_approx(1, 10)
+    assert 0.0 < res_1 < 1.0
+
+    # Test indiv_risk_exact
+    res_exact_eq = indiv_risk_exact(5, 5.0)
+    assert res_exact_eq == pytest.approx(1 / 5)
+    res_exact_2 = indiv_risk_exact(2, 10.0)
+    assert 0.0 < res_exact_2 < 1.0
+    res_exact_gt2 = indiv_risk_exact(4, 10.0)
+    assert 0.0 < res_exact_gt2 < 1.0
 
 
 def test_t_closeness_num():

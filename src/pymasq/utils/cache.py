@@ -10,6 +10,7 @@ from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 from pandas.util import hash_pandas_object
+import numpy as np
 
 import pymasq.config as cfg
 from pymasq import BEARTYPE
@@ -17,11 +18,25 @@ from pymasq.errors import InputError
 
 logger = logging.getLogger(__name__)
 
-def _hmac(data: object) -> str:
+def _hmac(data: Union[bytes, str]) -> str:
     """
-    Returns the md5 hash of given data as a string
+    Returns the SHA-256 HMAC of given data as a string
     """
-    return hmac.new(str.encode(cfg.CACHE_HMAC_KEY), data, hashlib.md5).hexdigest()
+    if isinstance(data, str):
+        data = data.encode()
+    return hmac.new(cfg.CACHE_HMAC_KEY.encode(), data, hashlib.sha256).hexdigest()
+
+
+def _verify_hmac(data: bytes, expected_digest: str) -> bool:
+    """
+    Verifies data against an expected HMAC digest using timing-safe comparison.
+    Supports SHA-256 and MD5 (for legacy caches).
+    """
+    digest_sha = hmac.new(cfg.CACHE_HMAC_KEY.encode(), data, hashlib.sha256).hexdigest()
+    if hmac.compare_digest(digest_sha, expected_digest):
+        return True
+    digest_md5 = hmac.new(cfg.CACHE_HMAC_KEY.encode(), data, hashlib.md5).hexdigest()
+    return hmac.compare_digest(digest_md5, expected_digest)
 
 
 @BEARTYPE
@@ -57,11 +72,18 @@ def save(
         Name of the cached file
     """
     cache_location = Path(cache_location)
-    total, _, free = shutil.disk_usage(cache_location)
-    percent_free = free / total
-    if percent_free < cfg.FREE_SPACE_THRESHOLD:
-        shutil.rmtree(cache_location)
     cache_location.mkdir(parents=True, exist_ok=True)
+    try:
+        total, _, free = shutil.disk_usage(cache_location)
+        percent_free = free / total
+        if percent_free < cfg.FREE_SPACE_THRESHOLD:
+            for cached_file in cache_location.glob("*.pkl"):
+                try:
+                    cached_file.unlink()
+                except OSError:
+                    pass
+    except OSError:
+        pass
 
     pickled_data = pickle.dumps([description, data])
 
@@ -71,7 +93,8 @@ def save(
     with open(filename, "wb") as fd:
         fd.write(pickled_data)
 
-    assert _hmac(open(filename, "rb").read()) == _hmac(pickled_data)
+    with open(filename, "rb") as fd:
+        assert _verify_hmac(fd.read(), _hmac(pickled_data))
     return filename
 
 
@@ -112,26 +135,26 @@ def load_cache(
     """
 
     for file in glob.glob(str(prefix_path) + "*"):
-        digest = _hmac(open(file, "rb").read())
+        try:
+            with open(file, "rb") as fd:
+                file_bytes = fd.read()
+        except OSError:
+            continue
+
+        file_digest = file.split(".")[-2]
         # check the hmac of the file (unless ignore)
-        if str(digest) != file.split(".")[-2] and not ignore_hmac:
+        if not ignore_hmac and not _verify_hmac(file_bytes, file_digest):
             if verbose > 0:
                 logger.info(
-                    f""""
-                    Error: hmac of file ({digest}) does not match the hmac stored in the filename
-                    ({file.split('.')[-2]}) for hmac key of '{cfg.CACHE_HMAC_KEY}' for file: {file}
-                    """
+                    f"Error: HMAC mismatch for file {file} with hmac key of '{cfg.CACHE_HMAC_KEY}'"
                 )
             continue
         if verbose > 0:
-            logger.info(f"Expected hmac: {str(digest)}")
-            logger.info(f"Filename hmac: {file.split('.')[-2]}")
+            logger.info(f"Filename hmac verified: {file_digest}")
 
         # read in the data
         try:
-            fd = open(file, "rb")
-            description, data = pickle.load(fd)
-            fd.close()
+            description, data = pickle.loads(file_bytes)
             if verbose > 0:
                 logger.info(f"{description}")
             return data, description
@@ -203,9 +226,7 @@ def df_to_filename_prefix(
         The dataframe, `df`, is not modified.
     """
 
-    df_as_list = [str(x) for x in sorted(hash_pandas_object(df))]
-    df_as_str = "".join(df_as_list)
-    df_as_bytes = bytes(df_as_str.encode())
-    file_name = hashlib.md5(df_as_bytes).hexdigest()
+    row_hashes = np.sort(hash_pandas_object(df).to_numpy())
+    file_name = hashlib.sha256(row_hashes.tobytes()).hexdigest()
     filename_with_path = os.path.join(path, f"{file_name}.{suffix}")
     return filename_with_path

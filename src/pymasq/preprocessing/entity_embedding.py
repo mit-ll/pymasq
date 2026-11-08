@@ -6,11 +6,6 @@ from typing import Dict, Optional, Union
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers import Dense, Embedding, Flatten
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.optimizers import SGD
-from tensorflow.random import set_seed as tf_set_seed
 
 import pymasq.config as cfg
 from pymasq.utils import cache
@@ -85,6 +80,17 @@ def embed_entities(
     Embedding
 
     """
+
+    try:
+        from tensorflow.keras.callbacks import EarlyStopping
+        from tensorflow.keras.layers import Dense, Embedding, Flatten
+        from tensorflow.keras.models import Sequential
+        from tensorflow.keras.optimizers import SGD
+        from tensorflow.random import set_seed as tf_set_seed
+    except ImportError as e:
+        raise ImportError(
+            "TensorFlow is required for entity embeddings. Install it with `pip install tensorflow`."
+        ) from e
 
     cache_location = (
         cfg.CACHE_LOCATION if cache_location is None else Path(cache_location)

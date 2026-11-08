@@ -55,8 +55,7 @@ class ModelingBase:
             self.cache_location = cache_location
         assert self.cache_location is not None
 
-        if not os.path.exists(self.cache_location):
-            os.mkdir(self.cache_location)
+        os.makedirs(self.cache_location, exist_ok=True)
 
         assert name is not None
         self.name = name
@@ -176,9 +175,8 @@ class ModelingBase:
         fn_prefix = cache.df_to_filename_prefix(
             df, suffix=self.name, path=self.cache_location
         )
-        # descrption to be added to cache file
-        # TODO: expose a flag to not store
-        desc = f"{self.name}. Description: {description}\nFirst ten rows:\n{df[0:min(len(df),10)]}"
+        # description to be added to cache file (avoid persisting raw sensitive records)
+        desc = f"{self.name}. Description: {description}\nShape: ({len(df)}, {len(df.columns)})"
 
         # cache it
         filename = cache.save(

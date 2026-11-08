@@ -8,7 +8,11 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import ElasticNet, ElasticNetCV, LarsCV, LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from tpot import TPOTClassifier, TPOTRegressor
+try:
+    from tpot import TPOTClassifier, TPOTRegressor
+except ImportError:
+    TPOTClassifier = None
+    TPOTRegressor = None
 
 from pymasq import BEARTYPE
 from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER, DEFAULT_MODEL_ITERATIONS
@@ -702,6 +706,11 @@ class TpotClassifier(ModelingBase):
             logger.info(f"{type(self).__name__} Training new model.")
 
         n_jobs = 1 if self.n_jobs == -1 else self.n_jobs
+        if TPOTClassifier is None:
+            raise ImportError(
+                "tpot is required for TpotClassifier. Install it with `pip install tpot`."
+            )
+
         tpot_kwargs = {
             "generations": int(generations),
             "population_size": int(population_size),
@@ -895,6 +904,11 @@ class TpotRegressor(ModelingBase):
             logger.info(f"{type(self).__name__} Training new model.")
 
         n_jobs = 1 if self.n_jobs == -1 else self.n_jobs
+        if TPOTClassifier is None:
+            raise ImportError(
+                "tpot is required for TpotClassifier. Install it with `pip install tpot`."
+            )
+
         tpot_kwargs = {
             "generations": int(generations),
             "population_size": int(population_size),
