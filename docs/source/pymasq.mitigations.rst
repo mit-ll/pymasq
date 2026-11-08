@@ -120,6 +120,5 @@ Module contents
 ---------------
 
 .. automodule:: pymasq.mitigations
-   :members:
    :undoc-members:
    :show-inheritance:

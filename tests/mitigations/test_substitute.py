@@ -4,6 +4,7 @@
 import pytest
 
 from pymasq.datasets import load_census
+from pymasq.errors import InputError
 from pymasq.mitigations import substitute
 
 
@@ -65,18 +66,26 @@ def test_substitute_5(my_df):
     assert all(test_df.isin(["Male", "Female"]))
 
 
-'''
 def test_substitute_6(my_df):
     """
     Test that substitute runs correctly for multiple columns
     Should replace "e" with "u"
     """
-    test_df = substitute(my_df, ["sex", "race"],
-                                from_val="e", to_val="u",
-                                check_substr=True)
-    assert (test_df.sex.isin(["Malu", "Fumalu"]).all() and
-            test_df.race.isin(["Whitu", "Asian-Pac-Islandur", "Black"]).all())
-'''
+    test_df = substitute(
+        my_df, cols=["sex", "race"], from_val="e", to_val="u", check_substr=True
+    )
+    assert (
+        test_df.sex.isin(["Malu", "Fumalu"]).all()
+        and test_df.race.isin(["Whitu", "Asian-Pac-Islandur", "Black"]).all()
+    )
+
+
+def test_substitute_mismatched_lengths(my_df):
+    """
+    Test that substitute raises InputError when from_val and to_val are lists of different lengths (> 1)
+    """
+    with pytest.raises(InputError, match="must be of the same length"):
+        substitute(my_df["sex"], from_val=["Male", "Female", "Unknown"], to_val=["M", "F"])
 
 
 def test_substitute_7(my_df):

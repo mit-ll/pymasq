@@ -27,9 +27,10 @@ def jensen_shannon(
 ) -> float:
     """
     Computes the Jensen-Shannon distance (not the divergence) of two data frames with same columns
-    and dimensions. Results are between 1.0 to 0.0, where
-        1.0 is 'there is complete difference between the data frames' and
-        0.0 is 'there is no distinction between the two data frames.'
+    and dimensions. Results are between 1.0 to 0.0, where:
+
+    - 1.0 is 'there is complete difference between the data frames' and
+    - 0.0 is 'there is no distinction between the two data frames.'
 
     Parameters
     ----------
@@ -44,9 +45,10 @@ def jensen_shannon(
 
     preprocessor : str, optional (Default: "embeddings")
         A string indicating what pre-processor to use. Options are:
-            "embeddings" (Default) uses pymasq.preprocessing
-            "label_encode" uses pymasq.preprocessing.label_encode()
-            None uses none (i.e., the data is already pre-processed)
+
+        - "embeddings" (Default) uses pymasq.preprocessing
+        - "label_encode" uses pymasq.preprocessing.label_encode()
+        - None uses none (i.e., the data is already pre-processed)
 
 
     Returns
@@ -118,19 +120,21 @@ def propensity_score(
     0/1 column that specifies the class of the row original. The combined frame is split into train and test. The classifer
     is trained to determine the class of each row. The classifier is then tested. Propensity is the AUC score for the prediction.)
 
-    AUC_SCORE:
-        Train(orig, predict[sensitive]) ->
-            - Test(orig, predict[sensity])
-            - Test(mod, predict[sensity])
-        Difference in test performance is AUC_Score
+    .. code-block:: text
 
-    PROPENSITY:
-        combined = orig+mod with new column
-        traindf = x% of combined
-        testdf = (1-x)% of combined
-        Classifer(traindf, predict[new column])
-            - Test(testdf, predict[new column])
-        Propensity of the area under the curve from Test()ing
+        AUC_SCORE:
+            Train(orig, predict[sensitive]) ->
+                - Test(orig, predict[sensity])
+                - Test(mod, predict[sensity])
+            Difference in test performance is AUC_Score
+
+        PROPENSITY:
+            combined = orig+mod with new column
+            traindf = x% of combined
+            testdf = (1-x)% of combined
+            Classifer(traindf, predict[new column])
+                - Test(testdf, predict[new column])
+            Propensity of the area under the curve from Test()ing
 
     1.0 indicates high disimilarity between orig_df and mod_df
     0.0 indicates high similarity between orig_df and mod_df
@@ -147,22 +151,25 @@ def propensity_score(
         A string for the column name in the data frame that contains binary labels
 
     n_jobs : int, optional (Default: -1)
-        Number of workers to use for parallel processing
-            -1 indicates use all available workers
+        Number of workers to use for parallel processing:
+
+        - -1 indicates use all available workers
 
     random_state: int, optional (Default: 1234)
         Integer seed for setting the random state in the model
 
     preprocessor : str, optional (Default: "embeddings")
         A string indicating what pre-processor to use. Options are:
-            "embeddings" (Default) uses pymasq.preprocessing.preprocess_data()
-            "label_encode" uses pymasq.preprocessing.label_encode()
-            None uses none (i.e., the data is already pre-processed)
+
+        - "embeddings" (Default) uses pymasq.preprocessing.preprocess_data()
+        - "label_encode" uses pymasq.preprocessing.label_encode()
+        - None uses none (i.e., the data is already pre-processed)
 
     method : str, optional (Default: "encv")
         A string indicating what classier to use. Options are:
-            "envc" (Default) uses sklearn's ElasticNetVC()
-            "larscv" uses sklearn's LarsCV()
+
+        - "envc" (Default) uses sklearn's ElasticNetVC()
+        - "larscv" uses sklearn's LarsCV()
 
     Returns
     -------

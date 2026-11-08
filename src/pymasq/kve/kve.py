@@ -118,8 +118,9 @@ def key_variable_exploration(
 
     verbose : int {0, 1, 2}, optional (Default: 0)
         Level of reporting from the algorithms:
-            - 0 disables verbose logging.
-            - 2 is step-by-step reporting.
+
+        - 0 disables verbose logging.
+        - 2 is step-by-step reporting.
 
     num_components : int, optional (Default: 6)
         Indicates the number of components used to represent categories
@@ -133,6 +134,7 @@ def key_variable_exploration(
 
     **kwargs
         Additional arguments to be passed to `importance_Scores`:
+
         * methods : Tuple[str], optional Default: ('rf', 'rfe', 'stepwise')
             Names of the ranking methods to run.
 
@@ -404,7 +406,7 @@ def rfe_scores(
     elimination (RFE) is to select features by recursively considering smaller
     and smaller sets of features. First, the estimator is trained on the
     initial set of features and the importance of each feature is obtained
-    either through a coef_ attribute or through a feature_importances_
+    either through a ``coef_`` attribute or through a ``feature_importances_``
     attribute. Then, the least important features are pruned from current set
     of features. That procedure is recursively repeated on the pruned set
     until the desired number of features to select is eventually reached.
@@ -479,8 +481,9 @@ def rfe_scores(
     cv : int, optional (Default: 5)
         Determines the cross-validation splitting strategy. Possible inputs
         for cv are:
-            None, to use the default 5-fold cross-validation,
-            integer, to specify the number of folds.
+
+        - None, to use the default 5-fold cross-validation,
+        - integer, to specify the number of folds.
 
         For integer/None inputs, if y is binary or multiclass,
         sklearn.model_selection.StratifiedKFold is used.
@@ -551,6 +554,7 @@ def stepwise_scores(
 
     **kwargs
         Additional arguments to be passed to `stepwise_selection`.
+
         * initial_list : List[str], optional (Default: None)
             list of features to start with (column names of x_train)
 
@@ -573,8 +577,9 @@ def stepwise_scores(
     List[str]:
         list of strings, contains whether a feature should be included in
         further analysis:
-            - "yes": stepwise_selection selects column given parameters
-            - "no": stepwise_selection does not selects column given parameters
+
+        - "yes": stepwise_selection selects column given parameters
+        - "no": stepwise_selection does not selects column given parameters
     """
     if not is_numeric_dtype(y):
         le = LabelEncoder()

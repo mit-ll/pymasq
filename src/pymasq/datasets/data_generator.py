@@ -123,6 +123,7 @@ def gen_num_df(n: int = 1000, seed: int = 1234) -> pd.DataFrame:
 def _l_div_sensitive_gen(l_div: int, n: int) -> List[int]:
     """
     Generates the sensitive variable for generate_l_diverse_table for each equivalence class
+
     Parameters
     ----------
     l_div : int
@@ -152,6 +153,7 @@ def generate_l_diverse_table(
 ) -> pd.DataFrame:
     """
     Used for testing l-diversity. Creates a data set that is l-diverse for given l.
+
     Parameters
     ----------
     l_div : Union[int, List[int]]
@@ -202,6 +204,7 @@ def generate_t_close_table(
 ) -> pd.DataFrame:
     """
     Used for testing t-closeness. Creates a data set that is t-close for given t.
+
     Parameters
     ----------
     sensitive_col : List[int]

@@ -38,7 +38,7 @@ class IterativeSearch(OptimizationBase):
 
     References
     ----------
-    https://en.wikipedia.org/wiki/Iterative_method
+    .. [1] https://en.wikipedia.org/wiki/Iterative_method
 
     Examples
     --------
@@ -158,7 +158,7 @@ class IncrementalSearch(OptimizationBase):
         Number of times to continue an optimization procedure
         even if a worse solution is found. Note that the standard hill-climbing
         algorithm terminates as soon as one inferior solution is reached (e.g.
-        `retry` is `0).
+        `retry` is 0).
 
     Notes
     -----
@@ -175,7 +175,7 @@ class IncrementalSearch(OptimizationBase):
 
     References
     ----------
-    https://en.wikipedia.org/wiki/Hill_climbing
+    .. [1] https://en.wikipedia.org/wiki/Hill_climbing
 
     Examples
     --------
@@ -317,7 +317,7 @@ class StochasticSearch(OptimizationBase):
 
     alpha : float, optional (Default: 0.05)
         The `temperature` annealing/decay rate. High exploration is achieved when
-        `alpha` is low (near zero) and low exploration when `alpha is high (near one).
+        `alpha` is low (near zero) and low exploration when `alpha` is high (near one).
 
     Notes
     -----
@@ -325,7 +325,7 @@ class StochasticSearch(OptimizationBase):
     Specifically, it is a metaheuristic to approximate global optimization in a large search space for an optimization problem.
     It is often used when the search space is discrete (e.g., the traveling salesman problem). For problems where finding an
     approximate global optimum is more important than finding a precise local optimum in a fixed amount of time,
-    simulated annealing may be preferable to alternatives such as gradient descent. [1_]
+    simulated annealing may be preferable to alternatives such as gradient descent. [1]_
 
     If self.exit_on_error==False, then errors are written to the error_log column
     of the returned logbook. Each row contains a list of errors.
@@ -334,7 +334,7 @@ class StochasticSearch(OptimizationBase):
 
     References
     ----------
-    https://en.wikipedia.org/wiki/Simulated_annealing
+    .. [1] https://en.wikipedia.org/wiki/Simulated_annealing
 
     Examples
     --------
@@ -531,7 +531,7 @@ class ExhaustiveSearch(OptimizationBase):
 
     References
     ----------
-    https://en.wikipedia.org/wiki/Brute-force_search
+    .. [1] https://en.wikipedia.org/wiki/Brute-force_search
 
     Examples
     --------

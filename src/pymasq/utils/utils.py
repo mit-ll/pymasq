@@ -89,8 +89,7 @@ def formatting(
                     if not all(data.dtypes == dtypes):
                         data = data.astype(dtypes)
                 except Exception:
-                    # TODO: switch to logging
-                    logger.info("WARNING: Unable to keep original datatypes.")
+                    logger.warning("Unable to keep original datatypes.")
 
             if on_output:
                 if input_type is pd.Series:
@@ -123,7 +122,8 @@ def freq_calc(
     quasi_cols: List[Union[int, str]],
     weights: Optional[List[float]] = None,
 ):
-    """
+    """Calculate sample and population frequency counts for quasi-identifiers.
+
     Parameters
     ----------
     data : pd.DataFrame

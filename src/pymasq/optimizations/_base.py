@@ -343,7 +343,7 @@ class OptimizationBase:
                     raise
                 else:
                     if self.verbose >= 2:
-                        logger.info(f"[Warning] exception {func.__name__}: {e}")
+                        logger.warning(f"exception {func.__name__}: {e}")
                     raise
             fitnesses.append((func.__name__, value, args["weight"]))
 
@@ -445,8 +445,8 @@ class OptimizationBase:
             result = func(target, **args)
         except Exception as e:
             if self.verbose >= 2:
-                logger.info(
-                    f"[Warning] mutation {func.__name__} failed with args:={args} and error: {e}"
+                logger.warning(
+                    f"mutation {func.__name__} failed with args:={args} and error: {e}"
                 )
             raise
         if isinstance(result, pd.Series):

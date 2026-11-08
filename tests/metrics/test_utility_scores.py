@@ -78,7 +78,7 @@ def test_propensity_bin(orig_bin_df, orig_cat_df):
                 scores = []
                 ratios = [i / 100 for i in range(0, 110, 10)]
                 n = orig_df.shape[0]
-                orig_df.Col.loc[0] = mod_val
+                orig_df.loc[0, "Col"] = mod_val
                 for r in ratios:
                     elements = sample(range(n), int(n * r))
                     mod_df = orig_df.copy()

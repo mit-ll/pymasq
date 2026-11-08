@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **SDC Risk Metrics - SUDA**:
+  - Implemented the Special Uniques Detection Algorithm (`pymasq.metrics.suda`) calculating disclosure risk via Minimal Sample Uniques (MSUs) and factorial subset weighting, with unit tests (`tests/metrics/test_suda.py`).
 - **SDC Mitigation - Rank Swapping**:
   - Implemented standard rank swapping mitigation for continuous and ordinal variables in `pymasq.mitigations.rank_swap`. Swaps records within a bounded rank window $P = \max(1, \lfloor N \cdot p \rfloor)$.
   - Supports both fraction (`0 < p <= 1`) and percentage (`1 < p <= 100`) parameter scales.
@@ -25,20 +27,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Vectorization & Performance Optimizations**:
+  - Optimized `indiv_risk` calculation by computing risk scores across unique frequency pairs and eliminating expensive whole-DataFrame self-merge.
   - Vectorized Jensen-Shannon divergence (`pymasq.metrics.jensen_shannon`) using `np.histogram(..., bins=bins)` instead of pandas cut/merge loops.
   - Vectorized equivalence class calculation in `pymasq.utils.freq_calc` and `pymasq.mitigations.utils.freq_calc` via `transform("size")`, eliminating memory allocations and guaranteeing row-index alignment.
   - Vectorized cell-by-cell hashing (`pymasq.mitigations.hashing`) by pre-hashing unique values and mapping back via `.map()`.
   - Vectorized PRAM transition probability scaling and index selection (`pymasq.mitigations.pram`).
   - Precomputed 2D rotation planes outside the column loop in geometric transformations (`pymasq.mitigations.geom_transform`).
   - Cached inspected metric signatures in `self._metric_signatures` and avoided redundant copies of `target` in the optimizer evaluation loop (`pymasq.optimizations._base`), yielding ~27% speedup.
+- **Documentation & Sphinx Build Fixes**:
+  - Fixed Sphinx toctree inclusion in `docs/source/modules.rst` ensuring `pymasq` is correctly rendered in table of contents.
+  - Resolved Sphinx docstring formatting errors (unexpected indentation, definition lists, unclosed backticks, footnote targets) across `pymasq.kve`, `pymasq.metrics`, `pymasq.mitigations`, `pymasq.optimizations`, `pymasq.preprocessing`, and `pymasq.datasets`.
+  - Upgraded warning messages logged via `logger.info("WARNING: ...")` to proper `logger.warning(...)` across `pymasq.mitigations.shuffle` and `pymasq.optimizations._base`.
 - **Defensive Edge-Case Hardening**:
+  - Added list length validation in `pymasq.mitigations.substitute` to raise `InputError` if `from_val` and `to_val` lists have unequal lengths (> 1).
+  - Raised `NotInRangeError` for out-of-bounds probability in `pymasq.datasets.rand_cat_change`.
   - Eliminated caller DataFrame and Index mutation in `_reverse_map` in `pymasq.mitigations.shuffle`.
   - Hardened `is_identical` / `_is_identical` to safely handle empty Series and Series containing `NaN` values without `IndexError` or false negatives.
   - Added input validation for missing column lookups in `as_dataframe`, raising `InputError`.
+  - Updated `preprocess.py` to include `"string"` alongside `"object", "category"` to comply with Pandas 3.0+ migration.
+  - Set explicit `scoring="accuracy"` and `l1_ratios=(0.0,)` in `LogisticRegressionCV` to preempt Scikit-Learn 1.10+ deprecations.
 
 ### Fixed
-- **SDC Risk Metrics Mathematical Operators**:
+- **SDC Risk Metrics Mathematical Operators & Typing**:
   - Corrected bitwise XOR (`^`) to exponentiation (`**`) across 8 equations in `indiv_risk_approx` and `indiv_risk_exact` in `pymasq.metrics.risk_scores`.
+  - Added `Union[int, float]` support for `samp_freq` and `pop_freq` in `indiv_risk_exact` to prevent runtime `BeartypeCallHintParamViolation` with float64 Series inputs.
   - Fixed `is_l_diverse` list-to-int comparison bug (`len(vals) >= l`).
   - Corrected $k$-anonymity inequality condition to `val >= k`.
 - **RNG Seed Unpacking**:

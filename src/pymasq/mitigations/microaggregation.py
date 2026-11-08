@@ -644,13 +644,11 @@ def advanced_magg(
         Refer to [1]_ for arguments that can be passed.
     scale : {"standard", "mcd", "robust"} or Callable, Optional (Default: None)
         Scaling method to use. Scaling aims to standarize, or transform, the data by centering to a specfic location (e.g., a cluster or 0).
-            - if `scale` is "standard":
-                The data will be centered to the mean and scaled to unit variance. Refer to [2]_ for more information.
-            - if `scale` is "mcd":
-                The data will be centered around the location of the robust MCD estimator. Refer to [3]_ for more information.
-            - if `scale` is "robust":
-                The data will be centered around decomposition of the input data. Refer to [4]_ for more information.
-                Note that this method required the `tensorly` Python library to be installed, which is not installed by default when installing `pymasq`.
+
+        * "standard": The data will be centered to the mean and scaled to unit variance. Refer to [2]_ for more information.
+        * "mcd": The data will be centered around the location of the robust MCD estimator. Refer to [3]_ for more information.
+        * "robust": The data will be centered around decomposition of the input data. Refer to [4]_ for more information. Note that this method required the `tensorly` Python library to be installed, which is not installed by default when installing `pymasq`.
+
         Note that scaling will only occur if `reduct` is passed.
     scale_kwargs : dict, Optional
         Keyword arguments to past into the `scale` function.
@@ -901,13 +899,7 @@ def microaggregation(
                 Refer to [1]_ for arguments that can be passed.
             * scale : {"standard", "mcd", "robust"} or Callable, Optional (Default: None)
                 Scaling method to use. Scaling aims to standarize, or transform, the data by centering to a specfic location (e.g., a cluster or 0).
-                    - if `scale` is "standard":
-                        The data will be centered to the mean and scaled to unit variance. Refer to [2]_ for more information.
-                    - if `scale` is "mcd":
-                        The data will be centered around the location of the robust MCD estimator. Refer to [3]_ for more information.
-                    - if `scale` is "robust":
-                        The data will be centered around decomposition of the input data. Refer to [4]_ for more information.
-                        Note that this method required the `tensorly` Python library to be installed, which is not installed by default when installing `pymasq`.
+                Options: "standard" (centered to mean, unit variance), "mcd" (robust MCD estimator), or "robust" (decomposition of input data; requires `tensorly`).
                 Note that scaling will only occur if `reduct` is passed.
             * scale_kwargs : dict, Optional
                 Keyword arguments to past into the `scale` function.

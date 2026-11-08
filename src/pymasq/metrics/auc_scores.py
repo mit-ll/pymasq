@@ -38,19 +38,21 @@ def auc_score(
     0/1 column that specifies the class of the row original. The combined frame is split into train and test. The classifer
     is trained to determine the class of each row. The classifier is then tested. Propensity is the AUC score for the prediction.)
 
-    AUC_SCORE:
-        Train(orig, predict[sensitive]) ->
+    .. code-block:: text
+
+        AUC_SCORE:
+            Train(orig, predict[sensitive]) ->
             - Test(orig, predict[sensity])
             - Test(mod, predict[sensity])
-        Difference in test performance is AUC_Score
+            Difference in test performance is AUC_Score
 
-    PROPENSITY:
-        combined = orig+mod with new column
-        traindf = x% of combined
-        testdf = (1-x)% of combined
-        Classifer(traindf, predict[new column])
+        PROPENSITY:
+            combined = orig+mod with new column
+            traindf = x% of combined
+            testdf = (1-x)% of combined
+            Classifer(traindf, predict[new column])
             - Test(testdf, predict[new column])
-        Propensity of the area under the curve from Test()ing
+            Propensity of the area under the curve from Test()ing
 
     1.0 indicates high disimilarity between orig_df and mod_df
     0.0 indicates high similarity between orig_df and mod_df
@@ -64,7 +66,8 @@ def auc_score(
     sensitive_col : str
         String of sensitive column name in the data frame that contains labels
     method : str
-        The classifier method to use. There are several options.
+        The classifier method to use. There are several options:
+
         - "encv" denotes the sklearn ElasticNetCV regressor
         - "larscv" denotes the sklearn LarsCV regressor
         - "rfreg" denotes the sklearn Random Forest regressor
@@ -81,7 +84,8 @@ def auc_score(
           used, specify the path in the "cache_location" argument. If method is "tpot",
           then "tpot_fname" should be passed as a named keyword argument.
     preprocessor : str, optional (Default: 'embeddings')
-        The pymasq preprocessor to use. There are several options.
+        The pymasq preprocessor to use. There are several options:
+
         - 'embeddings': advanced processing of numeric and categorical data.
         - 'label_encode': skLearn-based encoding of categorical data only
         - None: the dataframes are not processed and assumed ready for use by a classifier

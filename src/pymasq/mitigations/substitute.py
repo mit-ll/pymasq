@@ -4,6 +4,7 @@ import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import FORMATTING_ON_OUTPUT
+from pymasq.errors import InputError
 from pymasq.utils import formatting
 
 __all__ = ["substitute"]
@@ -17,12 +18,18 @@ def __format_if_list(
         to_val = to_val if isinstance(to_val, list) else [to_val]
         if len(to_val) == 1:
             to_val = [to_val[0] for _ in range(len(from_val))]
-        # TODO: elif not of same length, raise
+        elif len(to_val) != len(from_val):
+            raise InputError(
+                f"`from_val` and `to_val` must be of the same length. (Received: {len(from_val)} and {len(to_val)})"
+            )
     elif isinstance(to_val, list):
         from_val = from_val if isinstance(from_val, list) else [from_val]
         if len(from_val) == 1:
             from_val = [from_val[0] for _ in range(len(to_val))]
-        # TODO: elif not of same length, raise
+        elif len(from_val) != len(to_val):
+            raise InputError(
+                f"`from_val` and `to_val` must be of the same length. (Received: {len(from_val)} and {len(to_val)})"
+            )
 
     return from_val, to_val
 

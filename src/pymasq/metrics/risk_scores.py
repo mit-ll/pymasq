@@ -345,13 +345,14 @@ def is_l_diverse(
     method : str {'distinct', 'entropy'}, optional
         The method of l-diversity being applied. From Wikipedia:
 
-            * Distinct l-diversity – The simplest definition ensures that at least L distinct values for the sensitive
-            field in each equivalence class exist.
-
-            * Entropy l-diversity – The most complex definition defines Entropy of an equivalent class E to be the
-            negation of summation of s across the domain of the sensitive attribute of p(E,s)log(p(E,s)) where p(E,s)
-            is the fraction of records in E that have the sensitive value s. A table has entropy l-diversity when for
-            every equivalent class E, Entropy(E) ≥ log(L).
+        * Distinct l-diversity – The simplest definition ensures that at least L
+          distinct values for the sensitive field in each equivalence class exist.
+        * Entropy l-diversity – The most complex definition defines Entropy of
+          an equivalent class E to be the negation of summation of s across the
+          domain of the sensitive attribute of p(E,s)log(p(E,s)) where p(E,s) is
+          the fraction of records in E that have the sensitive value s. A table
+          has entropy l-diversity when for every equivalent class E,
+          Entropy(E) ≥ log(L).
 
         (Default: 'distinct')
 
@@ -381,6 +382,7 @@ def _get_probs(
 ) -> Dict[Any, float]:
     """
     Given a dataset, calculates the discrete proability of each of the unique values of the sensitive column
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -402,6 +404,7 @@ def _get_probs(
 def _get_probs_col(col: pd.Series) -> Dict:
     """
     Given a dataset, calculates the discrete proability of each of the unique values of the sensitive column
+
     Parameters
     ----------
     col : pd.Series
@@ -422,6 +425,7 @@ def _dict_diff(dict1: Dict, dict2: Dict) -> List[float]:
     """
     Calculates the absolute difference between the values of two dictionaries by the intersection of their keys. This
     operation is commutable.
+
     Parameters
     ----------
     dict1 : Dict
@@ -445,6 +449,7 @@ def _num_emd(qs: Dict, q_block_col: pd.Series) -> float:
     Calculates the earth mover's distance for numerical values. The earth mover's distance as a metric between
     distributions can be explained as the least amount of work that needs to be done to convert the shape of one
     dirt pile to shape of another, if the distributions are thought of as dirt piles.
+
     Parameters
     ----------
     qs : Dict
@@ -482,6 +487,7 @@ def _num_emd(qs: Dict, q_block_col: pd.Series) -> float:
 def _cat_emd(qs: Dict, q_block_col: pd.Series) -> float:
     """
     Calculates the earth mover's distance for categorical values.
+
     Parameters
     ----------
     qs : Dict
@@ -517,6 +523,7 @@ def _closeness(
     """
     Calculates the t-closeness of the dataset using the function provided. The provided function determines if the
     the t-closeness is calculated for numerical or categorical values in the sensitive column.
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -568,6 +575,7 @@ def t_closeness(
 ) -> Union[List, float]:
     """
     Determines if the t-closeness is more than the parameter t
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -618,6 +626,7 @@ def is_t_close(
 ) -> bool:
     """
     Determines if the t-closeness is more than the parameter t
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -686,15 +695,17 @@ def indiv_risk_approx(samp_freq: Union[int, float], pop_freq: Union[int, float])
 
 
 @BEARTYPE
-def indiv_risk_exact(samp_freq: int, pop_freq: float) -> float:
+def indiv_risk_exact(
+    samp_freq: Union[int, float], pop_freq: Union[int, float]
+) -> float:
     """
     calculates the exact individual risk
 
     Parameters
     ----------
-    samp_freq : int
+    samp_freq : int or float
         the sample frequency of the row's combination of quasi-identifier values
-    pop_freq : int
+    pop_freq : int or float
         the population frequence of the row's combination of quasi-identifier values
 
     Returns
@@ -707,6 +718,9 @@ def indiv_risk_exact(samp_freq: int, pop_freq: float) -> float:
     TODO
 
     """
+    samp_freq = int(round(samp_freq))
+    pop_freq = float(pop_freq)
+
     if samp_freq == pop_freq:
         return 1 / float(samp_freq)
 
@@ -795,20 +809,27 @@ def indiv_risk(
         quasi_cols=quasi_cols,
     )
 
+    unique_pairs = freq_count[["samp_fq", "pop_fq"]].drop_duplicates()
     if method == APPROX:
-        freq_count["risk"] = freq_count.apply(
-            lambda x: indiv_risk_approx(x["samp_fq"], x["pop_fq"]) * qual, axis=1
-        )
+        risk_map = {
+            (s, p): indiv_risk_approx(s, p) * qual
+            for s, p in zip(unique_pairs["samp_fq"], unique_pairs["pop_fq"])
+        }
     elif method == EXACT:
-        freq_count["risk"] = freq_count.apply(
-            lambda x: indiv_risk_exact(x["samp_fq"], x["pop_fq"]) * qual, axis=1
-        )
+        risk_map = {
+            (s, p): indiv_risk_exact(s, p) * qual
+            for s, p in zip(unique_pairs["samp_fq"], unique_pairs["pop_fq"])
+        }
     else:
         raise InputError(
             f"Method must be in ['{APPROX}', '{EXACT}'] Method given was {method}"
         )
 
-    return pd.merge(df, freq_count, how="left", on=quasi_cols + ["order"], validate="many_to_one")["risk"]
+    risk_vals = [
+        risk_map[(s, p)]
+        for s, p in zip(freq_count["samp_fq"], freq_count["pop_fq"])
+    ]
+    return pd.Series(risk_vals, index=df.index, name="risk")
 
 
 @BEARTYPE

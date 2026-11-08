@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 
 from pymasq.datasets import load_census
@@ -9,6 +11,7 @@ from pymasq.errors import InputError
 from pymasq.metrics import (
     auc_score,
     beta_likeness,
+    indiv_risk,
     indiv_risk_approx,
     indiv_risk_exact,
     is_beta_like,
@@ -273,3 +276,23 @@ def test_auc_score_3(my_df, method, preprocessor):
     assert (
         score == answer_key[(method, preprocessor)]
     ), f"{method, preprocessor}: Got {score}, which is not equal to {answer_key[(method, preprocessor)]}."
+
+
+def test_indiv_risk():
+    df = pd.DataFrame({
+        "age": [20, 20, 30, 40],
+        "zip": [10001, 10001, 10002, 10003],
+        "salary": [50, 60, 70, 80],
+    })
+    res_approx = indiv_risk(
+        df, sensitive_col="salary", quasi_cols=["age", "zip"], method="approx"
+    )
+    res_exact = indiv_risk(
+        df, sensitive_col="salary", quasi_cols=["age", "zip"], method="exact"
+    )
+    assert len(res_approx) == 4
+    assert len(res_exact) == 4
+    assert np.isclose(res_approx.iloc[0], 0.5)
+    assert np.isclose(res_approx.iloc[2], 1.0)
+    assert np.isclose(res_exact.iloc[0], 0.5)
+    assert np.isclose(res_exact.iloc[2], 1.0)

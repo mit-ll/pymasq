@@ -136,90 +136,90 @@ def add_noise_correlated(
 ) -> pd.DataFrame:
     """Add correlated noise to data.
 
-      Note that this method requires 2 or more data features, or columns.
+    Note that this method requires 2 or more data features, or columns.
 
-      Parameters
-      ----------
-      data : DataFrame
-          The data to be modified.
-      magnitude : int (Default: 5)
-          Amount of perturbative noise to add. This will be converted into a percentage
-          (e.g., magnitude=5 will add 5% noise).
-      encode_non_numeric : bool (Default: False)
-          If True, all non-numeric columns in `data` will be encoded as numerical values
-          using a LabelEncoder and be included in the covariance matrix calculations (note
-          that this will result in non-numeric columns being returned as numeric features).
-          If False, only numeric columns will be accounted for.
-      cols : str or list
-          The name of the column or columns to subset from `data` if `data` is a dataframe.
-      keep_dtypes : bool (Default: True)
-          Determine whether the data types of the output values should be the same as the
-          data types of the input values.
+    Parameters
+    ----------
+    data : DataFrame
+        The data to be modified.
+    magnitude : int (Default: 5)
+        Amount of perturbative noise to add. This will be converted into a percentage
+        (e.g., magnitude=5 will add 5% noise).
+    encode_non_numeric : bool (Default: False)
+        If True, all non-numeric columns in `data` will be encoded as numerical values
+        using a LabelEncoder and be included in the covariance matrix calculations (note
+        that this will result in non-numeric columns being returned as numeric features).
+        If False, only numeric columns will be accounted for.
+    cols : str or list
+        The name of the column or columns to subset from `data` if `data` is a dataframe.
+    keep_dtypes : bool (Default: True)
+        Determine whether the data types of the output values should be the same as the
+        data types of the input values.
 
-      Returns
-      -------
-      DataFrame
-          A DataFrame perturbed with correlated noise.
+    Returns
+    -------
+    DataFrame
+        A DataFrame perturbed with correlated noise.
 
-      Raises
-      ------
-      InputError:
-          This error is raised when an insufficient number of columns are specified.
+    Raises
+    ------
+    InputError:
+        This error is raised when an insufficient number of columns are specified.
 
-      Examples
-      --------
-      >>> df = pd.DataFrame(np.random.random_integers(0, 100, (10,3)))
-         0    1    2
-      0  182  529  949
-      1  783  375  59
-      2  253  349  631
-      3  889  683  996
-      4  523  554  803
-      5  279  379  242
-      6  639  26   833
-      7  30   307  551
-      8  681  885  822
-      9  659  180  823
+    Examples
+    --------
+    >>> df = pd.DataFrame(np.random.random_integers(0, 100, (10,3)))
+       0    1    2
+    0  182  529  949
+    1  783  375  59
+    2  253  349  631
+    3  889  683  996
+    4  523  554  803
+    5  279  379  242
+    6  639  26   833
+    7  30   307  551
+    8  681  885  822
+    9  659  180  823
 
-      >>> add_noise_correlated(df, magnitude=2, keep_dtypes=True)
-          0   1    2
-      0  146  525  944
-      1  772  351  65
-      2  286  344  601
-      3  903  664  947
-      4  520  543  827
-      5  296  375  257
-      6  588  30   821
-      7  32   346  581
-      8  630  893  787
-      9  639  158  857
+    >>> add_noise_correlated(df, magnitude=2, keep_dtypes=True)
+        0   1    2
+    0  146  525  944
+    1  772  351  65
+    2  286  344  601
+    3  903  664  947
+    4  520  543  827
+    5  296  375  257
+    6  588  30   821
+    7  32   346  581
+    8  630  893  787
+    9  639  158  857
 
-      >>> df2 = pd.DataFrame(np.random.random_integers(1, 100, (10, 3)))
-      >>> df2[3] = np.random.choice(["a", "b", "c"], size=10)
-          0  1   2   3
-      0  98  3   39  b
-      1  37  8   56  a
-      2  31  68  83  c
-      3  18  71  64  b
-      4  33  63  3   c
-      5  38  20  20  c
-      6  23  33  52  a
-      7  52  32  15  a
-      8  28  95  65  b
-      9  58  80  73  a
+    >>> df2 = pd.DataFrame(np.random.random_integers(1, 100, (10, 3)))
+    >>> df2[3] = np.random.choice(["a", "b", "c"], size=10)
+        0  1   2   3
+    0  98  3   39  b
+    1  37  8   56  a
+    2  31  68  83  c
+    3  18  71  64  b
+    4  33  63  3   c
+    5  38  20  20  c
+    6  23  33  52  a
+    7  52  32  15  a
+    8  28  95  65  b
+    9  58  80  73  a
 
     >>> add_noise_correlated(df, magnitude=2, encode_non_numeric=True, keep_dtypes=True)
-          0  1   2   3
-      0  98  2   38  0.986802
-      1  37  7   55  0.00440759
-      2  31  67  83  1.98077
-      3  19  70  63  1.00325
-      4  32  63  2   1.98965
-      5  37  19  20  1.98499
-      6  23  32  52  -0.0159703
-      7  51  30  14  0.012063
-      8  28  94  65  1.0021
-      9  57  80  73  0.0147035
+        0  1   2   3
+    0  98  2   38  0.986802
+    1  37  7   55  0.00440759
+    2  31  67  83  1.98077
+    3  19  70  63  1.00325
+    4  32  63  2   1.98965
+    5  37  19  20  1.98499
+    6  23  32  52  -0.0159703
+    7  51  30  14  0.012063
+    8  28  94  65  1.0021
+    9  57  80  73  0.0147035
     """
     if len(data.columns) <= 1:
         raise InputError(

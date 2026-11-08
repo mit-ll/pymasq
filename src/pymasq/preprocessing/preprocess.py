@@ -58,10 +58,10 @@ class LabelEncoderPM(PreprocessorBase):
         If you need encode two dataframes in a consistent manner, then use encode_both(), and do not call this
         method twice.
 
-        **kwargs are ignored currently.
+        ``**kwargs`` are ignored currently.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         df: pdf.DataFrame:
             The data frame to encode.
 
@@ -102,10 +102,10 @@ class LabelEncoderPM(PreprocessorBase):
 
         This method requires that the two data frames have the same column names.
 
-        **kwargs are ignored currently.
+        ``**kwargs`` are ignored currently.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         df_a: pdf.DataFrame:
             The data frame to encode.
         df_b: pdf.DataFrame:
@@ -398,19 +398,19 @@ class EmbeddingsEncoder(PreprocessorBase):
         numerical_columns = list(
             input_data.select_dtypes(include=[np.number]).columns.values
         )
-        binary_columns = [
-            col
-            for col in numerical_columns
-            if np.isin(input_data[col].dropna().unique(), [0, 1]).all()
-        ]
-        numerical_columns = [
-            col
-            for col in numerical_columns
-            if not np.isin(input_data[col].dropna().unique(), [0, 1]).all()
-        ]
+        binary_columns = []
+        non_binary_columns = []
+        for col in numerical_columns:
+            if np.isin(input_data[col].dropna().unique(), [0, 1]).all():
+                binary_columns.append(col)
+            else:
+                non_binary_columns.append(col)
+        numerical_columns = non_binary_columns
 
         cat_columns = list(
-            input_data.select_dtypes(include=["object", "category"]).columns.values
+            input_data.select_dtypes(
+                include=["object", "category", "string"]
+            ).columns.values
         )
         textual_columns = []
         categorical_columns = []

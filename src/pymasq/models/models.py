@@ -341,6 +341,8 @@ class LogisticRegressionClassifier(ModelingBase):
             n_jobs=self.n_jobs,
             solver=DEFAULT_LOGISITIC_REGRESSION_SOLVER,
             max_iter=DEFAULT_MODEL_ITERATIONS,
+            scoring="accuracy",
+            l1_ratios=(0.0,),
         )
         self.trained.fit(x_scaled, y)
 

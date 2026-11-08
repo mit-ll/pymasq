@@ -3,6 +3,7 @@ from random import choice, sample
 from numpy import ndarray
 
 from pymasq import BEARTYPE
+from pymasq.errors import NotInRangeError
 
 
 @BEARTYPE
@@ -25,8 +26,7 @@ def rand_cat_change(arr: ndarray, p: float) -> ndarray:
         An array with a user-defined portion of the elements randomly changed
     """
     if not 0 <= p <= 1:
-        # TODO: raise optimizations.NotInRangeError
-        raise ValueError("p must be between 0.0 and 1.0")
+        raise NotInRangeError("p must be between 0.0 and 1.0")
     a = arr.copy()
     cats = list(set(a))
     if len(cats) <= 1:

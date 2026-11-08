@@ -48,6 +48,5 @@ Module contents
 ---------------
 
 .. automodule:: pymasq.metrics
-   :members:
    :undoc-members:
    :show-inheritance:

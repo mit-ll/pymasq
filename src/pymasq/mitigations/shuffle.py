@@ -215,8 +215,8 @@ def shuffle(
                 f"The values of `data[{cor_cols}]` are all identical and therefore cannot be used for correlation."
             )
         else:
-            logger.info(
-                "WARNING: ignoring columns that are composed entirely of identical values."
+            logger.warning(
+                "ignoring columns that are composed entirely of identical values."
             )
 
     _data = LabelEncoderPM.encode(df=pd.concat([x, y], axis=1))

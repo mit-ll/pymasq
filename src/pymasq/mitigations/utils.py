@@ -58,7 +58,8 @@ def __calc_freq(
     sensitive_col: str,
     weights: List[float],
 ) -> pd.DataFrame:
-    """
+    """Calculate frequency counts for given columns and sensitive column.
+
     Parameters
     ----------
     df : DataFrame
@@ -101,7 +102,8 @@ def freq_calc(
     sensitive_col: Optional[str] = None,
     weights: Optional[List[float]] = None,
 ):
-    """
+    """Calculate sample and population frequency counts.
+
     Parameters
     ----------
     df : pd.DataFrame

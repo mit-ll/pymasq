@@ -106,8 +106,7 @@ def gen_samples(
             params, num_samples, calc_second_order=calc_second_order
         )
     elif method == SAMPLE:
-        # TODO: figure out sampling method
-        samples = None
+        raise NotImplementedError("Sampling method 'sample' is not yet implemented.")
     else:
         raise InputError(
             f"'method' parameter must be in ['{UNIFORM}', '{SAMPLE}'], entered '{method}'"
