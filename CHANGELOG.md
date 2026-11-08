@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.6] - 2026-11-07
+## [1.0.1] - 2026-11-07
 
 ### Added
 - **Python Compatibility**: Added official support for Python 3.10, 3.11, 3.12, and 3.13 (`requires-python = ">=3.10"`).
