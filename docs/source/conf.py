@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -37,6 +37,7 @@ release = "1.1"
 extensions = [
     "sphinx.ext.napoleon",  # NumPy & Google style docstring support
     "sphinx_rtd_theme",
+    "sphinx_mdinclude",
 ]
 
 napoleon_google_docstring = False
