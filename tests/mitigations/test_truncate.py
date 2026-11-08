@@ -2,12 +2,12 @@
 # coding: utf-8
 
 import logging
-import pytest
 
 import pandas as pd
+import pytest
 
 from pymasq.datasets import load_census
-from pymasq.mitigations import truncate, INDEX, MATCH, START, END, BOTH
+from pymasq.mitigations import BOTH, END, INDEX, MATCH, START, truncate
 
 logger = logging.getLogger(__name__)
 

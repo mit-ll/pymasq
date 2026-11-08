@@ -1,26 +1,24 @@
+import logging
 from typing import Any, Callable, Dict, Final, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-
 from scipy.stats import shapiro, zscore
-from sklearn.cluster import KMeans, DBSCAN, Birch, AgglomerativeClustering, OPTICS
+from sklearn.cluster import DBSCAN, OPTICS, AgglomerativeClustering, Birch, KMeans
 from sklearn.covariance import MinCovDet
+from sklearn.decomposition import PCA, FastICA, IncrementalPCA, KernelPCA
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import scale as sklearn_scale
-from sklearn.decomposition import PCA, IncrementalPCA, KernelPCA, FastICA
 
 from pymasq import BEARTYPE
 from pymasq.config import (
-    FORMATTING_ON_OUTPUT,
     FORMATTING_IGNORE_DTYPES,
+    FORMATTING_ON_OUTPUT,
     VALIDATE_NUMERIC_ON_INPUT,
     VALIDATE_NUMERIC_ON_OUTPUT,
 )
-from pymasq.utils import validate_numeric, formatting
-from pymasq.errors import InputError, NotInRangeError, LessThanOrEqualToZeroError
-
-import logging
+from pymasq.errors import InputError, LessThanOrEqualToZeroError, NotInRangeError
+from pymasq.utils import formatting, validate_numeric
 
 logger = logging.getLogger(__name__)
 
@@ -341,6 +339,7 @@ def sequential_magg(
             f"The aggregation level must be an integer greater than 0. (Received: {aggr})"
         )
 
+    data = data.astype(float).copy()
     bins = data.index // aggr
 
     measure_kwargs = measure_kwargs if measure_kwargs else {}
@@ -552,11 +551,11 @@ def robust_magg(
             f"Warning: data not normally distributed; fails Shapiro-Wilk test (p={result.pvalue})."
         )
 
-    z = zscore(data, ddof=1, nan_policy="raise").values
+    z = np.asarray(zscore(data, ddof=1, nan_policy="raise"))
 
     if np.isnan(z).any():
         raise ValueError(
-            "Computed z-scores contain NaN(s); verify that `data` is not entirely composed of identical vlaues."
+            "Computed z-scores contain NaN(s); verify that `data` is not entirely composed of identical values."
         )
 
     pw_dists = pairwise_distances(z)
@@ -772,6 +771,7 @@ def advanced_magg(
             f"The aggregation level must be an integer greater than 0. (Received: {aggr})"
         )
 
+    data = data.astype(float).copy()
     bins = data.index // aggr
 
     c_idx, _data = None, None

@@ -1,8 +1,7 @@
-from pymasq.preprocessing.preprocess import LabelEncoderPM
-import pandas as pd
-import numpy as np
-
 from typing import Final, List, Optional, Union
+
+import numpy as np
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (
@@ -10,7 +9,8 @@ from pymasq.config import (
     VALIDATE_NUMERIC_ON_INPUT,
 )
 from pymasq.errors import InputError
-from pymasq.utils import validate_numeric, formatting
+from pymasq.preprocessing.preprocess import LabelEncoderPM
+from pymasq.utils import formatting, validate_numeric
 
 __all__ = [
     "global_recode",

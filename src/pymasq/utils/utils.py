@@ -7,9 +7,7 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
-from pymasq import BEARTYPE
-from pymasq import config
-
+from pymasq import BEARTYPE, config
 
 __all__ = ["BOTH", "as_dataframe", "validate_numeric", "formatting", "freq_calc"]
 
@@ -86,16 +84,16 @@ def formatting(
                 try:
                     if not all(data.dtypes == dtypes):
                         data = data.astype(dtypes)
-                except:
+                except Exception:
                     # TODO: switch to logging
                     logger.info("WARNING: Unable to keep original datatypes.")
 
             if on_output:
-                if input_type == pd.Series:
+                if input_type is pd.Series:
                     return data.squeeze()
-                if input_type == np.ndarray:
+                if input_type is np.ndarray:
                     return data.to_numpy()
-                if input_type == list:
+                if input_type is list:
                     return data.values.tolist()
 
             return data

@@ -3,8 +3,7 @@ from typing import Optional
 
 import pandas as pd
 
-from pymasq import ROOT_DIR, BEARTYPE
-
+from pymasq import BEARTYPE, ROOT_DIR
 
 DATA_DIR = join(ROOT_DIR, "datasets", "data")
 

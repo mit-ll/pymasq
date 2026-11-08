@@ -1,8 +1,8 @@
 from .models import (
-    LarsCvRegressor,
     ElasticNetCvRegressor,
-    TpotClassifier,
+    LarsCvRegressor,
     RandomForestClassifier,
+    TpotClassifier,
 )
 
 __all__ = [

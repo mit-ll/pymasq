@@ -1,11 +1,11 @@
-import pandas as pd
+from typing import List, Optional, Union
 
-from typing import List, Union, Optional
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (
-    FORMATTING_ON_OUTPUT,
     FORMATTING_IGNORE_DTYPES,
+    FORMATTING_ON_OUTPUT,
     VALIDATE_NUMERIC_ON_INPUT,
     VALIDATE_NUMERIC_ON_OUTPUT,
 )

@@ -1,0 +1,86 @@
+[project]
+name = "pymasq"
+description = "Mitigation Assessment and Application for Statistical Disclosure Control"
+license = {text = "MIT License"}
+authors = [
+	{name = "Cuyler D. O'Brien", email="cuyler.obrien@ll.mit.edu"},
+	{name = "Jaime Pena", email="jdpena@ll.mit.edu"},
+	{name = "Evan Young", email="evan.young@ll.mit.edu"},
+	{name = "Brian Levine"},
+	{name = "Eric Wybenga"},
+	{name = "MIT Lincoln Laboratory"},
+]
+requires-python = ">=3.10"
+dependencies = [
+	"bpemb>=0.3",
+	"matplotlib>=3.5",
+	"numpy>=1.26",
+	"pandas>=2.0",
+	"plotly>=4.11.0",
+	"SALib>=1.4",
+	"scikit-learn>=1.2",
+	"scipy>=1.8",
+	"statsmodels>=0.14",
+	"tensorflow>=2.10",
+	"tpot>=1.1.0",
+]
+keywords = ["SDC", "Statistical Disclosure Control"]
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"License :: OSI Approved :: MIT License",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+]
+dynamic = ["version", "readme"]
+
+[project.optional-dependencies]
+test = [
+	"pytest>=7.4",
+	"beartype>=0.5.1",
+	"coverage[toml]>=7.0",
+	"ruff>=0.4",
+]
+
+[project.urls]
+Documentation = "https://mit-ll.github.io/pymasq/"
+Repository = "https://github.com/mit-ll/pymasq"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages]
+find = {where = ["src"]}
+
+[tool.setuptools.dynamic]
+version = {attr = "pymasq.__version__"}
+readme = {file = ["README.md"], content-type="text/markdown"}
+
+[tool.pytest.ini_options]
+addopts = ["-ra", "-v"]
+junit_family = "xunit2"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+command_line = "-m pytest"
+
+[tool.bandit]
+targets = ["src"]
+exclude_dirs = ["tests", "build"]
+
+[tool.black]
+skip-magic-trailing-comma = true
+
+[tool.ruff]
+include = ["*.py", "*.pyi", "**/pyproject.toml"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+extend-ignore = ["E501", "E731"]
+per-file-ignores = { "**/__init__.py" = ["F401", "F403"], "tests/*" = ["E501", "E402", "F401", "F403", "F405", "F841"] }
+isort = { known-first-party = ["pymasq"] }

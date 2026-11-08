@@ -1,19 +1,18 @@
 import logging
 import math
-from typing import Union, List, Final, Optional
+from typing import Final, List, Optional, Union
 
-import pandas as pd
-from pandas.api.types import is_numeric_dtype
 import numpy as np
+import pandas as pd
 import scipy.stats as ss
+from pandas.api.types import is_numeric_dtype
 
 from pymasq import BEARTYPE
 from pymasq.config import DEFAULT_SEED, FORMATTING_ON_OUTPUT
-from pymasq.utils import formatting
-from pymasq.preprocessing import LabelEncoderPM
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
-
+from pymasq.preprocessing import LabelEncoderPM
+from pymasq.utils import formatting
 
 __all__ = [
     "shuffle",
@@ -248,7 +247,7 @@ def shuffle(
 
 
 '''
-### Not currently being used; keeping for future integration 
+### Not currently being used; keeping for future integration
 def _shuffle_wrapper(
     data: pd.DataFrame,
     method: str,

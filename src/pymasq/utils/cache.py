@@ -1,12 +1,12 @@
+import glob
 import hashlib
 import hmac
-import glob
 import logging
 import os
 import pickle
 import shutil
 from pathlib import Path
-from typing import Optional, Tuple, Dict, Union
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 from pandas.util import hash_pandas_object
@@ -118,7 +118,7 @@ def load_cache(
             if verbose > 0:
                 logger.info(
                     f""""
-                    Error: hmac of file ({digest}) does not match the hmac stored in the filename 
+                    Error: hmac of file ({digest}) does not match the hmac stored in the filename
                     ({file.split('.')[-2]}) for hmac key of '{cfg.CACHE_HMAC_KEY}' for file: {file}
                     """
                 )

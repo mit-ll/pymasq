@@ -175,7 +175,8 @@ def hashing(
         elif isinstance(salt, str):
             salt_df[:] = salt.encode()
         elif isinstance(salt, int):
-            salt_df = salt_df.applymap(lambda v: os.urandom(salt))
+            _map = getattr(salt_df, "map", getattr(salt_df, "applymap", None))
+            salt_df = _map(lambda v: os.urandom(salt))
         else:
             raise InputError(
                 f"Invalid `salt` type; only types allowed are `list`, `str`, and `int`. (Received: {type(salt)})"
@@ -187,8 +188,9 @@ def hashing(
             with open(store_salt, "w") as f:
                 salt_df.to_csv(f, index=False)
 
+    _df_map = getattr(data, "map", getattr(data, "applymap", None))
     if isinstance(hash_func, Callable):
-        return data.applymap(lambda v: hash_func(v))
+        return _df_map(lambda v: hash_func(v))
 
     hash_func = getattr(hashlib, hash_func)
 
@@ -196,6 +198,6 @@ def hashing(
         logger.warning(
             f"Warning: the default length of the hexdigest is set to 16; to alter the length, pass in `{hash_func}` as a callable defined with your prefered length."
         )
-        return data.map(lambda v: hash_func(v).hexdigest(16))
+        return _df_map(lambda v: hash_func(v).hexdigest(16))
 
-    return data.map(lambda v: hash_func(v).hexdigest())
+    return _df_map(lambda v: hash_func(v).hexdigest())

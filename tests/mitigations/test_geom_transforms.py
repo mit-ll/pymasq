@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 
 from pymasq.config import DEFAULT_SEED
-from pymasq.mitigations import geom_transform
 from pymasq.errors import InputError
+from pymasq.mitigations import geom_transform
 
 rg = np.random.default_rng(DEFAULT_SEED)
 
@@ -144,9 +144,9 @@ def test_geom_transform_same_values_for_sensitive_col(my_rand_df):
         perturb_cols=perturb_cols,
         sensitive_col=sensitive_col,
     )
-    assert (
-        my_rand_df[sensitive_col].values.squeeze().sort()
-        == rdf[sensitive_col].values.ravel().sort()
+    assert np.array_equal(
+        np.sort(my_rand_df[sensitive_col].to_numpy().ravel()),
+        np.sort(rdf[sensitive_col].to_numpy().ravel()),
     ), "Geom Transform did not return the same input values for sensitive_col with shuffling"
 
 

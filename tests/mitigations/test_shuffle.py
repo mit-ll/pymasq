@@ -3,11 +3,11 @@ import pandas as pd
 import pytest
 
 from pymasq.datasets import load_data, load_loan
+from pymasq.errors import InputError
 from pymasq.mitigations import (
     s,  # shuffle.py module
     shuffle,
 )
-from pymasq.errors import InputError
 
 
 @pytest.fixture

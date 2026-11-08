@@ -1,22 +1,21 @@
+from typing import Final, List, Optional, Union
+
 import numpy as np
 import pandas as pd
-
 from pandas.api.types import is_numeric_dtype
-from scipy.stats import chi2
-from scipy.stats import multivariate_normal
-from sklearn.preprocessing import LabelEncoder
+from scipy.stats import chi2, multivariate_normal
 from sklearn.covariance import MinCovDet
-from typing import List, Optional, Union, Final
+from sklearn.preprocessing import LabelEncoder
 
+from pymasq import BEARTYPE
 from pymasq.config import (
     DEFAULT_SEED,
     FORMATTING_ON_OUTPUT,
     VALIDATE_NUMERIC_ON_INPUT,
     VALIDATE_NUMERIC_ON_OUTPUT,
 )
-from pymasq.utils import validate_numeric, formatting
-from pymasq import BEARTYPE
 from pymasq.errors import InputError
+from pymasq.utils import formatting, validate_numeric
 
 __all__ = [
     "add_noise",
@@ -238,7 +237,7 @@ def add_noise_correlated(
                     name=column[0]  # Label encodes
                     # non-numeric data, preserving the original column name
                 )
-                for column in data.dtypes.iteritems()
+                for column in data.dtypes.items()
             ]
         ).transpose()  # Transposes the data to have the column/row orientation match the input data
 

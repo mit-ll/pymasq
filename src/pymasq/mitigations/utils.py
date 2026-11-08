@@ -1,6 +1,6 @@
-import pandas as pd
+from typing import Final, List, Optional, Union
 
-from typing import Union, List, Final, Optional
+import pandas as pd
 
 from pymasq.errors import InputError
 

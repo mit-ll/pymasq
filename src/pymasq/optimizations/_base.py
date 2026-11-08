@@ -7,15 +7,15 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-import pymasq.mitigations as mits
 import pymasq.metrics as mets
+import pymasq.mitigations as mits
 from pymasq import BEARTYPE
 from pymasq.config import DEFAULT_SEED
 from pymasq.errors import (
-    SumNotEqualToOneError,
-    NotInRangeError,
     LessThanZeroError,
     NoMutationAvailableError,
+    NotInRangeError,
+    SumNotEqualToOneError,
 )
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class OptimizationBase:
         mutations: List[Dict],
         metrics: Dict[Union[str, Callable], Dict],
         headers: Optional[List[str]] = None,
-        iters: int = 10,
+        iters: Union[int, float] = 10,
         reuse_mutations: bool = True,
         randomize_mutations: bool = True,
         theta: Union[int, float] = 0.0,
@@ -544,4 +544,4 @@ class Logbook:
         """
         record = self._pretty_values(record)
         df = pd.DataFrame.from_records(record)
-        self.log = self.log._append(df, ignore_index=True)
+        self.log = pd.concat([self.log, df], ignore_index=True)

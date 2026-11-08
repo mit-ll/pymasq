@@ -1,13 +1,14 @@
-import numpy as np
-import pandas as pd
-import string
 import random
+import string
 from typing import List, Union
 
-from .utils import rand_cat_change
+import numpy as np
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import DEFAULT_SEED
+
+from .utils import rand_cat_change
 
 rg = np.random.default_rng(DEFAULT_SEED)
 
@@ -139,7 +140,7 @@ def _l_div_sensitive_gen(l_div: int, n: int) -> List[int]:
         unique_entries = rg.choice(range(n), l_div)
 
     non_unique = rg.choice(unique_entries, n - l_div)
-    return list(unique_entries) + list(non_unique)
+    return [int(x) for x in list(unique_entries) + list(non_unique)]
 
 
 @BEARTYPE

@@ -1,24 +1,22 @@
-from typing import Dict, Final, List, Optional, Tuple, Union
-
 import logging
-
-logger = logging.getLogger(__name__)
+from typing import Any, Dict, Final, List, Optional, Tuple, Union
 
 import numpy as np
-from numpy import ndarray
 import pandas as pd
 import statsmodels.api as sm
+from numpy import ndarray
 from pandas.api.types import is_numeric_dtype
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.feature_selection import RFECV
 from sklearn.inspection import permutation_importance
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from pandas.api.types import is_numeric_dtype
 
 from pymasq import BEARTYPE
 from pymasq.preprocessing import EmbeddingsEncoder
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "key_variable_exploration",
@@ -95,9 +93,9 @@ def key_variable_exploration(
     df: pd.DataFrame,
     sensitive_col: str,
     preprocessed: bool = False,
-    verbose: int = 0,
+    verbose: Union[int, bool] = 0,
     num_components: int = 6,
-    **kwargs: Dict[str, str],
+    **kwargs: Any,
 ) -> Dict[str, pd.DataFrame]:
     """
     Explore the ranking of key variables in a binary classification setting
@@ -211,9 +209,9 @@ def importance_scores(
     input_df: pd.DataFrame,
     sensitive_col: str,
     categories: int,
-    methods: Optional[Tuple[str]] = None,
-    verbose: int = 0,
-    **kwargs,
+    methods: Optional[Tuple[str, ...]] = None,
+    verbose: Union[int, bool] = 0,
+    **kwargs: Any,
 ) -> pd.DataFrame:
     """
     Use Feature Selection methods to generate importance ranks for variables
@@ -305,7 +303,7 @@ def random_forest_scores(
     n_estimators: int = 100,
     n_jobs: int = -1,
     random_state: int = 1234,
-    verbose: int = 0,
+    verbose: Union[int, bool] = 0,
 ) -> Tuple[ndarray, List[str]]:
     """
     Runs permutation importance on a Random Forest model which returns both
@@ -371,8 +369,10 @@ def random_forest_scores(
         )
 
     rf.fit(x_train, y_train)
+    # Avoid loky multiprocessing memory mapping exhaustion on permutation_importance
+    perm_n_jobs = 1 if n_jobs == -1 else n_jobs
     result = permutation_importance(
-        rf, x_test, y_test, n_repeats=10, random_state=random_state, n_jobs=n_jobs
+        rf, x_test, y_test, n_repeats=10, random_state=random_state, n_jobs=perm_n_jobs
     )
     include = ["yes" if i > 0 else "no" for i in result.importances_mean]
     return rf.feature_importances_, include
@@ -385,7 +385,7 @@ def rfe_scores(
     categories: int,
     n_jobs: int = -1,
     random_state: int = 1234,
-    verbose: int = 0,
+    verbose: Union[int, bool] = 0,
     solver: str = "saga",
     penalty: str = "l2",
     l1_ratio: float = 0.5,
@@ -511,18 +511,17 @@ def rfe_scores(
                 solver=solver,
                 penalty=penalty,
                 l1_ratio=l1_ratio,
-                multi_class="ovr",
             )
         else:
             estimator = LogisticRegression(
                 random_state=random_state,
                 solver=solver,
                 penalty=penalty,
-                multi_class="ovr",
             )
     else:
         estimator = LinearRegression(n_jobs=n_jobs)
-    rfecv_selector = RFECV(estimator, step=step, cv=cv, verbose=verbose, n_jobs=n_jobs)
+    rfecv_n_jobs = 1 if n_jobs == -1 else n_jobs
+    rfecv_selector = RFECV(estimator, step=step, cv=cv, verbose=verbose, n_jobs=rfecv_n_jobs)
     rfecv_selector.fit(x_train, y)
     return ["yes" if r == 1 else "no" for r in list(rfecv_selector.ranking_)]
 
@@ -531,7 +530,7 @@ def rfe_scores(
 def stepwise_scores(
     x_train: pd.DataFrame,
     y: pd.Series,
-    **kwargs: Dict[str, str],
+    **kwargs: Any,
 ) -> List[str]:
     """
     Feature ranking with stepwise selection with regression for retaining significant features.

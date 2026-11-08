@@ -1,21 +1,21 @@
 import pytest
 
 from pymasq.datasets import load_census
-from pymasq.metrics import (
-    is_l_diverse,
-    l_diversity,
-    is_t_close,
-    t_closeness,
-    is_beta_like,
-    beta_likeness,
-    k_anon,
-    auc_score,
-)
 from pymasq.datasets.data_generator import (
     generate_l_diverse_table,
     generate_t_close_table,
 )
 from pymasq.errors import InputError
+from pymasq.metrics import (
+    auc_score,
+    beta_likeness,
+    is_beta_like,
+    is_l_diverse,
+    is_t_close,
+    k_anon,
+    l_diversity,
+    t_closeness,
+)
 
 
 @pytest.fixture
@@ -146,9 +146,9 @@ def test_auc_score_1(my_df, method, preprocessor):
     """
     Tests auc_drop on a toy dataset for overall comparison
     """
-    kwargs = {"verbose": 1}
-    if method == "tpot":
-        kwargs = {"generations": 5, "population_size": 10}
+    kwargs = {"verbose": 0}
+    if "tpot" in method:
+        kwargs = {"generations": 2, "population_size": 5, "cv": 2, "random_state": 1234}
     assert (
         auc_score(
             orig_df=my_df,
@@ -171,8 +171,8 @@ def test_auc_score_2(my_df, method, preprocessor):
     """
 
     kwargs = {}
-    if method == "tpot":
-        kwargs = {"generations": 5, "population_size": 10}
+    if "tpot" in method:
+        kwargs = {"generations": 2, "population_size": 5, "cv": 2, "random_state": 1234}
     my_df2 = my_df.copy()
     score = round(
         auc_score(

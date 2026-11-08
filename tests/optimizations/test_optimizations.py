@@ -5,11 +5,11 @@ import copy
 import hashlib
 import itertools
 import json
+import random
+
 import numpy as np
 import pandas as pd
 import pytest
-import random
-
 from scipy.special import perm
 from sklearn.utils import shuffle
 
@@ -18,7 +18,6 @@ from pymasq import mitigations as mits
 from pymasq import optimizations as opts
 from pymasq.config import DEFAULT_SEED
 from pymasq.datasets import load_census
-
 
 pymasq.BEARTYPE = lambda func: func
 

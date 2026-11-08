@@ -7,7 +7,7 @@ import pytest
 from numpy import NaN
 
 from pymasq.datasets import load_census
-from pymasq.preprocessing import embed_entities, LabelEncoderPM, EmbeddingsEncoder
+from pymasq.preprocessing import EmbeddingsEncoder, LabelEncoderPM, embed_entities
 
 # from pymasq.errors import InputError, DataTypeError
 

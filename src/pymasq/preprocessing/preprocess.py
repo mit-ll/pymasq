@@ -1,21 +1,22 @@
 import logging
+from pathlib import Path
 from time import time
-from typing import Tuple, List, Union, Optional
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from bpemb import BPEmb
-from pathlib import Path
-from sklearn.decomposition import TruncatedSVD, PCA, IncrementalPCA, KernelPCA, FastICA
+from sklearn.decomposition import PCA, FastICA, IncrementalPCA, KernelPCA, TruncatedSVD
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder as skLabelEncoder
 
-from pymasq.errors import InputError
 import pymasq.config as cfg
-from .entity_embedding import embed_entities
-from pymasq.preprocessing._base import PreprocessorBase
-from pymasq.metrics import utils
 from pymasq import BEARTYPE
+from pymasq.errors import InputError
+from pymasq.metrics import utils
+from pymasq.preprocessing._base import PreprocessorBase
+
+from .entity_embedding import embed_entities
 
 # This file contains two children of PreprocessorBase
 #  1. LabelEncoderPM
@@ -134,8 +135,9 @@ class LabelEncoderPM(PreprocessorBase):
         df_a[class_col] = 0
         df_b[class_col] = 1
 
-        # append b to a; and then split out the categorical (non-numerical) columns
-        cat_cols = df_a._append(df_b).select_dtypes(exclude=["number"])
+        # concatenate b to a; and then split out the categorical (non-numerical) columns
+        combined_df = pd.concat([df_a, df_b])
+        cat_cols = combined_df.select_dtypes(exclude=["number"])
         # cast everything to string in case we have a mix of floats and string,
         # otherwise LabelEncoder will choke/die.
         # This should never happen, but does in our pytests, so who knows.
@@ -143,8 +145,8 @@ class LabelEncoderPM(PreprocessorBase):
             lambda col: le.fit_transform(col.astype(str)), axis=0, result_type="expand"
         )
 
-        # append b to a; and then split out the non-categorical (numerical) columns
-        num_cols = df_a._append(df_b).select_dtypes(include=["number"])
+        # split out the non-categorical (numerical) columns
+        num_cols = combined_df.select_dtypes(include=["number"])
         # concatenate, but relabel the cat_cols first
         if cat_cols.empty:
             both = num_cols
@@ -385,7 +387,7 @@ class EmbeddingsEncoder(PreprocessorBase):
             dropped_cols.extend(ignore_columns)
 
         if sensitive_col or ignore_columns:
-            input_data = df.drop(columns=dropped_cols, axis=1).copy()
+            input_data = df.drop(columns=dropped_cols).copy()
         else:
             input_data = df.copy()
 
@@ -549,7 +551,7 @@ class EmbeddingsEncoder(PreprocessorBase):
             logger.info("Splitting Data into Numerical and Categorical Data...")
 
         if sensitive_col or ignore_columns:
-            input_data = df.drop(columns=dropped_cols, axis=1).copy()
+            input_data = df.drop(columns=dropped_cols).copy()
             ignore_col_data = df.loc[:, ignore_columns].copy()
         else:
             input_data = df.copy()

@@ -2,12 +2,12 @@ import argparse
 import json
 import logging
 import os
+
 import yaml
 
 import pymasq
-
-from pymasq import optimizations as opts
 from pymasq import datasets
+from pymasq import optimizations as opts
 
 pymasq.set_seed(123)
 

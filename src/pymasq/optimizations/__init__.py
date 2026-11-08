@@ -1,8 +1,8 @@
 from .optimizations import (
+    ExhaustiveSearch,
     IncrementalSearch,
     IterativeSearch,
     StochasticSearch,
-    ExhaustiveSearch,
 )
 from .utils import apply_and_evaluate
 

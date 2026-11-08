@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from pymasq.datasets import load_census
 from pymasq import metrics as mets
-from pymasq.optimizations import apply_and_evaluate
-from pymasq.optimizations import IterativeSearch
+from pymasq.datasets import load_census
+from pymasq.optimizations import IterativeSearch, apply_and_evaluate
 
 
 def test_apply_and_evaluate():

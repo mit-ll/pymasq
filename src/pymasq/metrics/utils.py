@@ -1,11 +1,11 @@
 import logging
-
-from pymasq.config import CATEGORY_THRESHOLD
-import pandas as pd
-
 from random import getrandbits
+
+import pandas as pd
 from pandas.api.types import is_numeric_dtype
+
 from pymasq import BEARTYPE
+from pymasq.config import CATEGORY_THRESHOLD
 
 __all__ = ["uniq_col_name", "_get_model_task"]
 

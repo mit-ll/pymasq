@@ -1,4 +1,5 @@
-from random import sample, choice
+from random import choice, sample
+
 from numpy import ndarray
 
 from pymasq import BEARTYPE

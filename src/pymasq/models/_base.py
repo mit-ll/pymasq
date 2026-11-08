@@ -1,14 +1,14 @@
 import logging
 import os
 from abc import abstractmethod
-from typing import Type, Optional, Union
+from typing import Optional, Type, Union
 
 import pandas as pd
 
 import pymasq.config as cfg
-from pymasq.utils import cache
-from pymasq.preprocessing._base import PreprocessorBase
 from pymasq import BEARTYPE
+from pymasq.preprocessing._base import PreprocessorBase
+from pymasq.utils import cache
 
 logger = logging.getLogger(__name__)
 

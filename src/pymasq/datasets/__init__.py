@@ -3,15 +3,14 @@ The :mod:`pymasq.datasets` module includes utilities to load tabular datasets.
 """
 
 from ._base import (
-    load_data,
+    load_bank_attrition_rates,
     load_census,
+    load_data,
     load_loan,
     load_prestige,
-    load_bank_attrition_rates,
 )
-from .data_generator import gen_geom_seq, gen_bin_df, gen_num_df
+from .data_generator import gen_bin_df, gen_geom_seq, gen_num_df
 from .utils import rand_cat_change
-
 
 __all__ = [
     "load_data",

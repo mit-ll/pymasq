@@ -1,6 +1,6 @@
 import itertools
 import logging
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from scipy.special import perm
@@ -215,7 +215,7 @@ class IncrementalSearch(OptimizationBase):
     """
 
     @BEARTYPE
-    def __init__(self, *args, retry: int = 3, **kwargs):
+    def __init__(self, *args, retry: Union[int, float] = 3, **kwargs):
         kwargs["headers"] = ["retry"]
         super().__init__(*args, **kwargs)
 

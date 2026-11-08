@@ -1,12 +1,12 @@
-import pandas as pd
 import re
+from typing import Final, List, Optional, Union
 
-from typing import List, Optional, Union, Final
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (
-    FORMATTING_ON_OUTPUT,
     FORMATTING_IGNORE_DTYPES,
+    FORMATTING_ON_OUTPUT,
 )
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import BOTH
@@ -87,7 +87,7 @@ def truncate_by_match(
         return series.apply(
             lambda x: re.split(re.escape(match), x, 1, flags=re.IGNORECASE)
         ).str[0 if keep_before else -1]
-    
+
     if isinstance(data, pd.Series):
         return pd.DataFrame(_truncate_by_match(data, match=match, ignore_case=ignore_case, keep_before=keep_before))
 
@@ -165,7 +165,7 @@ def truncate_by_index(
         raise InputError(
             f"`trim_from` must be one of ['start', 'end', 'both', None]. (Received: {trim_from})"
         )
-    
+
     if isinstance(data, pd.Series):
         return pd.DataFrame(_truncate_by_index(data, trim_from=trim_from, idx=idx, end=end))
 

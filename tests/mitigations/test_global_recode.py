@@ -3,12 +3,11 @@ import logging
 import pandas as pd
 
 from pymasq import config
-
 from pymasq.mitigations import (
-    global_recode,
     EQUAL,
-    MAGNITUDE,
     LOG_EQUIDISTANT,
+    MAGNITUDE,
+    global_recode,
 )
 
 config.FORMATTING_ON_OUTPUT = True

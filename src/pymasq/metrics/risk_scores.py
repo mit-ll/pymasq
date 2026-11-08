@@ -1,14 +1,12 @@
-from typing import List, Callable, Dict, Optional, Union, Final
+from copy import copy
+from typing import Any, Callable, Dict, Final, List, Optional, Union
 
 import numpy as np
 import pandas as pd
 
-from copy import copy
-
 from pymasq import BEARTYPE
 from pymasq.errors import InputError, NotInRangeError
 from pymasq.utils import formatting, freq_calc
-
 
 __all__ = [
     "k_anon",
@@ -386,7 +384,7 @@ def is_l_diverse(
 def _get_probs(
     df: pd.DataFrame,
     sensitive_col: str,
-) -> Dict[str, int]:
+) -> Dict[Any, float]:
     """
     Given a dataset, calculates the discrete proability of each of the unique values of the sensitive column
     Parameters

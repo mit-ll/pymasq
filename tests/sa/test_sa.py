@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.linear_model import LinearRegression
+
 from pymasq.datasets import load_census
 from pymasq.errors import DataTypeError, InputError
 from pymasq.sa import *
-from sklearn.linear_model import LinearRegression
 
 
 @pytest.fixture

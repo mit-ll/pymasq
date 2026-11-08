@@ -1,8 +1,8 @@
 import logging
 from typing import Dict, List, Optional, Union
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (
@@ -12,7 +12,6 @@ from pymasq.config import (
 from pymasq.errors import InputError, NotInRangeError
 from pymasq.mitigations.utils import _is_identical
 from pymasq.utils import formatting
-
 
 __all__ = ["pram"]
 
@@ -96,7 +95,7 @@ def __randomization(
             d_pramed[idxs] = rg.choice(
                 cats,
                 len(idxs),
-                p=trans.loc[cat,],
+                p=trans.loc[cat],
             )
 
     return d_pramed
@@ -269,7 +268,7 @@ def pram(
     """
     try:
         data = data.astype("category")
-    except:
+    except Exception:
         raise InputError(
             f"All values of `data` must be of type categorical and cannot be coerced. (Received {data.dtypes})"
         )
@@ -333,7 +332,7 @@ def pram(
         if isinstance(probs, dict):
             try:
                 transmat = probs[series.name]
-            except:
+            except Exception:
                 raise InputError(
                     f"Invalid key in `probs` dict ({list(probs.keys())}). ensure that all `perturb_cols` are present as keys in `probs` dict. (Received {series.name})"
                 )

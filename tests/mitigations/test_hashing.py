@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import logging
 import hashlib
+import logging
 
 import pytest
 
 from pymasq.config import rg
 from pymasq.datasets import load_census
 from pymasq.mitigations import hashing
-
 
 ALGORITHMS = hashlib.algorithms_guaranteed
 

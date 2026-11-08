@@ -11,7 +11,6 @@ from pymasq.errors import InputError, NotInRangeError
 from pymasq.metrics.risk_scores import indiv_risk
 from pymasq.utils import formatting
 
-
 __all__ = ["local_supp"]
 
 logger = logging.getLogger(__name__)

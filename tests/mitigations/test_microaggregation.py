@@ -11,7 +11,6 @@ from pymasq.errors import InputError, LessThanOrEqualToZeroError, NotInRangeErro
 from pymasq.mitigations import microaggregation as magg
 from pymasq.mitigations.microaggregation import MaggMethods
 
-
 config.FORMATTING_ON_OUTPUT = True
 
 

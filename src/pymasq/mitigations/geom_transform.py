@@ -1,18 +1,17 @@
 import itertools
 import logging
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from scipy import stats
-from typing import List, Optional, Union
 
 from pymasq import BEARTYPE
-from pymasq.config import FORMATTING_ON_OUTPUT, FORMATTING_IGNORE_DTYPES, rg
+from pymasq.config import FORMATTING_IGNORE_DTYPES, FORMATTING_ON_OUTPUT, rg
 from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
 from pymasq.utils import formatting
-
 
 __all__ = ["geom_transform"]
 
@@ -292,7 +291,9 @@ def geom_transform(
             range(bo.shape[0]), size=(bo.shape[0]), replace=False
         )
 
-    data.loc[:, perturb_cols] = bo[shuff_idx,]
+    shuffled_bo = bo[shuff_idx]
+    for i, col in enumerate(perturb_cols):
+        data[col] = shuffled_bo[:, i]
     if len(sensitive_col) != 0:
         data.loc[:, sensitive_col] = data.loc[shuff_idx, sensitive_col].reset_index(
             drop=True

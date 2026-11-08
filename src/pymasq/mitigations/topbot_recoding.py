@@ -1,6 +1,6 @@
-import pandas as pd
+from typing import Final, List, Optional, Union
 
-from typing import Union, List, Optional, Final
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (

@@ -8,8 +8,8 @@ from pymasq import config
 config.FORMATTING_ON_OUTPUT = True
 
 from pymasq.datasets import load_census
-from pymasq.mitigations import topbot_recoding, TOP, BOTTOM, BOTH
 from pymasq.errors import InputError
+from pymasq.mitigations import BOTH, BOTTOM, TOP, topbot_recoding
 
 
 @pytest.fixture
