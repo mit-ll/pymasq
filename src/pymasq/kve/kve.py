@@ -3,6 +3,7 @@ from typing import Any, Dict, Final, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+
 try:
     import statsmodels.api as sm
 except ImportError:

@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+
 try:
     from bpemb import BPEmb
 except ImportError:

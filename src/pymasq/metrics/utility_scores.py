@@ -1,7 +1,7 @@
 from typing import Optional
 
+import numpy as np
 import pandas as pd
-from numpy import linspace
 from scipy.spatial import distance
 from sklearn.model_selection import train_test_split
 
@@ -74,40 +74,18 @@ def jensen_shannon(
     # Compute JS on each column; store sum in js
     jensen_shannon = 0.0
     for col in orig_enc.columns:
-        # we are going to create 100 bins between min_val and max_val
+        # Create 100 bin edges between min_val and max_val
         min_val = min(orig_enc[col].min(), mod_enc[col].min())
         max_val = max(orig_enc[col].max(), mod_enc[col].max())
-        # pd.cut() requires that min_val and max_val not be equal
         if max_val == min_val:
             max_val += 1
-        # Makes a histogram/pmf for each data frame, based on 20 bins
-        # Assumes all cells are numeric
-        a1 = (
-            pd.cut(
-                orig_enc[col],
-                bins=[x for x in linspace(min_val, max_val, 100)],
-                include_lowest=True,
-            )
-            .value_counts(normalize=True, sort=False)
-            .rename_axis("val")
-            .reset_index(name="cnts")
-        )
-        a2 = (
-            pd.cut(
-                mod_enc[col],
-                bins=[x for x in linspace(min_val, max_val, 100)],
-                include_lowest=True,
-            )
-            .value_counts(normalize=True, sort=False)
-            .rename_axis("val")
-            .reset_index(name="cnts")
-        )
-        combined = a1.merge(a2, on="val", how="outer")
-        jensen_shannon += distance.jensenshannon(
-            combined[["cnts_x"]].fillna(0),
-            combined[["cnts_y"]].fillna(0),
-            base=2.0,  # must be base 2.0 or results are not between 0 and 1.
-        )[0]
+        bins = np.linspace(min_val, max_val, 100)
+        h1, _ = np.histogram(orig_enc[col], bins=bins)
+        h2, _ = np.histogram(mod_enc[col], bins=bins)
+        s1, s2 = h1.sum(), h2.sum()
+        p1 = h1 / s1 if s1 > 0 else np.zeros_like(h1, dtype=float)
+        p2 = h2 / s2 if s2 > 0 else np.zeros_like(h2, dtype=float)
+        jensen_shannon += float(distance.jensenshannon(p1, p2, base=2.0))
     # return the average JS score over all columns as if they are independent.
     return jensen_shannon / len(orig_enc.columns)
 

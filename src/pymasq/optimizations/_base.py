@@ -118,6 +118,7 @@ class OptimizationBase:
         self._headers = list(metrics.keys()) + (headers or [])
         self._logbook = None
         self.exit_on_error = exit_on_error
+        self._metric_signatures = {}
 
         self.progress_reporter = kwargs.get("callback", None)
         if self.progress_reporter:
@@ -321,9 +322,12 @@ class OptimizationBase:
                     function or custom function, but cannot be set until runtime.
                     These parameters are limited to `orig_df`, `mod_df`, and `df`.
             """
-            func_params = inspect.signature(func).parameters
+            func_params = self._metric_signatures.get(func)
+            if func_params is None:
+                func_params = set(inspect.signature(func).parameters)
+                self._metric_signatures[func] = func_params
             if "orig_df" in func_params:
-                params["orig_df"] = self.target.copy()
+                params["orig_df"] = self.target
             if "mod_df" in func_params:
                 params["mod_df"] = target
             if "df" in func_params:

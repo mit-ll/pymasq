@@ -56,14 +56,16 @@ def _reverse_map(data: pd.DataFrame, y_star: pd.DataFrame) -> pd.DataFrame:
     y_star : pd.DataFrame
         A dataframe containing the shuffled data.
     """
+    data = data.copy()
+    y_star = y_star.copy()
     x_idx_name = data.index.name
     y_idx_name = y_star.index.name
 
     if not x_idx_name:
         name = "index"
-        data.index.set_names(name, inplace=True)
+        data.index = data.index.set_names(name)
         x_idx_name = name
-        y_star.index.set_names(name, inplace=True)
+        y_star.index = y_star.index.set_names(name)
         y_idx_name = name
 
     for col in y_star.columns:
@@ -72,7 +74,7 @@ def _reverse_map(data: pd.DataFrame, y_star: pd.DataFrame) -> pd.DataFrame:
         x = data.loc[x_idx, col].reset_index()
         y = data.loc[y_idx, col].reset_index()
         x[col] = y[col]
-        x.set_index(x_idx_name, inplace=True)
+        x = x.set_index(x_idx_name)
         if isinstance(x[col], pd.Series):
             data[col] = x
         else:
@@ -81,7 +83,7 @@ def _reverse_map(data: pd.DataFrame, y_star: pd.DataFrame) -> pd.DataFrame:
         x = data.loc[x_idx, col].reset_index()
         y = y_star.loc[y_idx, col].reset_index()
         y[col] = x[col]
-        y.set_index(y_idx_name, inplace=True)
+        y = y.set_index(y_idx_name)
         y_star[col] = y[col]
 
     return y_star
@@ -239,8 +241,9 @@ def shuffle(
         mean=[0] * len(resp_cols), cov=sigma, size=_data.shape[0]
     )
     y_star = ystar1 + e1
-    y_star.set_index(_data.index, inplace=True)
+    y_star.index = _data.index
 
+    data = data.copy()
     data[resp_cols] = _reverse_map(_data, y_star)
 
     return data

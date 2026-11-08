@@ -1,9 +1,11 @@
 from os.path import join
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
 
 from pymasq import BEARTYPE, ROOT_DIR
+from pymasq.errors import InputError
 
 DATA_DIR = join(ROOT_DIR, "datasets", "data")
 
@@ -30,7 +32,12 @@ def load_data(fname: str, fpath: Optional[str] = None):
     if fpath is None:
         fpath = DATA_DIR
 
-    return pd.read_csv(join(fpath, fname))
+    base_dir = Path(fpath).resolve()
+    target_path = (base_dir / fname).resolve()
+    if not target_path.is_relative_to(base_dir):
+        raise InputError(f"Path traversal detected in fname: {fname}")
+
+    return pd.read_csv(target_path)
 
 
 def load_census():

@@ -1,5 +1,6 @@
 from typing import Final, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 
 from pymasq.errors import InputError
@@ -12,8 +13,12 @@ BOTH: Final = "both"
 
 def _is_identical(s: pd.Series) -> bool:
     """Checks if all values in the input series are identical."""
-    s = s.to_numpy()  # s.values (pandas<0.24)
-    return (s[0] == s).all()
+    if len(s) == 0:
+        return True
+    arr = s.to_numpy()
+    if pd.isna(arr[0]):
+        return bool(pd.isna(arr).all())
+    return bool((arr[0] == arr).all())
 
 
 def _as_series(
@@ -78,11 +83,14 @@ def __calc_freq(
     TODO
 
     """
-    freq_df = df.groupby(cols).count()[sensitive_col]
-    freq_df = freq_df.rename("samp_fq")
-    freq_df = freq_df.reset_index()
-    result = pd.merge(df, freq_df, how="outer", on=cols, validate="m:1")
-    result["pop_fq"] = result["samp_fq"].values * weights
+    cols_list = cols if isinstance(cols, list) else [cols]
+    result = df.copy()
+    result["samp_fq"] = df.groupby(cols_list, observed=False)[cols_list[0]].transform("size")
+    if isinstance(weights, (pd.Series, pd.DataFrame)):
+        w = weights.to_numpy().flatten()
+    else:
+        w = np.asarray(weights).flatten()
+    result["pop_fq"] = result["samp_fq"].to_numpy() * w
 
     return result
 

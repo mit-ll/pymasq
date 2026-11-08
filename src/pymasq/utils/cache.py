@@ -8,9 +8,9 @@ import shutil
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 from pandas.util import hash_pandas_object
-import numpy as np
 
 import pymasq.config as cfg
 from pymasq import BEARTYPE

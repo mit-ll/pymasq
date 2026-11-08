@@ -8,6 +8,7 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
 from pymasq import BEARTYPE, config
+from pymasq.errors import InputError
 
 __all__ = ["BOTH", "as_dataframe", "validate_numeric", "formatting", "freq_calc"]
 
@@ -26,6 +27,9 @@ def as_dataframe(obj, cols: Optional[Union[List, str, int]] = None):
         cols = cols if isinstance(cols, list) else [cols]
     if isinstance(obj, pd.DataFrame):
         if cols is not None:
+            missing = [c for c in cols if c not in obj.columns]
+            if missing:
+                raise InputError(f"Columns not in DataFrame: {missing}")
             return obj.loc[:, cols].copy()
         return obj.copy()
     return pd.DataFrame(obj, columns=cols)
@@ -105,8 +109,12 @@ def formatting(
 
 def is_identical(s: pd.Series) -> bool:
     """Checks if all values in the input series are identical."""
-    s = s.to_numpy()  # s.values (pandas<0.24)
-    return (s[0] == s).all()
+    if len(s) == 0:
+        return True
+    arr = s.to_numpy()
+    if pd.isna(arr[0]):
+        return bool(pd.isna(arr).all())
+    return bool((arr[0] == arr).all())
 
 
 def freq_calc(
@@ -144,11 +152,15 @@ def freq_calc(
     TODO
 
     """
-    freq_df = data.groupby(quasi_cols).count()[sensitive_col]
-    freq_df = freq_df.rename("samp_fq").reset_index()
-
-    freqs = pd.merge(data, freq_df, how="outer", on=quasi_cols, validate="many_to_one")
-    weights = as_dataframe(weights) if weights else pd.Series([1] * freqs.shape[0])
-    freqs["pop_fq"] = freqs["samp_fq"].values * weights
+    freqs = data.copy()
+    freqs["samp_fq"] = data.groupby(quasi_cols, observed=False)[quasi_cols[0]].transform("size")
+    if weights is not None:
+        if isinstance(weights, (pd.Series, pd.DataFrame)):
+            w = weights.to_numpy().flatten()
+        else:
+            w = np.asarray(weights).flatten()
+        freqs["pop_fq"] = freqs["samp_fq"].to_numpy() * w
+    else:
+        freqs["pop_fq"] = freqs["samp_fq"].to_numpy() * 1.0
 
     return freqs
