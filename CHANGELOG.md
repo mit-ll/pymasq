@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SDC Mitigation - Rank Swapping**:
+  - Implemented standard rank swapping mitigation for continuous and ordinal variables in `pymasq.mitigations.rank_swap`. Swaps records within a bounded rank window $P = \max(1, \lfloor N \cdot p \rfloor)$.
+  - Supports both fraction (`0 < p <= 1`) and percentage (`1 < p <= 100`) parameter scales.
+  - Strictly preserves column multisets, sums, and means while breaking exact record linkages.
+  - Handled NaN positions defensively, added seed determinism, and added unit test coverage (`tests/mitigations/test_rank_swap.py`).
+- **Security & Data Privacy**:
+  - Added path traversal protection in `pymasq.datasets.load_data` using `Path.resolve()` and `target_path.is_relative_to(base_dir)`.
+  - Upgraded cache HMAC integrity validation in `pymasq.utils.cache` from MD5 to SHA-256 with fallback verification for legacy caches and timing-attack resistant `hmac.compare_digest`.
+  - Added support for `PYMASQ_CACHE_KEY` and `PYMASQ_CACHE_DIR` environment variables for secure cache configuration.
+  - Eliminated plain-text dumps of raw dataset rows in cache description metadata headers.
+  - Restricted cache clearing to `.pkl` files to avoid recursive directory tree deletion.
+- **Modular Dependency Extras**:
+  - Split heavy optional dependencies in `pyproject.toml` into granular extras: `[dl]`, `[automl]`, `[sa]`, `[nlp]`, `[stats]`, and `[all]`.
+  - Added lazy import guarding with informative `ImportError` messages when optional packages are not installed.
+
+### Changed
+- **Vectorization & Performance Optimizations**:
+  - Vectorized Jensen-Shannon divergence (`pymasq.metrics.jensen_shannon`) using `np.histogram(..., bins=bins)` instead of pandas cut/merge loops.
+  - Vectorized equivalence class calculation in `pymasq.utils.freq_calc` and `pymasq.mitigations.utils.freq_calc` via `transform("size")`, eliminating memory allocations and guaranteeing row-index alignment.
+  - Vectorized cell-by-cell hashing (`pymasq.mitigations.hashing`) by pre-hashing unique values and mapping back via `.map()`.
+  - Vectorized PRAM transition probability scaling and index selection (`pymasq.mitigations.pram`).
+  - Precomputed 2D rotation planes outside the column loop in geometric transformations (`pymasq.mitigations.geom_transform`).
+  - Cached inspected metric signatures in `self._metric_signatures` and avoided redundant copies of `target` in the optimizer evaluation loop (`pymasq.optimizations._base`), yielding ~27% speedup.
+- **Defensive Edge-Case Hardening**:
+  - Eliminated caller DataFrame and Index mutation in `_reverse_map` in `pymasq.mitigations.shuffle`.
+  - Hardened `is_identical` / `_is_identical` to safely handle empty Series and Series containing `NaN` values without `IndexError` or false negatives.
+  - Added input validation for missing column lookups in `as_dataframe`, raising `InputError`.
+
+### Fixed
+- **SDC Risk Metrics Mathematical Operators**:
+  - Corrected bitwise XOR (`^`) to exponentiation (`**`) across 8 equations in `indiv_risk_approx` and `indiv_risk_exact` in `pymasq.metrics.risk_scores`.
+  - Fixed `is_l_diverse` list-to-int comparison bug (`len(vals) >= l`).
+  - Corrected $k$-anonymity inequality condition to `val >= k`.
+- **RNG Seed Unpacking**:
+  - Fixed signed 32-bit unpack (`"i"`) to unsigned (`"I"`) in `set_seed()`, preventing negative seed generation.
+  - Fixed timestamp token padding format in `new_token()`.
+- **Plotting**:
+  - Fixed invalid `hovername` keyword to `hover_name` in `px.scatter`.
+- **Security in Tests**:
+  - Replaced unsafe `yaml.FullLoader` with `yaml.safe_load` in integration tests.
+
 ## [1.0.1] - 2026-11-07
 
 ### Added

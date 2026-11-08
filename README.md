@@ -31,13 +31,43 @@ pip install -e .
 
 ### Optional Dependencies
 
+PyMASq provides modular optional dependency extras for specialized features:
+
 ```sh
-# Install testing dependencies
+# Deep learning / entity embeddings (TensorFlow)
+pip install -e ".[dl]"
+
+# Automated Machine Learning (TPOT)
+pip install -e ".[automl]"
+
+# Sensitivity analysis (SALib)
+pip install -e ".[sa]"
+
+# Natural language processing / subword tokenization (BPEmb)
+pip install -e ".[nlp]"
+
+# Statistical models (Statsmodels)
+pip install -e ".[stats]"
+
+# All optional dependencies
+pip install -e ".[all]"
+
+# Install testing and linting dependencies
 pip install -e ".[test]"
 
 # Install documentation dependencies
 pip install -e ".[doc]"
 ```
+
+### Configuration Environment Variables
+
+PyMASq can be configured via environment variables:
+
+| Variable | Description | Default |
+|---|---|---|
+| `PYMASQ_CACHE_KEY` | HMAC secret key used for verifying pickled cache integrity | Internal default |
+| `PYMASQ_CACHE_DIR` | Directory path for caching models, embeddings, and preprocessed data | `~/.pymasq/cache` |
+| `PYMASQ_VERBOSE` | Verbosity level for logging and progress reporting | `0` |
 
 ### Installing into a Conda Environment
 
