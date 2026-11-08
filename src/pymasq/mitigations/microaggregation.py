@@ -1,26 +1,24 @@
+import logging
 from typing import Any, Callable, Dict, Final, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-
 from scipy.stats import shapiro, zscore
-from sklearn.cluster import KMeans, DBSCAN, Birch, AgglomerativeClustering, OPTICS
+from sklearn.cluster import DBSCAN, OPTICS, AgglomerativeClustering, Birch, KMeans
 from sklearn.covariance import MinCovDet
+from sklearn.decomposition import PCA, FastICA, IncrementalPCA, KernelPCA
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import scale as sklearn_scale
-from sklearn.decomposition import PCA, IncrementalPCA, KernelPCA, FastICA
 
 from pymasq import BEARTYPE
 from pymasq.config import (
-    FORMATTING_ON_OUTPUT,
     FORMATTING_IGNORE_DTYPES,
+    FORMATTING_ON_OUTPUT,
     VALIDATE_NUMERIC_ON_INPUT,
     VALIDATE_NUMERIC_ON_OUTPUT,
 )
-from pymasq.utils import validate_numeric, formatting
-from pymasq.errors import InputError, NotInRangeError, LessThanOrEqualToZeroError
-
-import logging
+from pymasq.errors import InputError, LessThanOrEqualToZeroError, NotInRangeError
+from pymasq.utils import formatting, validate_numeric
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +122,7 @@ def _scaling(
             raise ImportError(
                 "Unable to import `tensorly` library to perform `robust` scaling; run ´pip3 install tensorly` from within your project environment to install it."
             )
-        scaled_data, _ = robust_pca(data.values.astype(np.float))
+        scaled_data, _ = robust_pca(data.values.astype(float))
         return scaled_data
     if callable(scale):
         return scale(data, **kwargs)
@@ -341,6 +339,7 @@ def sequential_magg(
             f"The aggregation level must be an integer greater than 0. (Received: {aggr})"
         )
 
+    data = data.astype(float).copy()
     bins = data.index // aggr
 
     measure_kwargs = measure_kwargs if measure_kwargs else {}
@@ -548,20 +547,20 @@ def robust_magg(
     # test data for normality; z-scores are only meaningful for normally distributed data
     result = shapiro(data)
     if result.pvalue < 0.05:
-        print(
+        logger.info(
             f"Warning: data not normally distributed; fails Shapiro-Wilk test (p={result.pvalue})."
         )
 
-    z = zscore(data, ddof=1, nan_policy="raise").values
+    z = np.asarray(zscore(data, ddof=1, nan_policy="raise"))
 
     if np.isnan(z).any():
         raise ValueError(
-            "Computed z-scores contain NaN(s); verify that `data` is not entirely composed of identical vlaues."
+            "Computed z-scores contain NaN(s); verify that `data` is not entirely composed of identical values."
         )
 
     pw_dists = pairwise_distances(z)
 
-    if not all(np.diagonal(pw_dists)) == 0:
+    if all(np.diagonal(pw_dists)) != 0:
         np.fill_diagonal(pw_dists, 0)
 
     mcd = MinCovDet(random_state=seed).fit(z)
@@ -578,18 +577,14 @@ def robust_magg(
     for _ in range((len(data) // aggr) - 1):
         max_val_idx = np.nanargmax(mah_dists)
         min_val_idxs = _knn(pw_dists[:, max_val_idx], aggr)
-        pw_dists[
-            min_val_idxs,
-        ] = np.nan
+        pw_dists[min_val_idxs,] = np.nan
         mah_dists[min_val_idxs] = np.nan
         z[min_val_idxs] = np.mean(z[min_val_idxs], axis=0)
 
     min_val_idxs = np.unique(
         np.argwhere(~np.isnan(pw_dists))[:, 0]
     )  # get idx of remaining non-nan values
-    z[min_val_idxs,] = z[min_val_idxs,].mean(
-        axis=0
-    )  # merge w above
+    z[min_val_idxs,] = z[min_val_idxs,].mean(axis=0)  # merge w above
 
     mat = (z * data.std().to_numpy()) + data.mean().to_numpy()
 
@@ -776,6 +771,7 @@ def advanced_magg(
             f"The aggregation level must be an integer greater than 0. (Received: {aggr})"
         )
 
+    data = data.astype(float).copy()
     bins = data.index // aggr
 
     c_idx, _data = None, None

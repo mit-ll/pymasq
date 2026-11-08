@@ -1,8 +1,7 @@
-from pymasq.preprocessing.preprocess import LabelEncoder_pm
-import pandas as pd
-import numpy as np
-
 from typing import Final, List, Optional, Union
+
+import numpy as np
+import pandas as pd
 
 from pymasq import BEARTYPE
 from pymasq.config import (
@@ -10,7 +9,8 @@ from pymasq.config import (
     VALIDATE_NUMERIC_ON_INPUT,
 )
 from pymasq.errors import InputError
-from pymasq.utils import validate_numeric, formatting
+from pymasq.preprocessing.preprocess import LabelEncoderPM
+from pymasq.utils import formatting, validate_numeric
 
 __all__ = [
     "global_recode",
@@ -29,23 +29,23 @@ MAGNITUDE: Final = "magnitude"
 
 
 def __gr_equidistant(data: pd.Series, breaks: int) -> pd.Series:
-    """ Global Recode for `equidistant` method """
+    """Global Recode for `equidistant` method"""
     return np.linspace(data.min(), data.max(), breaks)
 
 
 def __gr_log_equidistant(data: pd.Series, breaks: int) -> pd.Series:
-    """ Global Recode for `log_equidistant` method """
+    """Global Recode for `log_equidistant` method"""
     data_log = np.log(data)
     return np.exp(np.linspace(data_log.min(), data_log.max(), breaks))
 
 
 def __gr_equal_quantity(data: pd.Series, breaks: int) -> pd.Series:
-    """ Global Recode for `equal` method """
+    """Global Recode for `equal` method"""
     return data.quantile(np.linspace(0, 1, breaks))
 
 
 def __gr_order_of_magnitude(data: pd.Series, breaks: int) -> pd.Series:
-    """ Global Recode for order of `magnitude` method. """
+    """Global Recode for order of `magnitude` method."""
     data_log = np.log10(data)
     return np.power(10, np.linspace(data_log.min(), data_log.max(), breaks))
 
@@ -194,7 +194,7 @@ def global_recode(
         )
     )
     if ret_ints:
-        le = LabelEncoder_pm()
+        le = LabelEncoderPM()
         return le.encode(data_recode.astype(str))
 
     return data_recode

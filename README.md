@@ -1,7 +1,7 @@
 # PyMASq
 
 <p align="center">
-    <img src="./assets/images/masq_logo_light.svg" width="150px"/>
+    <img src="./assets/images/masq_logo_light.svg" width="150px" alt="MASq Logo"/>
 </p>
 
 ## Python-based Mitigation Application and Assessment (MASq)
@@ -21,30 +21,40 @@ Furthermore, MASq can automate the aforementioned procedures by applying hundred
 
 [PyMASq User Guide](https://github.com/mit-ll/pymasq/wiki)
 
-## Installating from Git
+## Installing from Git
 
 ```sh
-pip install .
 git clone git@github.com:mit-ll/pymasq.git
 cd pymasq
+pip install -e .
+```
+
+### Optional Dependencies
+
+```sh
+# Install testing dependencies
+pip install -e ".[test]"
+
+# Install documentation dependencies
+pip install -e ".[doc]"
 ```
 
 ### Installing into a Conda Environment
 
 ```sh
-conda create -n masq python=3.8 -y
+conda create -n masq python=3.11 -y
 conda activate masq
-pip install .
+pip install -e .
 ```
 
-To generate the docs
+### Building Documentation
 
 ```bash
-python -m pip install -r ./doc-requirements.txt
+sphinx-build -b html docs/source docs/_build/html
 ```
 
 <p align="center">
-    <img src="./assets/images/Lincoln_Lab_icon.png" width="150px"/>
+    <img src="./assets/images/Lincoln_Lab_icon.png" width="150px" alt="MIT Lincoln Lab Logo"/>
 </p>
 
 ## Distribution Statement

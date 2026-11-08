@@ -1,8 +1,10 @@
 import os
 import sys
-import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath(os.path.join('..','..')))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
+
+import pymasq  # noqa: E402
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -22,12 +24,13 @@ sys.path.insert(0, os.path.abspath(os.path.join('..','..')))
 
 # -- Project information -----------------------------------------------------
 
-project = 'pymasq'
-copyright = '2022, MITLL'
-author = 'MITLL'
+project = "pymasq"
+copyright = "2022, MITLL"
+author = "MITLL"
 
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = pymasq.__version__
+version = ".".join(release.split(".")[:2])
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,14 +39,15 @@ release = '1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.napoleon',  # NumPy & Google style docstring support
+    "sphinx.ext.napoleon",  # NumPy & Google style docstring support
     "sphinx_rtd_theme",
+    "sphinx_mdinclude",
 ]
 
 napoleon_google_docstring = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -56,9 +60,9 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]

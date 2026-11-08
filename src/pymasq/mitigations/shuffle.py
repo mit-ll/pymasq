@@ -1,18 +1,18 @@
+import logging
 import math
-from typing import Union, List, Final, Optional
+from typing import Final, List, Optional, Union
 
-import pandas as pd
-from pandas.api.types import is_numeric_dtype
 import numpy as np
+import pandas as pd
 import scipy.stats as ss
+from pandas.api.types import is_numeric_dtype
 
 from pymasq import BEARTYPE
-from pymasq.config import FORMATTING_ON_OUTPUT
-from pymasq.utils import formatting
-from pymasq.preprocessing import LabelEncoder_pm
-from pymasq.errors import InputError, DataTypeError
+from pymasq.config import DEFAULT_SEED, FORMATTING_ON_OUTPUT
+from pymasq.errors import InputError
 from pymasq.mitigations.utils import _is_identical
-
+from pymasq.preprocessing import LabelEncoderPM
+from pymasq.utils import formatting
 
 __all__ = [
     "shuffle",
@@ -25,12 +25,15 @@ __all__ = [
     "MODEL",
 ]
 
+logger = logging.getLogger(__name__)
 
 SPEARMAN: Final = "spearman"
 PEARSON: Final = "pearson"
 KENDALL: Final = "kendall"
 CORRELATIVE: Final = "corr"
 MODEL: Final = "model"
+
+rg = np.random.default_rng(DEFAULT_SEED)
 
 
 @BEARTYPE
@@ -210,11 +213,11 @@ def shuffle(
                 f"The values of `data[{cor_cols}]` are all identical and therefore cannot be used for correlation."
             )
         else:
-            print(
+            logger.info(
                 "WARNING: ignoring columns that are composed entirely of identical values."
             )
 
-    _data = LabelEncoder_pm.encode(df=pd.concat([x, y], axis=1))
+    _data = LabelEncoderPM.encode(df=pd.concat([x, y], axis=1))
 
     resp_cols = y.columns.to_list()
     pred_cols = x.columns.to_list()
@@ -232,7 +235,7 @@ def shuffle(
     ystar1 = predictors.dot(pxs.dot(pssinv).T)
 
     sigma = pxx - pxs.dot(pssinv.dot(psx))
-    e1 = np.random.multivariate_normal(
+    e1 = rg.multivariate_normal(
         mean=[0] * len(resp_cols), cov=sigma, size=_data.shape[0]
     )
     y_star = ystar1 + e1
@@ -244,7 +247,7 @@ def shuffle(
 
 
 '''
-### Not currently being used; keeping for future integration 
+### Not currently being used; keeping for future integration
 def _shuffle_wrapper(
     data: pd.DataFrame,
     method: str,

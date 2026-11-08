@@ -11,6 +11,7 @@ import pymasq.mitigations.shuffle as s
 import pymasq.mitigations.substitute as sub
 import pymasq.mitigations.topbot_recoding as tb
 import pymasq.mitigations.truncate as t
+
 from .add_noise import *
 from .geom_transform import *
 from .global_recode import *
@@ -25,7 +26,6 @@ from .substitute import *
 from .topbot_recoding import *
 from .truncate import *
 from .utils import BOTH
-
 
 __all__ = ["BOTH"]
 __all__.extend(an.__all__)

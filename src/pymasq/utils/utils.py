@@ -1,17 +1,17 @@
-import inspect
 import functools
-import numpy as np
-import pandas as pd
-
-from pandas.api.types import is_numeric_dtype
+import inspect
+import logging
 from typing import Final, List, Optional, Union
 
-from pymasq import BEARTYPE
-from pymasq import config
-from pymasq.errors import InputError
+import numpy as np
+import pandas as pd
+from pandas.api.types import is_numeric_dtype
 
+from pymasq import BEARTYPE, config
 
 __all__ = ["BOTH", "as_dataframe", "validate_numeric", "formatting", "freq_calc"]
+
+logger = logging.getLogger(__name__)
 
 
 BOTH: Final = "both"
@@ -19,7 +19,7 @@ BOTH: Final = "both"
 
 @BEARTYPE
 def as_dataframe(obj, cols: Optional[Union[List, str, int]] = None):
-    """ Convert an object data structure into a DataFrame """
+    """Convert an object data structure into a DataFrame"""
     if isinstance(obj, (list, np.ndarray)):
         cols = None
     if cols is not None:
@@ -84,16 +84,16 @@ def formatting(
                 try:
                     if not all(data.dtypes == dtypes):
                         data = data.astype(dtypes)
-                except:
+                except Exception:
                     # TODO: switch to logging
-                    print("WARNING: Unable to keep original datatypes.")
+                    logger.info("WARNING: Unable to keep original datatypes.")
 
             if on_output:
-                if input_type == pd.Series:
+                if input_type is pd.Series:
                     return data.squeeze()
-                if input_type == np.ndarray:
+                if input_type is np.ndarray:
                     return data.to_numpy()
-                if input_type == list:
+                if input_type is list:
                     return data.values.tolist()
 
             return data
@@ -104,7 +104,7 @@ def formatting(
 
 
 def is_identical(s: pd.Series) -> bool:
-    """ Checks if all values in the input series are identical. """
+    """Checks if all values in the input series are identical."""
     s = s.to_numpy()  # s.values (pandas<0.24)
     return (s[0] == s).all()
 
@@ -147,7 +147,7 @@ def freq_calc(
     freq_df = data.groupby(quasi_cols).count()[sensitive_col]
     freq_df = freq_df.rename("samp_fq").reset_index()
 
-    freqs = pd.merge(data, freq_df, how="outer", on=quasi_cols)
+    freqs = pd.merge(data, freq_df, how="outer", on=quasi_cols, validate="many_to_one")
     weights = as_dataframe(weights) if weights else pd.Series([1] * freqs.shape[0])
     freqs["pop_fq"] = freqs["samp_fq"].values * weights
 

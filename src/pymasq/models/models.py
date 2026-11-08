@@ -1,14 +1,17 @@
-from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER, DEFAULT_SEED
-import pandas as pd
+import inspect
+import logging
+from typing import Any, List, Optional, Type, Union
+
 import numpy as np
-from typing import List, Optional, Type, Any, Union
-from sklearn.preprocessing import LabelEncoder
-from tpot import TPOTClassifier, TPOTRegressor
-from sklearn.metrics import roc_auc_score
-from sklearn.linear_model import ElasticNetCV, ElasticNet, LarsCV, LogisticRegressionCV
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.linear_model import ElasticNet, ElasticNetCV, LarsCV, LogisticRegressionCV
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from tpot import TPOTClassifier, TPOTRegressor
 
 from pymasq import BEARTYPE
+from pymasq.config import DEFAULT_LOGISITIC_REGRESSION_SOLVER, DEFAULT_MODEL_ITERATIONS
 from pymasq.models._base import ModelingBase
 from pymasq.preprocessing._base import PreprocessorBase
 
@@ -23,6 +26,8 @@ from pymasq.preprocessing._base import PreprocessorBase
 
 
 #########################
+
+logger = logging.getLogger(__name__)
 
 
 def mape(
@@ -44,7 +49,10 @@ def mape(
         Percent error of the predicted to the actual 0.0 and 1.0
 
     """
-    mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    y_true_arr = np.asarray(y_true, dtype=float)
+    y_pred_arr = np.asarray(y_pred, dtype=float)
+    denom = np.maximum(np.abs(y_true_arr), np.finfo(np.float64).eps)
+    mape = np.mean(np.abs((y_true_arr - y_pred_arr) / denom)) * 100
     return mape
 
 
@@ -84,7 +92,7 @@ class LarsCvRegressor(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -106,7 +114,7 @@ class LarsCvRegressor(ModelingBase):
 
         # We didn't: train the model and cache it.
         if verbose > 0:
-            print("Training LarsCV model ")
+            logger.info("Training LarsCV model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = df_enc[y_column]
         self.trained = LarsCV(n_jobs=self.n_jobs)
@@ -140,6 +148,11 @@ class LarsCvRegressor(ModelingBase):
         assert self.trained is not None
 
         y_predict = self.trained.predict(x_test)
+        if pd.Series(y_true).nunique() == 2:
+            try:
+                return roc_auc_score(y_true=y_true, y_score=y_predict)
+            except Exception:
+                return 0.5
         return mape(y_true=y_true, y_pred=y_predict)
 
 
@@ -180,7 +193,7 @@ class ElasticNetCvRegressor(ModelingBase):
         preprocessor : PreprocessorBase  (Default: None)
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -198,7 +211,7 @@ class ElasticNetCvRegressor(ModelingBase):
 
         # no cache found, we need to train.
         if verbose > 0:
-            print("Training ElasticNetCV model ")
+            logger.info("Training ElasticNetCV model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = df_enc[y_column]
 
@@ -241,6 +254,11 @@ class ElasticNetCvRegressor(ModelingBase):
         assert self.trained is not None
 
         y_predict = self.trained.predict(x_test)
+        if pd.Series(y_true).nunique() == 2:
+            try:
+                return roc_auc_score(y_true=y_true, y_score=y_predict)
+            except Exception:
+                return 0.5
         return mape(y_true=y_true, y_pred=y_predict)
 
 
@@ -263,8 +281,9 @@ class LogisticRegressionClassifier(ModelingBase):
             A string defining the type of modeling task
         """
         super().__init__(
-            name="logreg", cache_location=cache_location, modeling_task=modeling_task
+            name="logreg", cache_location=cache_location, modeling_task=modeling_task,
         )
+        self.scaler = StandardScaler()
 
     @BEARTYPE
     def train(
@@ -288,7 +307,7 @@ class LogisticRegressionClassifier(ModelingBase):
         preprocessor : PreprocessorBase  (Default: None)
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -307,16 +326,18 @@ class LogisticRegressionClassifier(ModelingBase):
 
         # no cache found, we need to train.
         if verbose > 0:
-            print("Training Logistic Regression model ")
+            logger.info("Training Logistic Regression model ")
         x_train = df_enc.drop(y_column, axis=1)
+        x_scaled = self.scaler.fit_transform(x_train)
         y = LabelEncoder().fit_transform(df_enc[y_column])
 
         self.trained = LogisticRegressionCV(
             random_state=self.seed,
             n_jobs=self.n_jobs,
             solver=DEFAULT_LOGISITIC_REGRESSION_SOLVER,
+            max_iter=DEFAULT_MODEL_ITERATIONS,
         )
-        self.trained.fit(x_train, y)
+        self.trained.fit(x_scaled, y)
 
         # save to cache
         self.save_trained_model(
@@ -344,12 +365,13 @@ class LogisticRegressionClassifier(ModelingBase):
 
         """
         assert self.trained is not None
+        x_scaled = self.scaler.fit_transform(x_test)
 
         if pd.Series(y_true).nunique() == 2:
-            y_predict = self.trained.predict(x_test)
+            y_predict = self.trained.predict(x_scaled)
             return roc_auc_score(y_true=y_true.tolist(), y_score=y_predict)
         else:
-            y_predict = self.trained.predict_proba(x_test)
+            y_predict = self.trained.predict_proba(x_scaled)
             return roc_auc_score(
                 y_true=y_true.tolist(), y_score=y_predict[:, 1:], multi_class="ovr"
             )
@@ -397,7 +419,7 @@ class RFClassifier(ModelingBase):
         preprocessor : PreprocessorBase  (Default: None)
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -416,7 +438,7 @@ class RFClassifier(ModelingBase):
 
         # no cache found, we need to train.
         if verbose > 0:
-            print("Training Logistic Regression model ")
+            logger.info("Training Logistic Regression model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = LabelEncoder().fit_transform(df_enc[y_column])
 
@@ -498,7 +520,7 @@ class RFRegressor(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
         retrain: bool (Default: False)
             Ignore cached results and retrain
@@ -518,7 +540,7 @@ class RFRegressor(ModelingBase):
 
         # We didn't: train the model and cache it.
         if verbose > 0:
-            print("Training LarsCV model ")
+            logger.info("Training LarsCV model ")
         x_train = df_enc.drop(y_column, axis=1)
         y = LabelEncoder().fit_transform(df_enc[y_column])
         self.trained = RandomForestRegressor(n_jobs=self.n_jobs, random_state=self.seed)
@@ -552,6 +574,11 @@ class RFRegressor(ModelingBase):
         assert self.trained is not None
 
         y_predict = self.trained.predict(x_test)
+        if pd.Series(y_true).nunique() == 2:
+            try:
+                return roc_auc_score(y_true=y_true, y_score=y_predict)
+            except Exception:
+                return 0.5
         return mape(y_true=y_true, y_pred=y_predict)
 
 
@@ -588,6 +615,7 @@ class TpotClassifier(ModelingBase):
         retrain: bool = False,
         use_dask: bool = False,
         verbose: int = 0,
+        **kwargs,
     ):
         """
         Uses TPOT auto-ML to find the best model pipeline that can distinguish between the binary labels in y_column of
@@ -604,7 +632,7 @@ class TpotClassifier(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
 
         scoring : string or callable, optional (Default: 'f1')
@@ -671,24 +699,35 @@ class TpotClassifier(ModelingBase):
 
         # No cache available, we need to train
         if verbose > 0:
-            print(f"{type(self).__name__} Training new model.")
+            logger.info(f"{type(self).__name__} Training new model.")
 
-        tpot = TPOTClassifier(
-            generations=int(generations),
-            population_size=int(population_size),
-            scoring=scoring,
-            cv=int(cv),
-            random_state=self.seed,
-            n_jobs=self.n_jobs,
-            use_dask=use_dask,
-            warm_start=True,
-            verbosity=verbose,
-        )
+        n_jobs = 1 if self.n_jobs == -1 else self.n_jobs
+        tpot_kwargs = {
+            "generations": int(generations),
+            "population_size": int(population_size),
+            "cv": int(cv),
+            "random_state": kwargs.get("random_state", self.seed),
+            "n_jobs": n_jobs,
+            "warm_start": True,
+        }
+        sig = inspect.signature(TPOTClassifier.__init__)
+        if "scorers" in sig.parameters:
+            tpot_kwargs["scorers"] = [scoring] if isinstance(scoring, str) else scoring
+        elif "scoring" in sig.parameters:
+            tpot_kwargs["scoring"] = scoring
+        if "verbose" in sig.parameters:
+            tpot_kwargs["verbose"] = verbose
+        if "verbosity" in sig.parameters:
+            tpot_kwargs["verbosity"] = verbose
+        if "use_dask" in sig.parameters:
+            tpot_kwargs["use_dask"] = use_dask
+
+        tpot = TPOTClassifier(**tpot_kwargs)
 
         x_train = df_enc.drop(y_column, axis=1)
         y = LabelEncoder().fit_transform(df_enc[y_column])
 
-        tpot.fit(features=x_train, target=y)
+        tpot.fit(x_train, y)
         self.trained = tpot.fitted_pipeline_
 
         # save to cache
@@ -726,7 +765,7 @@ class TpotClassifier(ModelingBase):
                 Y_predict_prob_array = getattr(self.trained, fn)(x_test)
                 if fn in ["predict_proba", "predict_prob"]:
                     Y_predict_prob_array = Y_predict_prob_array[:, 1]
-            except:
+            except Exception:
                 continue
         if Y_predict_prob_array is None:
             raise (f"No prediction method available for {self.trained}")
@@ -769,6 +808,7 @@ class TpotRegressor(ModelingBase):
         retrain: bool = False,
         use_dask: bool = False,
         verbose: int = 0,
+        **kwargs,
     ):
         """
         Uses TPOT auto-ML to find the best model pipeline that can perform regressoin on the y_column of
@@ -785,7 +825,7 @@ class TpotRegressor(ModelingBase):
         preprocessor : PreprocessorBase
             A child of PreprocessorBase class indicating what preprocessor to use. Options are:
             - pymasq.preprocessing.EmbeddingsEncoder
-            - pymasq.preprocessing.LabelEncoder_pm
+            - pymasq.preprocessing.LabelEncoderPM
             - None (i.e., the data is already pre-processed)
 
         scoring : string or callable, optional (Default: 'f1')
@@ -852,24 +892,35 @@ class TpotRegressor(ModelingBase):
 
         # No cache available, we need to train
         if verbose > 0:
-            print(f"{type(self).__name__} Training new model.")
+            logger.info(f"{type(self).__name__} Training new model.")
 
-        tpot = TPOTRegressor(
-            generations=int(generations),
-            population_size=int(population_size),
-            scoring=scoring,
-            cv=int(cv),
-            random_state=self.seed,
-            n_jobs=self.n_jobs,
-            use_dask=use_dask,
-            warm_start=True,
-            verbosity=verbose,
-        )
+        n_jobs = 1 if self.n_jobs == -1 else self.n_jobs
+        tpot_kwargs = {
+            "generations": int(generations),
+            "population_size": int(population_size),
+            "cv": int(cv),
+            "random_state": kwargs.get("random_state", self.seed),
+            "n_jobs": n_jobs,
+            "warm_start": True,
+        }
+        sig = inspect.signature(TPOTRegressor.__init__)
+        if "scorers" in sig.parameters:
+            tpot_kwargs["scorers"] = [scoring] if isinstance(scoring, str) else scoring
+        elif "scoring" in sig.parameters:
+            tpot_kwargs["scoring"] = scoring
+        if "verbose" in sig.parameters:
+            tpot_kwargs["verbose"] = verbose
+        if "verbosity" in sig.parameters:
+            tpot_kwargs["verbosity"] = verbose
+        if "use_dask" in sig.parameters:
+            tpot_kwargs["use_dask"] = use_dask
+
+        tpot = TPOTRegressor(**tpot_kwargs)
 
         x_train = df_enc.drop(y_column, axis=1)
         y = df_enc[y_column]
 
-        tpot.fit(features=x_train, target=y)
+        tpot.fit(x_train, y)
         self.trained = tpot.fitted_pipeline_
 
         # save to cache
@@ -906,12 +957,12 @@ class TpotRegressor(ModelingBase):
                 Y_predict_prob_array = getattr(self.trained, fn)(x_test)
                 if fn in ["predict_proba", "predict_prob"]:
                     Y_predict_prob_array = Y_predict_prob_array[:, 1]
-            except:
+            except Exception:
                 continue
         if Y_predict_prob_array is None:
-            raise (f"No prediction method available for {self.trained}")
+            raise Exception (f"No prediction method available for {self.trained}")
 
-        return mape(y_true=y_true, y_score=Y_predict_prob_array)
+        return mape(y_true=y_true, y_pred=Y_predict_prob_array)
 
 
 # For translation from text to callable functions

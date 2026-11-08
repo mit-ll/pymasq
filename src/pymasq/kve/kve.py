@@ -1,37 +1,31 @@
-from typing import Dict, Final, List, Optional, Tuple, Union
-
 import logging
-
-logger = logging.getLogger(__name__)
+from typing import Any, Dict, Final, List, Optional, Tuple, Union
 
 import numpy as np
-from numpy import ndarray
 import pandas as pd
 import statsmodels.api as sm
-import json
-from boruta import BorutaPy
+from numpy import ndarray
 from pandas.api.types import is_numeric_dtype
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.feature_selection import RFECV
 from sklearn.inspection import permutation_importance
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from pandas.api.types import is_numeric_dtype
 
 from pymasq import BEARTYPE
 from pymasq.preprocessing import EmbeddingsEncoder
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "key_variable_exploration",
     "importance_scores",
     "random_forest_scores",
-    "boruta_scores",
     "rfe_scores",
     "stepwise_scores",
     "stepwise_selection",
     "RANDOM_FOREST",
-    "BORUTA",
     "RFE",
     "INCLUDE",
     "VARIABLE",
@@ -43,7 +37,6 @@ __all__ = [
 
 
 RANDOM_FOREST: Final = "Random_Forest"
-BORUTA: Final = "Boruta"
 RFE: Final = "RFE"
 STEPWISE: Final = "Stepwise"
 INCLUDE: Final = "Include"
@@ -100,9 +93,9 @@ def key_variable_exploration(
     df: pd.DataFrame,
     sensitive_col: str,
     preprocessed: bool = False,
-    verbose: int = 0,
+    verbose: Union[int, bool] = 0,
     num_components: int = 6,
-    **kwargs: Dict[str, str],
+    **kwargs: Any,
 ) -> Dict[str, pd.DataFrame]:
     """
     Explore the ranking of key variables in a binary classification setting
@@ -136,7 +129,7 @@ def key_variable_exploration(
 
     **kwargs
         Additional arguments to be passed to `importance_Scores`:
-        * methods : Tuple[str], optional Default: ('rf', 'boruta', 'rfe', 'stepwise')
+        * methods : Tuple[str], optional Default: ('rf', 'rfe', 'stepwise')
             Names of the ranking methods to run.
 
     Returns
@@ -162,10 +155,10 @@ def key_variable_exploration(
             normalize=True,
         )
 
-    methods = kwargs.get("methods", (RANDOM_FOREST, BORUTA, RFE, STEPWISE))
+    methods = kwargs.get("methods", (RANDOM_FOREST, RFE, STEPWISE))
     categories = len(df[sensitive_col].dropna().unique())
     if categories < 2:
-        print(
+        logger.info(
             "The kve function requires two categories for binary classification  and the {} column has {} class".format(
                 sensitive_col, categories
             )
@@ -178,7 +171,7 @@ def key_variable_exploration(
         df, sensitive_col, categories=categories, verbose=verbose, **kwargs
     )
     if verbose > 0:
-        print("Building ranking...")
+        logger.info("Building ranking...")
     include_cols = [c for c in rank_df.columns if INCLUDE in c]
 
     rank_df[INCLUDE] = rank_df.apply(
@@ -216,9 +209,9 @@ def importance_scores(
     input_df: pd.DataFrame,
     sensitive_col: str,
     categories: int,
-    methods: Optional[Tuple[str]] = None,
-    verbose: int = 0,
-    **kwargs,
+    methods: Optional[Tuple[str, ...]] = None,
+    verbose: Union[int, bool] = 0,
+    **kwargs: Any,
 ) -> pd.DataFrame:
     """
     Use Feature Selection methods to generate importance ranks for variables
@@ -238,7 +231,7 @@ def importance_scores(
         Number of categories in the senestive column used to determine the type
         of model used in feature selection, -1 indicates the column is continuous
 
-    methods : Tuple[str], optional (Default: "Random_Forest","Boruta","RFE", "Stepwise")
+    methods : Tuple[str], optional (Default: "Random_Forest","RFE", "Stepwise")
         Names of the ranking methods to run
 
     verbose : int {0, 1, 2}, (Default: 0)
@@ -256,7 +249,7 @@ def importance_scores(
         "callback", None
     )  # callable function that emits to main server
     if methods is None:
-        methods = (RANDOM_FOREST, BORUTA, RFE, STEPWISE)
+        methods = (RANDOM_FOREST, RFE, STEPWISE)
     method_len = float(len(methods))  # instantiated for progress emits
     method_count = 1  # instantiated for progress emits
     x_rf = input_df.drop([sensitive_col], axis=1)
@@ -266,7 +259,7 @@ def importance_scores(
     score_dict = {}
     if RANDOM_FOREST in methods:
         if verbose > 0:
-            print("Running Random Forest...")
+            logger.info("Running Random Forest...")
         (
             score_dict[RANDOM_FOREST],
             score_dict[f"{RANDOM_FOREST}_{INCLUDE}"],
@@ -274,18 +267,9 @@ def importance_scores(
         if progress_reporter is not None:
             progress_reporter(method_count / method_len)
             method_count += 1
-    if BORUTA in methods and x_train.shape[0] >= 250:
-        if verbose > 0:
-            print("Running Boruta...")
-        score_dict[f"{BORUTA}_{INCLUDE}"] = boruta_scores(
-            x_train, y, verbose=verbose, categories=categories
-        )
-        if progress_reporter is not None:
-            progress_reporter(method_count / method_len)
-            method_count += 1
     if RFE in methods:
         if verbose > 0:
-            print("Running Recursive Feature Elimination...")
+            logger.info("Running Recursive Feature Elimination...")
         score_dict[f"{RFE}_{INCLUDE}"] = rfe_scores(
             x_train, y, verbose=verbose, categories=categories
         )
@@ -294,7 +278,7 @@ def importance_scores(
             method_count += 1
     if STEPWISE in methods:
         if verbose > 0:
-            print("Running Stepwise...")
+            logger.info("Running Stepwise...")
         score_dict[f"{STEPWISE}_{INCLUDE}"] = stepwise_scores(
             x_rf, y_rf, verbose=verbose
         )
@@ -319,7 +303,7 @@ def random_forest_scores(
     n_estimators: int = 100,
     n_jobs: int = -1,
     random_state: int = 1234,
-    verbose: int = 0,
+    verbose: Union[int, bool] = 0,
 ) -> Tuple[ndarray, List[str]]:
     """
     Runs permutation importance on a Random Forest model which returns both
@@ -385,114 +369,13 @@ def random_forest_scores(
         )
 
     rf.fit(x_train, y_train)
+    # Avoid loky multiprocessing memory mapping exhaustion on permutation_importance
+    perm_n_jobs = 1 if n_jobs == -1 else n_jobs
     result = permutation_importance(
-        rf, x_test, y_test, n_repeats=10, random_state=random_state, n_jobs=n_jobs
+        rf, x_test, y_test, n_repeats=10, random_state=random_state, n_jobs=perm_n_jobs
     )
     include = ["yes" if i > 0 else "no" for i in result.importances_mean]
     return rf.feature_importances_, include
-
-
-@BEARTYPE
-def boruta_scores(
-    x_train: pd.DataFrame,
-    y: pd.Series,
-    categories: int,
-    n_estimators: int = 1000,
-    n_jobs: int = -1,
-    random_state: int = 1234,
-    verbose: int = 0,
-    max_iter: int = 50,
-) -> List[str]:
-    """
-    Boruta is an all relevant feature selection method, while most other are
-    minimal optimal; this means it tries to find all features carrying
-    information usable for prediction, rather than finding a possibly compact
-    subset of features on which some classifier has a minimal error
-
-
-    NOTE: Does not work with small data, requires >250 rows
-
-    Parameters
-    ----------
-    x_train : pd.DataFrame
-        A dataframe containing all input variables for training the model
-
-    y : pd.Series
-        A series containing the ground truth labels or numbers
-
-    categories: int
-        number of categories in the senestive column used to determine the type
-        of model used in feature selection, -1 indicates the column is continuous
-
-    n_estimators : int, optional (Default: 1000)
-        Number of trees that are constructed during the random forest
-
-    n_jobs : int, optional (Default: -1)
-        Number of workers to use for parallel processing
-            - -1 indicates use all available workers
-
-    random_state: int, optional (Default: 1234)
-        Integer seed for setting the random state in the model
-
-    verbose : int {0, 1, 2}, optional (Default 2)
-        Level of reporting from the algorithms:
-            - 0 disables verbose logging
-            - 2 is step-by-step reporting
-
-    max_iter: int, optional (Default: 50)
-        The number of maximum iterations to perform.
-
-    Returns
-    -------
-    List[str]
-        list of strings, contains whether a feature should be included in
-        further analysis:
-        - "yes": boruta ranking = 1
-        - "maybe": boruta ranking = 2
-        - "no": boruta ranking >= 3
-
-    References
-    ----------
-    https://medium.com/@indreshbhattacharyya/feature-selection-categorical-feature-selection-boruta-light-gbm-chi-square-bf47e94e2558
-
-    """
-    if x_train.shape[0] < 250:
-        print("Requires > 250 rows to be stable")
-        return []
-    if categories >= 2:
-        rf = RandomForestClassifier(
-            n_estimators=n_estimators,
-            n_jobs=n_jobs,
-            verbose=verbose,
-            random_state=random_state,
-        )
-    else:
-        rf = RandomForestRegressor(
-            n_estimators=n_estimators,
-            n_jobs=n_jobs,
-            verbose=verbose,
-            random_state=random_state,
-        )
-    boruta_selector = BorutaPy(
-        rf,
-        verbose=verbose,
-        n_estimators="auto",
-        random_state=random_state,
-        max_iter=max_iter,
-    )
-    if isinstance(x_train, np.ndarray):
-        boruta_selector.fit(x_train, y)
-    else:
-        boruta_selector.fit(x_train.values, y.values)
-    include = []
-    for r in list(boruta_selector.ranking_):
-        if r == 1:
-            include.append("yes")
-        elif r == 2:
-            include.append("maybe")
-        else:
-            include.append("no")
-    return include
 
 
 @BEARTYPE
@@ -502,7 +385,7 @@ def rfe_scores(
     categories: int,
     n_jobs: int = -1,
     random_state: int = 1234,
-    verbose: int = 0,
+    verbose: Union[int, bool] = 0,
     solver: str = "saga",
     penalty: str = "l2",
     l1_ratio: float = 0.5,
@@ -628,18 +511,17 @@ def rfe_scores(
                 solver=solver,
                 penalty=penalty,
                 l1_ratio=l1_ratio,
-                multi_class="ovr",
             )
         else:
             estimator = LogisticRegression(
                 random_state=random_state,
                 solver=solver,
                 penalty=penalty,
-                multi_class="ovr",
             )
     else:
-        estimator = LinearRegression(normalize=True, n_jobs=n_jobs)
-    rfecv_selector = RFECV(estimator, step=step, cv=cv, verbose=verbose, n_jobs=n_jobs)
+        estimator = LinearRegression(n_jobs=n_jobs)
+    rfecv_n_jobs = 1 if n_jobs == -1 else n_jobs
+    rfecv_selector = RFECV(estimator, step=step, cv=cv, verbose=verbose, n_jobs=rfecv_n_jobs)
     rfecv_selector.fit(x_train, y)
     return ["yes" if r == 1 else "no" for r in list(rfecv_selector.ranking_)]
 
@@ -648,7 +530,7 @@ def rfe_scores(
 def stepwise_scores(
     x_train: pd.DataFrame,
     y: pd.Series,
-    **kwargs: Dict[str, str],
+    **kwargs: Any,
 ) -> List[str]:
     """
     Feature ranking with stepwise selection with regression for retaining significant features.
@@ -771,7 +653,7 @@ def stepwise_selection(
             tested.append(best_feature)
             changed = True
             if verbose > 0:
-                print("Add  {:30} with p-value {:.6}".format(best_feature, best_pval))
+                logger.info("Add  {:30} with p-value {:.6}".format(best_feature, best_pval))
 
         # backward step
         model = sm.OLS(y, sm.add_constant(pd.DataFrame(x_train[included]))).fit()
@@ -783,7 +665,7 @@ def stepwise_selection(
             worst_feature = included[pvalues.argmax()]
             included.remove(worst_feature)
             if verbose > 0:
-                print("Drop {:30} with p-value {:.6}".format(worst_feature, worst_pval))
+                logger.info("Drop {:30} with p-value {:.6}".format(worst_feature, worst_pval))
         if not changed:
             break
         count += 1

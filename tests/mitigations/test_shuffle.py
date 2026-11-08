@@ -3,12 +3,11 @@ import pandas as pd
 import pytest
 
 from pymasq.datasets import load_data, load_loan
+from pymasq.errors import InputError
 from pymasq.mitigations import (
     s,  # shuffle.py module
     shuffle,
-    MODEL,
 )
-from pymasq.errors import InputError, DataTypeError
 
 
 @pytest.fixture
@@ -88,7 +87,7 @@ def test_shuffle_cols_not_numeric(my_df):
 
 
 def test_shuffle_same_mean_different_values(loan_df):
-    """ Test that values are perturbed and retain the same mean while also in different order """
+    """Test that values are perturbed and retain the same mean while also in different order"""
     shuffle_cols = ["ApplicantIncome", "LoanAmount"]
     cor_cols = ["Education", "Loan_Status"]
     shuffled = shuffle(

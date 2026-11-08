@@ -5,8 +5,8 @@ from pymasq import config
 config.FORMATTING_ON_OUTPUT = True
 config.FORMATTING_IGNORE_DTYPES = True
 
-from pymasq.mitigations.utils import _as_dataframe
 from pymasq.mitigations import local_supp
+from pymasq.mitigations.utils import _as_dataframe
 
 dataset = {
     "ZipCode": [13055, 13056, 13057, 13058, 13056, 13055, 13058, 14859, 14859, 13057],

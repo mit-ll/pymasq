@@ -1,14 +1,13 @@
-from pymasq.metrics.utils import _get_model_task
-from pymasq.config import CLASSIFIER_MODELS, REGRESSOR_MODELS
-import numpy as np
+from typing import Optional
+
 import pandas as pd
-from typing import Optional, Union
 from sklearn.preprocessing import LabelEncoder as skLabelEncoder
 
+from pymasq import BEARTYPE
+from pymasq.errors import InputError
+from pymasq.metrics.utils import _get_model_task
 from pymasq.models import models
 from pymasq.preprocessing import preprocess
-from pymasq.errors import InputError
-from pymasq import BEARTYPE
 
 __all__ = ["auc_score"]
 
@@ -134,7 +133,7 @@ def auc_score(
         )
     # Encode the two data frames (at once for consistent encodings)
     orig_enc, mod_enc = preprocessor_fn.encode_both(
-        df_A=orig_df, df_B=mod_df, sensitive_col=sensitive_col
+        df_a=orig_df, df_b=mod_df, sensitive_col=sensitive_col
     )
     # Train the classifer based on only the original data
     classifer_fn.train(
@@ -161,5 +160,8 @@ def auc_score(
     if absolute_risk:
         risk_score = mod_score / 0.5
     else:
-        risk_score = min(orig_score, mod_score) / orig_score
+        if orig_score == 0:
+            risk_score = 1.0 if mod_score == 0 else 0.0
+        else:
+            risk_score = min(orig_score, mod_score) / orig_score
     return risk_score

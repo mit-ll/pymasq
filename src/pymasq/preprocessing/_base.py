@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-
 # This is the base class for all preprocessors
 
 

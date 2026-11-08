@@ -1,9 +1,11 @@
+from typing import Dict, Final, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from pymasq.errors import DataTypeError, InputError
-from SALib.sample import saltelli
 from SALib.analyze import sobol
-from typing import Dict, Optional, Tuple, Final
+from SALib.sample import sobol as saltelli
+
+from pymasq.errors import DataTypeError, InputError
 
 __all__ = ["gen_params", "gen_samples", "analyze", "UNIFORM", "SAMPLE"]
 

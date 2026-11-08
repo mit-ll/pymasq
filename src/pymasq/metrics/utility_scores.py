@@ -1,14 +1,15 @@
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from scipy.spatial import distance
-from numpy import linspace
 from typing import Optional
 
-from pymasq.models import models
+import pandas as pd
+from numpy import linspace
+from scipy.spatial import distance
+from sklearn.model_selection import train_test_split
+
+from pymasq import BEARTYPE
 from pymasq.errors import InputError
 from pymasq.metrics import utils
+from pymasq.models import models
 from pymasq.preprocessing import preprocess
-from pymasq import BEARTYPE
 
 __all__ = [
     "propensity_score",
@@ -57,10 +58,13 @@ def jensen_shannon(
 
     if preprocessor not in preprocess.preprocessor_fn:
         raise InputError("No such preprocessor defined in pymasq:", preprocessor)
+
+    if orig_df.equals(mod_df):
+        return 0.0
     # Encode the two data frames (at once for consistent encodings)
     preprocessor_fn = preprocess.preprocessor_fn[preprocessor]
     orig_enc, mod_enc = preprocessor_fn.encode_both(
-        df_A=orig_df, df_B=mod_df, sensitive_col=sensitive_col
+        df_a=orig_df, df_b=mod_df, sensitive_col=sensitive_col
     )
 
     # remove sensitive column
@@ -198,10 +202,13 @@ def propensity_score(
     if preprocessor not in preprocess.preprocessor_fn:
         raise InputError("No such preprocessor defined in pymasq:", preprocessor)
 
+    if orig_df.equals(mod_df):
+        return 0.0
+
     # Encode the two data frames (at once for consistent encodings)
     preprocessor_fn = preprocess.preprocessor_fn[preprocessor]
     orig_enc, mod_enc = preprocessor_fn.encode_both(
-        df_A=orig_df, df_B=mod_df, sensitive_col=sensitive_col
+        df_a=orig_df, df_b=mod_df, sensitive_col=sensitive_col
     )
     # Create a unique column name to mark from which dataframe a row came from
     class_col = utils.uniq_col_name(orig_df)

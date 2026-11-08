@@ -1,30 +1,37 @@
 from os import path
 
-__version__ = "0.6.5"
+__version__ = "1.0.1"
 
 
 try:
     # import the runtime type checker, if available
-    from beartype import beartype
+    from warnings import filterwarnings
 
+    from beartype import beartype
+    from beartype.roar import BeartypeDecorHintPep585DeprecationWarning
+
+    filterwarnings(action="ignore", category=BeartypeDecorHintPep585DeprecationWarning)
     BEARTYPE = beartype
 except ImportError:
     BEARTYPE = lambda func: func
 
 
 def set_seed(r=None):
-    """Set a module-wide random seed
+    """Set a module-wide random seed.
 
     Typically this would be used for testing purposes
     and replicating experiments.
     """
-    import numpy as np
-    import struct
     import random
+    import struct
     from os import urandom
 
+    import numpy as np
+
     if r is None:
-        r = struct.unpack("i", urandom(4))
+        r = struct.unpack("i", urandom(4))[0]
+    elif isinstance(r, (tuple, list)):
+        r = r[0]
 
     _random_seed = int(r)
     np.random.seed(_random_seed)
@@ -68,8 +75,11 @@ __all__ = [
     "kve",
     "metrics",
     "mitigations",
+    "models",
     "optimizations",
     "preprocessing",
     "plotting",
+    "sa",
+    "utils",
     "config",
 ]

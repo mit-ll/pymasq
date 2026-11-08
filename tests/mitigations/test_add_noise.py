@@ -4,7 +4,6 @@
 import numpy as np
 import pandas as pd
 import pytest
-
 from scipy.stats import kstest
 
 from pymasq import config, set_seed
@@ -12,9 +11,8 @@ from pymasq import config, set_seed
 config.FORMATTING_ON_OUTPUT = True
 
 from pymasq.datasets import load_data
-from pymasq.mitigations import add_noise, ADDITIVE, CORRELATED
 from pymasq.errors import InputError
-
+from pymasq.mitigations import ADDITIVE, CORRELATED, add_noise
 
 set_seed(10)
 
