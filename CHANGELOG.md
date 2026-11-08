@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-08
+
 ### Added
 - **SDC Risk Metrics - SUDA**:
   - Implemented the Special Uniques Detection Algorithm (`pymasq.metrics.suda`) calculating disclosure risk via Minimal Sample Uniques (MSUs) and factorial subset weighting, with unit tests (`tests/metrics/test_suda.py`).
